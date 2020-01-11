@@ -47,8 +47,10 @@ It's not meant to resolve any real life problems it'll serve as purely education
 
 ## Changelog
 
-### 2020-01-07
+### 2020-01-11
+* Added initial code for Project, Issue and User - no logic yet, just simple classes available for later development. 
 
+### 2020-01-07
 * Project skeleton with basic CI configured
 * Added readme, documented already made decisions
 * Decided on the scope and on the approach to the project development
