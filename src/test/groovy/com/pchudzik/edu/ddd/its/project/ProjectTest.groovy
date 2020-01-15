@@ -1,6 +1,6 @@
 package com.pchudzik.edu.ddd.its.project
 
-import com.pchudzik.edu.ddd.its.infrastructure.ValidationException
+import com.pchudzik.edu.ddd.its.infrastructure.domain.ValidationException
 import spock.lang.Specification
 
 class ProjectTest extends Specification {

@@ -1,4 +1,4 @@
-package com.pchudzik.edu.ddd.its.infrastructure;
+package com.pchudzik.edu.ddd.its.infrastructure.domain;
 
 public class ValidationException extends RuntimeException {
     public ValidationException(String message) {

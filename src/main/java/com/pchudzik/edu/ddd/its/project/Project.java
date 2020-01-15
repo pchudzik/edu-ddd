@@ -1,11 +1,19 @@
 package com.pchudzik.edu.ddd.its.project;
 
-import com.pchudzik.edu.ddd.its.infrastructure.ValidationException;
+import com.pchudzik.edu.ddd.its.infrastructure.domain.ValidationException;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 class Project {
+    @Getter(AccessLevel.PACKAGE)
     private ProjectId id;
+
+    @Getter(AccessLevel.PACKAGE)
     private String projectFullName;
+
+    @Getter(AccessLevel.PACKAGE)
     private String projectDescription;
 
     Project() {
@@ -17,7 +25,7 @@ class Project {
     }
 
     public void projectName(String newProjectName) {
-        if (StringUtils.isBlank(projectFullName)) {
+        if (StringUtils.isBlank(newProjectName)) {
             throw new ValidationException.EmptyValueValidationException("Project name can not be empty");
         }
         this.projectFullName = newProjectName;
