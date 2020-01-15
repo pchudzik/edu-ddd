@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.project.read;
 
+import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,7 @@ public interface ProjectViewFacade {
     @Builder
     @EqualsAndHashCode
     class ProjectDto {
-        private final String id;
+        private final ProjectId id;
         private final String name;
         private final String description;
     }

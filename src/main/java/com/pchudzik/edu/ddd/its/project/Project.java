@@ -19,8 +19,8 @@ class Project {
     Project() {
     }
 
-    Project(String projectId, String projectName) {
-        this.id = new ProjectId(projectId);
+    Project(ProjectId projectId, String projectName) {
+        this.id = projectId;
         projectName(projectName);
     }
 

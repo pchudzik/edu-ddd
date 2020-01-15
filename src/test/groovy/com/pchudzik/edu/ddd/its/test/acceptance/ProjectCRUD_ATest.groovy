@@ -2,7 +2,7 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.project.ProjectFacade
-
+import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.project.read.ProjectViewFacade
 import spock.lang.Specification
 
@@ -13,9 +13,12 @@ class ProjectCRUD_ATest extends Specification {
     def projectViewFacade = injector.getInstance(ProjectViewFacade)
 
     def "new project is created"() {
+        given:
+        def projectId = new ProjectId("ABCD")
+
         when:
         projectFacade.createNewProject(ProjectFacade.ProjectCreationCommand.builder()
-                .id("ABCD")
+                .id(projectId)
                 .name("Some Project")
                 .description("Some description")
                 .build())
@@ -26,7 +29,7 @@ class ProjectCRUD_ATest extends Specification {
         and:
         allProjects.size() == 1
         allProjects.contains(ProjectViewFacade.ProjectDto.builder()
-                .id("ABCD")
+                .id(projectId)
                 .name("Some Project")
                 .description("Some description")
                 .build())

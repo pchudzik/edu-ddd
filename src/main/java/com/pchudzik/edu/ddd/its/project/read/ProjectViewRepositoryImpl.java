@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.project.read;
 
+import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
 
@@ -15,7 +16,7 @@ class ProjectViewRepositoryImpl implements ProjectViewRepository {
         return jdbi.withHandle(h -> h
                 .createQuery("select id, name, description from project")
                 .map((rs, ctx) -> ProjectViewFacade.ProjectDto.builder()
-                        .id(rs.getNString("id"))
+                        .id(new ProjectId(rs.getNString("id")))
                         .name(rs.getNString("name"))
                         .description(rs.getString("description"))
                         .build())

@@ -1,7 +1,7 @@
 package com.pchudzik.edu.ddd.its.project;
 
-import lombok.Builder;
-import lombok.Data;
+import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
+import lombok.*;
 
 public interface ProjectFacade {
     void createNewProject(ProjectCreationCommand creationCommand);
@@ -9,8 +9,15 @@ public interface ProjectFacade {
     @Data
     @Builder
     class ProjectCreationCommand {
-        private final String id;
+        private final ProjectId id;
         private final String name;
         private final String description;
+    }
+
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    class ProjectCreatedMessage implements MessageQueue.Message {
+        @Getter
+        private final ProjectId projectId;
     }
 }

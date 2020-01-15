@@ -12,4 +12,16 @@ public interface TransactionManager {
     interface TransactionCallback<T> {
         T execute();
     }
+
+    class NoTransactionManager implements TransactionManager {
+        @Override
+        public <R> R inTransaction(TransactionCallback<R> transactionCallback) {
+            return transactionCallback.execute();
+        }
+
+        @Override
+        public void useTransaction(TransactionAction callback) {
+            callback.execute();
+        }
+    }
 }
