@@ -1,8 +1,10 @@
 package com.pchudzik.edu.ddd.its.project;
 
 import com.pchudzik.edu.ddd.its.infrastructure.domain.ValidationException;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
+@EqualsAndHashCode
 public class ProjectId {
     private final String id;
 
