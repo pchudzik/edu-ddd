@@ -1,22 +1,14 @@
 package com.pchudzik.edu.ddd.its.issue;
 
+import com.pchudzik.edu.ddd.its.issue.id.IssueId;
+
 class Issue {
-    IssueId id;
+    private final IssueId id;
 
-    IssueDescription issueDescription;
+    private final String title;
 
-    Issue(IssueId id, String title, String description) {
+    Issue(IssueId id, String title) {
         this.id = id;
-        this.issueDescription = new IssueDescription(title, description);
-    }
-
-    private static class IssueDescription {
-        private String title;
-        private String description;
-
-        public IssueDescription(String title, String description) {
-            this.title = title;
-            this.description = description;
-        }
+        this.title = title;
     }
 }

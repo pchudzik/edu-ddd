@@ -3,8 +3,8 @@ package com.pchudzik.edu.ddd.its.infrastructure;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.pchudzik.edu.ddd.its.infrastructure.db.DatabaseContextModule;
-import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessagingContextModule;
+import com.pchudzik.edu.ddd.its.issue.id.IssueIdContextModule;
 import com.pchudzik.edu.ddd.its.project.ProjectContextModule;
 import com.pchudzik.edu.ddd.its.project.read.ProjectReadContextModule;
 
@@ -14,7 +14,8 @@ public class InjectorFactory {
                 new DatabaseContextModule(),
                 new MessagingContextModule(),
                 new ProjectContextModule(),
-                new ProjectReadContextModule()
+                new ProjectReadContextModule(),
+                new IssueIdContextModule()
         );
     }
 }

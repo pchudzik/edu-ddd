@@ -13,12 +13,13 @@ class ProjectFacadeImpl implements ProjectFacade {
     private final TransactionManager txManager;
 
     @Override
-    public void createNewProject(ProjectCreationCommand creationCommand) {
-        txManager.useTransaction(() -> {
+    public ProjectId createNewProject(ProjectCreationCommand creationCommand) {
+        return txManager.inTransaction(() -> {
             Project project = new Project(creationCommand.getId(), creationCommand.getName());
             project.projectDescription(creationCommand.getDescription());
             projectRepository.save(project);
             messageQueue.publish(new ProjectCreatedMessage(project.getId()));
+            return project.getId();
         });
     }
 }

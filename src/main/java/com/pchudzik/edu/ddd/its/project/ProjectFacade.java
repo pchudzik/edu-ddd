@@ -4,7 +4,7 @@ import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import lombok.*;
 
 public interface ProjectFacade {
-    void createNewProject(ProjectCreationCommand creationCommand);
+    ProjectId createNewProject(ProjectCreationCommand creationCommand);
 
     @Data
     @Builder
