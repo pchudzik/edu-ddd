@@ -4,23 +4,22 @@
 
 Sample bug tracking project meant to learn and practice DDD approach to software development.
 It's not meant to resolve any real life problems it'll serve as purely educational project.
+There are no external dependencies to this project.
+All what's required is served as in memory services.
 
-## Scope
+## Functional overview
 
 ### Included
 
 * Core domain implementation
-  * Walking skeleton in the first iteration will include:
-    * Project because every big organization have many of them 
-    * Issues inside project (title, description)
-    * Users just simple name and nothing more for now
+  * Walking skeleton of some features
   * Acceptance tests for those scenarios
 * Future "unexpected" changes
   * To simulate real life and project evolution in time and check how assumptions will work
   * New features will be added without much planning up front.
     I'm not going to spend too much time thinking now about what possible features will be implemented.
     I'll start with walking skeleton and then try to add new features depending on current star alignments and air humidity.
-* Tests unit and acceptance
+* Unit and acceptance tests
   * Verify how hexagonal architecture works with testing
   * Check by myself how DDD approach works with testing and TDD
 * CI because I tend not to run all tests so it's just precaution to be sure it compiles ;)
@@ -35,22 +34,42 @@ It's not meant to resolve any real life problems it'll serve as purely education
 
 ### Excluded (for now)
 
-* REST API 
-* Database
-* Any framework integration (what about IC and DI?)
+* REST API
+
+### Unexpected changes
+
+#### Dynamic fields (18.01.2020)
+
+As a user I'd like to add any number of user defined fields to the project.
+As a user I'd like to add any number of user defined fields to the issues created inside project.
+
+Fields can be marker as required or optional and system should allow to change if it's mandatory or not on the fly.
+
+Available field types:
+* String field - named field which accepts free text defined by the user
+* Number field - named field which accepts number defined by the user. User can define number range, if decimal number are accepted and numbers sign
+* Boolean field - named field which allows to set simple boolean values. User can map any text to positive and negative values (yes/no, included/excluded, etc).
+  Null value (non defined, N/A) is also available and user can define custom text for it and if it's available for the user. 
+* Label field - field for which values can be populated on the fly and in case value exist it'll be proposed by the system
+* Choice field - field along with available choices and if field can be multiple choice or single choice user can also include additional icons associated with the field
+* Date time field - field which stores data or time or data and time depending on user configuration
+
+As a system administrator I'd like to define fields added by default to every project created.
+As a system administrator I'd like to change fields added to every project created at any time. 
+
+As a project administrator I'd like to define fields added to every issue created.
+As a project administrator I'd like to change set of default fields for issues at any time.
+
+#### [Future] user & user management
+#### [Future] permissions/roles model
+#### [Future] audit
+#### [Future] watching issues
+#### [Future] time tracking
+
+#### More TBD and documented here
 
 ## Building
 
-* Requires java 13
+* Requires java 11
 
 `./mvnw clean package`
-
-## Changelog
-
-### 2020-01-11
-* Added initial code for Project, Issue and User - no logic yet, just simple classes available for later development. 
-
-### 2020-01-07
-* Project skeleton with basic CI configured
-* Added readme, documented already made decisions
-* Decided on the scope and on the approach to the project development
