@@ -1,12 +1,12 @@
-package com.pchudzik.edu.ddd.its.test.acceptance;
+package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
+import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.issue.id.IssueIdGenerator
 import com.pchudzik.edu.ddd.its.project.ProjectFacade
 import com.pchudzik.edu.ddd.its.project.ProjectId
-import spock.lang.Specification;
 
-class IssueId_ATest extends Specification {
+class IssueId_ATest extends DbSpecification {
     private def injector = InjectorFactory.injector()
     private def projectFacade = injector.getInstance(ProjectFacade)
     private def issueIdGenerator = injector.getInstance(IssueIdGenerator)
