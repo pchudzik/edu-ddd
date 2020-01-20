@@ -22,4 +22,25 @@ create table issue
     title          varchar(255) not null,
     primary key (project, issue_sequence),
     foreign key (project) references project(id)
-)
+);
+
+create table field
+(
+    id          uuid         not null,
+    version     integer      not null,
+    name        varchar(255) not null,
+    type        varchar(32)  not null,
+    description varchar(255),
+    required    boolean,
+    min_length  integer,
+    max_length  integer,
+    primary key (id, version)
+);
+
+create table last_field
+(
+  id      uuid    not null,
+  version integer not null,
+  primary key (id),
+  foreign key (id) references field(id)
+);
