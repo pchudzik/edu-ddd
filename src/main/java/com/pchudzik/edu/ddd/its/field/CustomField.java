@@ -9,6 +9,6 @@ interface CustomField<T> {
 
     FieldVersion getFieldVersion();
 
-    Either<FieldValidator.ValidationResult, ? extends FieldValue<T>> value(T value);
+    <A> Either<FieldValidator.ValidationResult, ? extends FieldValue<A, T>> value(A assignee, T value);
 
 }

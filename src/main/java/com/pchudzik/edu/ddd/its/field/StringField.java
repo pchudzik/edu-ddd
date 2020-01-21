@@ -2,6 +2,7 @@ package com.pchudzik.edu.ddd.its.field;
 
 import io.vavr.control.Either;
 import lombok.*;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.Optional;
 
@@ -24,9 +25,13 @@ class StringField implements CustomField<String> {
     }
 
     public StringField(FieldId fieldId, FieldName fieldName, boolean required, int minLength, int maxLength) {
+        this(fieldId, new FieldVersion(1), fieldName, required, minLength, maxLength);
+    }
+
+    public StringField(FieldId fieldId, FieldVersion version, FieldName fieldName, boolean required, int minLength, int maxLength) {
         this.fieldId = fieldId;
         this.fieldName = fieldName;
-        this.fieldVersion = new FieldVersion(1);
+        this.fieldVersion = version;
         this.configuration = new StringFieldConfiguration(required, minLength, maxLength);
     }
 
@@ -42,10 +47,10 @@ class StringField implements CustomField<String> {
         return this;
     }
 
-    public Either<FieldValidator.ValidationResult, StringFieldValue> value(String value) {
+    public <A> Either<FieldValidator.ValidationResult, StringFieldValue<A>> value(A assignee, String value) {
         FieldValidator.ValidationResult validationResult = configuration.getValidator().isValid(value);
         if (validationResult.isValid()) {
-            return Either.right(new StringFieldValue(fieldId, fieldVersion, value));
+            return Either.right(new StringFieldValue<A>(fieldId, fieldVersion, assignee, value));
         } else {
             return Either.left(validationResult);
         }
@@ -140,15 +145,23 @@ class StringField implements CustomField<String> {
     }
 
     @RequiredArgsConstructor
-    private static class StringFieldValue implements FieldValue<String> {
+    private static class StringFieldValue<A> implements FieldValue<A, String> {
         @Getter
         private final FieldId fieldId;
 
         @Getter
-        private final FieldVersion configurationFieldVersion;
+        private final FieldVersion fieldVersion;
+
+        @Getter
+        private final A assignee;
 
         @Getter
         private final String value;
+
+        @Override
+        public A getAssignee() {
+            return null;
+        }
     }
 
     @EqualsAndHashCode

@@ -1,9 +1,11 @@
 package com.pchudzik.edu.ddd.its.field
 
-
+import com.pchudzik.edu.ddd.its.project.ProjectId
 import spock.lang.Specification
 
 class StringFieldTest extends Specification {
+    def projectId = new ProjectId("ABCD")
+
     def "when field configuration is updated version is updated"() {
         given:
         def field = new StringField(new FieldId(), "field")
@@ -29,7 +31,7 @@ class StringFieldTest extends Specification {
                 .length(0, 128)
 
         when:
-        def value = field.value("ala ma kota")
+        def value = field.value(projectId, "ala ma kota")
 
         then:
         !value.isLeft()
@@ -43,7 +45,7 @@ class StringFieldTest extends Specification {
                 .length(0, 128)
 
         when:
-        def value = field.value(null)
+        def value = field.value(projectId, null)
 
         then:
         value.swap().get().validationMessages == [RequiredValidator.RequiredValidationMessage.REQUIRED_FIELD]
@@ -56,7 +58,7 @@ class StringFieldTest extends Specification {
                 .length(100, 200)
 
         when:
-        def value = field.value("value")
+        def value = field.value(projectId, "value")
 
         then:
         value.swap().get().validationMessages == [new StringField.StringValidationMessage(100, 200)]
@@ -69,7 +71,7 @@ class StringFieldTest extends Specification {
                 .length(2, 3)
 
         when:
-        def value = field.value("super long value")
+        def value = field.value(projectId, "super long value")
 
         then:
         value.swap().get().validationMessages == [new StringField.StringValidationMessage(2, 3)]
