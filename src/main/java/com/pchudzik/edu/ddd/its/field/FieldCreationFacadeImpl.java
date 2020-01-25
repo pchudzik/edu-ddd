@@ -9,7 +9,6 @@ import javax.inject.Inject;
 class FieldCreationFacadeImpl implements FieldCreationFacade {
     private final TransactionManager txManager;
     private final StringFieldRepository stringFieldRepository;
-    private final LastFieldPointerRepository lastFieldPointerRepository;
 
     @Override
     public FieldId createStringField(StringFieldCreationCommand command) {
@@ -19,7 +18,6 @@ class FieldCreationFacadeImpl implements FieldCreationFacade {
                     new FieldName(command.getFieldName(), command.getFieldDescription()),
                     command.isRequired(), command.getMinLength(), command.getMaxLength());
             stringFieldRepository.save(field.getSnapshot());
-            lastFieldPointerRepository.save(field.getFieldId(), field.getFieldVersion());
             return field.getFieldId();
         });
     }

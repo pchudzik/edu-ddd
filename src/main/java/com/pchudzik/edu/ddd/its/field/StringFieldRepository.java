@@ -9,6 +9,8 @@ import javax.inject.Inject;
 class StringFieldRepository {
     private final Jdbi jdbi;
 
+    private final LastFieldPointerRepository lastFieldPointerRepository;
+
     public void save(StringField.StringFieldSnapshot fieldSnapshot) {
         jdbi.withHandle(h ->
                 h
@@ -17,7 +19,7 @@ class StringFieldRepository {
                                 "(id,  version,  type,  name,  description,  required,  min_length,  max_length) values " +
                                 "(:id, :version, :type, :name, :description, :required, :min_length, :max_length)")
                         .bind("id", fieldSnapshot.getFieldId().getValue())
-                        .bind("version", fieldSnapshot.getFieldVersion().getVersion())
+                        .bind("version", fieldSnapshot.getFieldId().getVersion())
                         .bind("type", FieldType.STRING_FIELD.name())
                         .bind("name", fieldSnapshot.getFieldName())
                         .bind("description", fieldSnapshot.getFieldDescription())
@@ -25,5 +27,6 @@ class StringFieldRepository {
                         .bind("min_length", fieldSnapshot.getConfiguration().getMinLength())
                         .bind("max_length", fieldSnapshot.getConfiguration().getMaxLength())
                         .execute());
+        lastFieldPointerRepository.save(fieldSnapshot.getFieldId());
     }
 }

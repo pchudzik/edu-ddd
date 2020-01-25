@@ -32,8 +32,9 @@ class FieldReadFacadeImpl implements FieldReadFacade {
         public FieldDto map(ResultSet rs, StatementContext ctx) throws SQLException {
             FieldType fieldType = FieldType.valueOf(rs.getString("type"));
             return FieldDto.builder()
-                    .id(new FieldId(UUID.fromString(rs.getString("id"))))
-                    .version(new FieldVersion(rs.getInt("version")))
+                    .id(new FieldId(
+                            UUID.fromString(rs.getString("id")),
+                            rs.getInt("version")))
                     .type(fieldType)
                     .name(rs.getString("name"))
                     .description(rs.getString("description"))

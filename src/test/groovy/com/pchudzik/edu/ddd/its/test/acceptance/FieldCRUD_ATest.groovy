@@ -3,7 +3,7 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 import com.pchudzik.edu.ddd.its.field.FieldCreationFacade
 import com.pchudzik.edu.ddd.its.field.FieldReadFacade
 import com.pchudzik.edu.ddd.its.field.FieldType
-import com.pchudzik.edu.ddd.its.field.FieldVersion
+
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 
 class FieldCRUD_ATest extends DbSpecification {
@@ -26,7 +26,6 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.STRING_FIELD
         allFields[0].id == fieldId
-        allFields[0].version == new FieldVersion(1)
         allFields[0].configuration == [
             required: true,
             minLength: 2,

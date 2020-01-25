@@ -5,10 +5,5 @@ import io.vavr.control.Either;
 interface CustomField<T> {
     FieldId getFieldId();
 
-    FieldName getFieldName();
-
-    FieldVersion getFieldVersion();
-
-    <A> Either<FieldValidator.ValidationResult, ? extends FieldValue<A, T>> value(A assignee, T value);
-
+    <A> Either<FieldValidator.ValidationResult, ? extends FieldValue<T>> value(T value);
 }

@@ -15,7 +15,6 @@ public interface FieldReadFacade {
     class FieldDto {
         private final FieldType type;
         private final FieldId id;
-        private final FieldVersion version;
         private final String name;
         private final String description;
         private final Map<String, Object> configuration;

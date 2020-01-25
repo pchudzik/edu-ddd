@@ -44,3 +44,16 @@ create table last_field
   primary key (id),
   foreign key (id) references field(id)
 );
+
+create table field_value
+(
+  id       uuid       not null,
+  field_id uuid       not null,
+  project  varchar(7) not null,
+  issue    integer,
+  value    text,
+  primary key (id),
+  foreign key (field_id) references field(id),
+  foreign key (project)  references project(id),
+  foreign key (issue)    references issue(issue_sequence)
+);

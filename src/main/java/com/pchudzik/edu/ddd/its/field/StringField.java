@@ -2,19 +2,14 @@ package com.pchudzik.edu.ddd.its.field;
 
 import io.vavr.control.Either;
 import lombok.*;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Optional;
 
 class StringField implements CustomField<String> {
     @Getter
-    private final FieldId fieldId;
+    private FieldId fieldId;
 
-    @Getter
     private FieldName fieldName;
-
-    @Getter
-    private FieldVersion fieldVersion;
 
     private StringFieldConfiguration configuration;
 
@@ -25,32 +20,27 @@ class StringField implements CustomField<String> {
     }
 
     public StringField(FieldId fieldId, FieldName fieldName, boolean required, int minLength, int maxLength) {
-        this(fieldId, new FieldVersion(1), fieldName, required, minLength, maxLength);
-    }
-
-    public StringField(FieldId fieldId, FieldVersion version, FieldName fieldName, boolean required, int minLength, int maxLength) {
         this.fieldId = fieldId;
         this.fieldName = fieldName;
-        this.fieldVersion = version;
         this.configuration = new StringFieldConfiguration(required, minLength, maxLength);
     }
 
     public StringField required(boolean required) {
         this.configuration = configuration.required(required);
-        this.fieldVersion = fieldVersion.next();
+        this.fieldId = fieldId.nextVersion();
         return this;
     }
 
     public StringField length(int min, int max) {
         this.configuration = configuration.length(min, max);
-        this.fieldVersion = fieldVersion.next();
+        this.fieldId = fieldId.nextVersion();
         return this;
     }
 
-    public <A> Either<FieldValidator.ValidationResult, StringFieldValue<A>> value(A assignee, String value) {
+    public <A> Either<FieldValidator.ValidationResult, StringFieldValue<A>> value(String value) {
         FieldValidator.ValidationResult validationResult = configuration.getValidator().isValid(value);
         if (validationResult.isValid()) {
-            return Either.right(new StringFieldValue<A>(fieldId, fieldVersion, assignee, value));
+            return Either.right(new StringFieldValue<A>(fieldId, value));
         } else {
             return Either.left(validationResult);
         }
@@ -59,7 +49,6 @@ class StringField implements CustomField<String> {
     public StringFieldSnapshot getSnapshot() {
         return StringFieldSnapshot.builder()
                 .fieldId(fieldId)
-                .fieldVersion(fieldVersion)
                 .fieldName(fieldName.getFieldName())
                 .fieldDescription(fieldName.getFieldDescription())
                 .configuration(configuration.getSnapshot())
@@ -70,7 +59,6 @@ class StringField implements CustomField<String> {
     @Builder(access = AccessLevel.PRIVATE)
     static class StringFieldSnapshot {
         private final FieldId fieldId;
-        private final FieldVersion fieldVersion;
         private final String fieldName;
         private final String fieldDescription;
         private final StringFieldConfigurationSnapshot configuration;
@@ -145,23 +133,12 @@ class StringField implements CustomField<String> {
     }
 
     @RequiredArgsConstructor
-    private static class StringFieldValue<A> implements FieldValue<A, String> {
+    private static class StringFieldValue<A> implements FieldValue<String> {
         @Getter
         private final FieldId fieldId;
 
         @Getter
-        private final FieldVersion fieldVersion;
-
-        @Getter
-        private final A assignee;
-
-        @Getter
         private final String value;
-
-        @Override
-        public A getAssignee() {
-            return null;
-        }
     }
 
     @EqualsAndHashCode

@@ -1,12 +1,8 @@
 package com.pchudzik.edu.ddd.its.field;
 
-public interface FieldValue<A, V> {
+interface FieldValue<V> {
 
     FieldId getFieldId();
-
-    FieldVersion getFieldVersion();
-
-    A getAssignee();
 
     V getValue();
 }

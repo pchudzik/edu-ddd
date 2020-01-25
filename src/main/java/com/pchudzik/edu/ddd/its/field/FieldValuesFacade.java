@@ -1,20 +1,34 @@
 package com.pchudzik.edu.ddd.its.field;
 
-import java.util.List;
-
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public interface FieldValuesFacade<T> {
-    List<FieldValueDto<T>> findFieldsAssignedToIssue(IssueId issueId);
+import java.util.List;
+
+public interface FieldValuesFacade {
+    List<FieldValueDto> findFieldsAssignedToIssue(IssueId issueId);
 
     @Builder
     @Getter
-    class FieldValueDto<T> {
+    class FieldValueDto {
         private final FieldId fieldId;
-        private final FieldVersion fieldVersion;
         private final IssueId issueId;
-        private final T value;
+        private final FieldType fieldType;
+        private final Value value;
+    }
+
+    @RequiredArgsConstructor
+    class Value {
+        private final String value;
+
+        public <V> V getValue(Class<V> clazz) {
+            if(String.class.equals(clazz)) {
+                return (V) value;
+            }
+
+            throw new UnsupportedOperationException("Ex");
+        }
     }
 }
