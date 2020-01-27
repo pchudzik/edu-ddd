@@ -13,9 +13,9 @@ class StringField implements CustomField<String> {
 
     private StringFieldConfiguration configuration;
 
-    public StringField(FieldId fieldId, String fieldName) {
+    public StringField(String fieldName) {
         this(
-                fieldId, new FieldName(fieldName),
+                new FieldId(), new FieldName(fieldName),
                 RequiredValidator.NOT_REQUIRED, StringFieldConfiguration.ZERO, StringFieldConfiguration.EVERYTHING);
     }
 
@@ -150,6 +150,30 @@ class StringField implements CustomField<String> {
         @Override
         public String getMessageKey() {
             return "Value must be between " + min + " and " + max + " characters";
+        }
+    }
+
+    @RequiredArgsConstructor
+    static
+    class RequiredValidator<T> implements FieldValidator<T> {
+        public static final boolean REQUIRED = true;
+        public static final boolean NOT_REQUIRED = false;
+
+        private final boolean isRequired;
+
+        @Override
+        public ValidationResult isValid(T value) {
+            boolean isValid = value != null || !isRequired;
+            return isValid ? FieldValidator.noError() : new SimpleValidationError(RequiredValidationMessage.REQUIRED_FIELD);
+        }
+
+        public enum RequiredValidationMessage implements ValidationMessage {
+            REQUIRED_FIELD {
+                @Override
+                public String getMessageKey() {
+                    return "Field is required";
+                }
+            }
         }
     }
 }

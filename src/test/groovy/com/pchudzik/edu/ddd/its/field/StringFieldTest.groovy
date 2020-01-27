@@ -5,7 +5,7 @@ import spock.lang.Specification
 class StringFieldTest extends Specification {
     def "when field configuration is updated version is updated"() {
         given:
-        def field = new StringField(new FieldId(), "field")
+        def field = new StringField("field")
 
         when:
         field.required(true)
@@ -23,7 +23,7 @@ class StringFieldTest extends Specification {
 
     def "non required empty string is accepted"() {
         given:
-        def field = new StringField(new FieldId(), "field")
+        def field = new StringField("field")
                 .required(false)
                 .length(0, 128)
 
@@ -37,7 +37,7 @@ class StringFieldTest extends Specification {
 
     def "required field can not be null"() {
         given:
-        def field = new StringField(new FieldId(), "field")
+        def field = new StringField( "field")
                 .required(true)
                 .length(0, 128)
 
@@ -45,12 +45,12 @@ class StringFieldTest extends Specification {
         def value = field.value(null)
 
         then:
-        value.swap().get().validationMessages == [RequiredValidator.RequiredValidationMessage.REQUIRED_FIELD]
+        value.swap().get().validationMessages == [StringField.RequiredValidator.RequiredValidationMessage.REQUIRED_FIELD]
     }
 
     def "too short field does not pass validation"() {
         given:
-        def field = new StringField(new FieldId(), "field")
+        def field = new StringField("field")
                 .required(true)
                 .length(100, 200)
 
@@ -63,7 +63,7 @@ class StringFieldTest extends Specification {
 
     def "too long field does not pass validation"() {
         given:
-        def field = new StringField(new FieldId(), "field")
+        def field = new StringField("field")
                 .required(true)
                 .length(2, 3)
 
