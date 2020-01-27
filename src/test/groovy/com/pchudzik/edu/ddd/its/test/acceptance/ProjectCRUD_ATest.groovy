@@ -1,14 +1,12 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
-import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
+
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.project.ProjectFacade
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.project.read.ProjectViewFacade
 
 class ProjectCRUD_ATest extends DbSpecification {
-    def injector = InjectorFactory.injector()
-
     def projectFacade = injector.getInstance(ProjectFacade)
     def projectViewFacade = injector.getInstance(ProjectViewFacade)
 

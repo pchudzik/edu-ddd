@@ -1,45 +1,21 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.FieldAssignmentFacade
-import com.pchudzik.edu.ddd.its.field.FieldCreationFacade
 import com.pchudzik.edu.ddd.its.field.FieldType
 import com.pchudzik.edu.ddd.its.field.FieldValuesFacade
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import com.pchudzik.edu.ddd.its.issue.IssueFacade
-import com.pchudzik.edu.ddd.its.project.ProjectFacade
-import com.pchudzik.edu.ddd.its.project.ProjectId
 
 class FieldValues_ATest extends DbSpecification {
-
-    def fieldCreationFacade = injector.getInstance(FieldCreationFacade)
-
-    def issueFacade = injector.getInstance(IssueFacade)
-
-    def projectFacade = injector.getInstance(ProjectFacade)
-
     def fieldAssignmentFacade = injector.getInstance(FieldAssignmentFacade)
-
     def fieldValuesFacade = injector.getInstance(FieldValuesFacade)
 
     def "new string field is created"() {
         given:
-        def projectId = projectFacade.createNewProject(ProjectFacade.ProjectCreationCommand.builder()
-                .id(new ProjectId("ABCD"))
-                .name("Some Project")
-                .description("Some description")
-                .build())
-        def issueId = issueFacade.createIssue(IssueFacade.IssueCreationCommand.builder()
-                .projectId(projectId)
-                .title("some issue")
-                .build())
+        def projectId = Fixtures.projectFixture().createNewProject()
+        def issueId = Fixtures.issueFixture().createNewIssue(projectId)
 
         and:
-        def fieldId = fieldCreationFacade.createStringField(FieldCreationFacade.StringFieldCreationCommand.builder()
-                .fieldName("string field")
-                .required(true)
-                .minLength(2)
-                .maxLength(20)
-                .build())
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         when:
         fieldAssignmentFacade.assignFieldToIssue(FieldAssignmentFacade.FieldAssignmentCommand.builder()

@@ -1,23 +1,14 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
-import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.issue.id.IssueIdGenerator
-import com.pchudzik.edu.ddd.its.project.ProjectFacade
-import com.pchudzik.edu.ddd.its.project.ProjectId
 
 class IssueId_ATest extends DbSpecification {
-    private def injector = InjectorFactory.injector()
-    private def projectFacade = injector.getInstance(ProjectFacade)
     private def issueIdGenerator = injector.getInstance(IssueIdGenerator)
 
     def "can create issue ids when new project is created"() {
         given:
-        def projectId = projectFacade.createNewProject(ProjectFacade.ProjectCreationCommand.builder()
-                .id(new ProjectId("ABC"))
-                .name("some project")
-                .description("test project")
-                .build())
+        def projectId = Fixtures.projectFixture().createNewProject("ABC")
 
         when:
         def id1 = issueIdGenerator.next(projectId)

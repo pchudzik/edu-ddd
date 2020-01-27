@@ -12,16 +12,21 @@ import com.pchudzik.edu.ddd.its.project.ProjectContextModule;
 import com.pchudzik.edu.ddd.its.project.read.ProjectReadContextModule;
 
 public class InjectorFactory {
-    public static Injector injector() {
-        return Guice.createInjector(
-                new DatabaseContextModule(),
-                new MessagingContextModule(),
-                new ProjectContextModule(),
-                new ProjectReadContextModule(),
-                new IssueIdContextModule(),
-                new IssueReadFacadeContextModule(),
-                new IssueContextModule(),
-                new FieldContextModule()
-        );
+    private static Injector injector;
+
+    public synchronized static Injector injector() {
+        if (injector == null) {
+            injector = Guice.createInjector(
+                    new DatabaseContextModule(),
+                    new MessagingContextModule(),
+                    new ProjectContextModule(),
+                    new ProjectReadContextModule(),
+                    new IssueIdContextModule(),
+                    new IssueReadFacadeContextModule(),
+                    new IssueContextModule(),
+                    new FieldContextModule()
+            );
+        }
+        return injector;
     }
 }
