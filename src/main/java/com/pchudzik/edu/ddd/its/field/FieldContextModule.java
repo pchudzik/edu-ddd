@@ -12,5 +12,6 @@ public class FieldContextModule extends AbstractModule {
 
         bind(FieldRepositoryImpl.class);
         bind(FieldValueRepository.class);
+        bind(LabelFieldRepository.class);
     }
 }

@@ -45,6 +45,17 @@ create table last_field
   foreign key (id) references field(id)
 );
 
+create table allowed_labels
+(
+    id             uuid        not null,
+    field_id       uuid        not null,
+    field_version integer      not null,
+    value         varchar(255) not null,
+    primary key (id),
+    foreign key (field_id)      references field(id),
+    foreign key (field_version) references field(version)
+);
+
 create table field_value
 (
   id       uuid       not null,

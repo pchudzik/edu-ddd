@@ -4,11 +4,13 @@ import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldCreationFacadeImpl implements FieldCreationFacade {
     private final TransactionManager txManager;
     private final StringFieldRepository stringFieldRepository;
+    private final LabelFieldRepository labelFieldRepository;
 
     @Override
     public FieldId createStringField(StringFieldCreationCommand command) {
@@ -19,6 +21,23 @@ class FieldCreationFacadeImpl implements FieldCreationFacade {
                     command.isRequired(), command.getMinLength(), command.getMaxLength());
             stringFieldRepository.save(field.getSnapshot());
             return field.getFieldId();
+        });
+    }
+
+    @Override
+    public FieldId createLabelField(LabelFieldCreationCommand fieldCreationCommand) {
+        return txManager.inTransaction(() -> {
+            LabelField label = new LabelField(
+                    new FieldId(),
+                    new FieldName(fieldCreationCommand.getFieldName(), fieldCreationCommand.getFieldDescription()),
+                    fieldCreationCommand.isRequired(),
+                    LabelField.LabelValues.of(fieldCreationCommand.getAllowedValues().stream()
+                            .map(LabelField.LabelValue::new)
+                            .collect(Collectors.toSet())));
+            LabelField.LabelFieldSnapshot snapshot = label.getSnapshot();
+            labelFieldRepository.saveField(snapshot);
+            labelFieldRepository.saveLabels(label.getFieldId(), snapshot.getAllowedValues());
+            return label.getFieldId();
         });
     }
 }

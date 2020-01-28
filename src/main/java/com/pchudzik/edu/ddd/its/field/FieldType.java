@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.field;
 
 public enum FieldType {
-    STRING_FIELD
+    STRING_FIELD,
+    LABEL_FIELD;
 }

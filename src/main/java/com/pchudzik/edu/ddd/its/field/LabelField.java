@@ -1,9 +1,7 @@
 package com.pchudzik.edu.ddd.its.field;
 
 import io.vavr.control.Either;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -25,6 +23,13 @@ class LabelField implements CustomField<LabelField.LabelValues> {
     public LabelField(String name) {
         this.fieldId = new FieldId();
         this.fieldName = new FieldName(name);
+    }
+
+    public LabelField(FieldId fieldId, FieldName fieldName, boolean required, LabelValues allowedValues) {
+        this.fieldId = fieldId;
+        this.fieldName = fieldName;
+        this.required = required;
+        this.allowedLabels = allowedValues;
     }
 
     public LabelField required(boolean required) {
@@ -52,12 +57,41 @@ class LabelField implements CustomField<LabelField.LabelValues> {
         return Either.left(valid);
     }
 
+    public LabelFieldSnapshot getSnapshot() {
+        return LabelFieldSnapshot.builder()
+                .fieldId(fieldId)
+                .fieldName(fieldName.getFieldName())
+                .fieldDescription(fieldName.getFieldDescription())
+                .required(required)
+                .allowedValues(allowedLabels.stream()
+                        .map(l -> new LabelFieldSnapshot.Label(l.id, l.value))
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     enum LabelIsRequiredError implements FieldValidator.ValidationMessage {
         LABEL_IS_REQUIRED_ERROR {
             @Override
             public String getMessageKey() {
                 return "Label is required";
             }
+        }
+    }
+
+    @Getter
+    @Builder(access = AccessLevel.PRIVATE)
+    static class LabelFieldSnapshot {
+        private final FieldId fieldId;
+        private final String fieldName;
+        private final String fieldDescription;
+        private final boolean required;
+        private final List<Label> allowedValues;
+
+        @Getter
+        @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+        static class Label {
+            private final UUID id;
+            private final String value;
         }
     }
 
@@ -75,6 +109,10 @@ class LabelField implements CustomField<LabelField.LabelValues> {
 
         private LabelValues(Collection<LabelValue> labels) {
             this.labels = new ArrayList<>(labels);
+        }
+
+        public static LabelValues of(Collection<LabelValue> labels) {
+            return new LabelValues(labels);
         }
 
         public static LabelValues of(LabelValue... labels) {
