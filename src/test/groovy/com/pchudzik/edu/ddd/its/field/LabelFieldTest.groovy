@@ -26,7 +26,7 @@ class LabelFieldTest extends Specification {
                 .allowedValues([allowedLabel])
 
         and:
-        def label = new LabelField.LabelValue("second")
+        def label = new LabelField.LabelValue("other")
 
         when:
         def value = field.value(LabelField.LabelValues.of(label))
@@ -34,17 +34,47 @@ class LabelFieldTest extends Specification {
         then:
         value.isLeft()
         !value.swap().get().valid
-        value.swap().get().validationMessages == [new LabelField.LabelNotAllowedValidationError([allowedLabel], [label])]
+        value.swap().get().validationMessages == [new LabelField.LabelNotAllowedValidationError(new LabelField.LabelValues([allowedLabel]), new LabelField.LabelValues([label]))]
     }
 
-    def "label can be required"() {
+    def "allowed labels comparison is case insensitive"() {
         given:
-        def allowedLabel = new LabelField.LabelValue("allowed")
+        def allowedLabel = new LabelField.LabelValue("Allowed")
         def field = new LabelField("label")
                 .allowedValues([allowedLabel])
 
         and:
-        def label = new LabelField.LabelValue("second")
+        def label = new LabelField.LabelValue("aLLoWeD")
+
+        when:
+        def value = field.value(LabelField.LabelValues.of(label))
+
+        then:
+        value.isRight()
+    }
+
+    def "not allowed labels message is formatted"() {
+        given:
+        def allowedLabel1 = new LabelField.LabelValue("First")
+        def allowedLabel2 = new LabelField.LabelValue("Second")
+        def field = new LabelField("label")
+                .allowedValues([allowedLabel1, allowedLabel2])
+
+        and:
+        def notAllowed = new LabelField.LabelValue("Third")
+        def allowed = new LabelField.LabelValue("Second")
+
+        when:
+        def value = field.value(LabelField.LabelValues.of(notAllowed, allowed))
+
+        then:
+        value.isLeft()
+        value.swap().get().validationMessages[0].messageKey == "Allowed labels are First, Second not allowed values Third"
+    }
+
+    def "label can be required"() {
+        given:
+        def field = new LabelField("label").required(true)
 
         when:
         def value = field.value(LabelField.LabelValues.empty())
@@ -52,7 +82,7 @@ class LabelFieldTest extends Specification {
         then:
         value.isLeft()
         !value.swap().get().valid
-        value.swap().get().validationMessages == [new LabelField.LabelIsRequiredError()]
+        value.swap().get().validationMessages == [LabelField.LabelIsRequiredError.LABEL_IS_REQUIRED_ERROR]
     }
 
     def "when field configuration is updated version is updated"() {
