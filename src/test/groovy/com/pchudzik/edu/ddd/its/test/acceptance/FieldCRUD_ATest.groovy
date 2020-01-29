@@ -45,18 +45,8 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.LABEL_FIELD
         allFields[0].id == fieldId
-        allFields[0].configuration == [
-                required: true,
-                allowedValues: [
-                        {
-                            id: "???"
-                            value: "First"
-                        },
-                        {
-                            id: "???"
-                            value: "Second"
-                        }
-                ]
-        ]
+        allFields[0].configuration.required == true
+        allFields[0].configuration.allowedLabels.collect { it.value } == ["First", "Second"]
+        allFields[0].configuration.allowedLabels.every {it.id != null && it.id instanceof UUID}
     }
 }

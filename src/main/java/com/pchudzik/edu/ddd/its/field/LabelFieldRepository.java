@@ -22,18 +22,18 @@ class LabelFieldRepository {
                 .map(LabelField.LabelFieldSnapshot.Label::getValue)
                 .collect(Collectors.toList());
         jdbi.withHandle(h -> {
-                    PreparedBatch batch = h.prepareBatch("" +
-                            "insert into allowed_labels(id, field_id, field_version, value) " +
-                            "values(:id, :fieldId, :fieldVersion, :value)");
-                    allowedValues.forEach(l -> batch
-                            .bind("id", l.getId())
-                            .bind("value", l.getValue())
-                            .bind("fieldId", fieldId.getValue())
-                            .bind("fieldVersion", fieldId.getVersion())
-                            .add());
+            PreparedBatch batch = h.prepareBatch("" +
+                    "insert into allowed_labels(id, field_id, field_version, value) " +
+                    "values(:id, :fieldId, :fieldVersion, :value)");
+            allowedValues.forEach(l -> batch
+                    .bind("id", l.getId())
+                    .bind("value", l.getValue())
+                    .bind("fieldId", fieldId.getValue())
+                    .bind("fieldVersion", fieldId.getVersion())
+                    .add());
 
-                    return batch.execute();
-                });
+            return batch.execute();
+        });
     }
 
     public void saveField(LabelField.LabelFieldSnapshot snapshot) {

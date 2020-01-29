@@ -60,11 +60,14 @@ As a system administrator I'd like to change fields added to every project creat
 As a project administrator I'd like to define fields added to every issue created.
 As a project administrator I'd like to change set of default fields for issues at any time.
 
+Field can be modified at any time without affecting existing values
+
 #### [Future] user & user management
 #### [Future] permissions/roles model
 #### [Future] audit
 #### [Future] watching issues
 #### [Future] time tracking
+#### [Future] workflow which can be defined and field restrictions can be applied on each step + predefined workflows
 
 #### More TBD and documented here
 
