@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public interface FieldValues {
     List<FieldValueDto> findFieldsAssignedToIssue(IssueId issueId);
@@ -42,10 +41,6 @@ public interface FieldValues {
     @RequiredArgsConstructor
     class LabelValues {
         private final List<LabelValue> values;
-
-        public Stream<LabelValue> stream() {
-            return values.stream();
-        }
 
         public List<LabelValue> getValues() {
             return Collections.unmodifiableList(values);
