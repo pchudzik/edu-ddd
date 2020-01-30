@@ -6,30 +6,28 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
-class LabelField implements Field<LabelField.LabelValues> {
+class LabelField implements Field<LabelValues> {
     @Getter
     private FieldId fieldId;
 
     private FieldName fieldName;
 
     private boolean required = false;
-    private LabelValues allowedLabels = LabelValues.empty();
+    private AllowableLabelValues allowedLabels = AllowableLabelValues.empty();
 
     public LabelField(String name) {
         this.fieldId = new FieldId();
         this.fieldName = new FieldName(name);
     }
 
-    public LabelField(FieldId fieldId, FieldName fieldName, boolean required, LabelValues allowedValues) {
+    public LabelField(FieldId fieldId, FieldName fieldName, boolean required, Collection<IdentifiableLabelValue> allowedValues) {
         this.fieldId = fieldId;
         this.fieldName = fieldName;
         this.required = required;
-        this.allowedLabels = allowedValues;
+        this.allowedLabels = new AllowableLabelValues(allowedValues);
     }
 
     public LabelField required(boolean required) {
@@ -38,20 +36,22 @@ class LabelField implements Field<LabelField.LabelValues> {
         return this;
     }
 
-    public LabelField allowedValues(Collection<LabelValue> values) {
-        this.allowedLabels = new LabelValues(values);
+    public LabelField allowedValues(Collection<LabelValues.LabelValue> values) {
+        this.allowedLabels = new AllowableLabelValues(values.stream()
+                .map(l -> new IdentifiableLabelValue(UUID.randomUUID(), l.getValue()))
+                .collect(Collectors.toList()));
         this.fieldId = fieldId.nextVersion();
         return this;
     }
 
     @Override
-    public <A> Either<FieldValidator.ValidationResult, ? extends FieldValue<LabelValues>> value(LabelValues value) {
+    public Either<FieldValidator.ValidationResult, ? extends FieldValue<LabelValues>> value(LabelValues value) {
         FieldValidator.ValidationResult valid = new RequiredLabelValidator(required)
                 .and(new FixedValuesValidator(allowedLabels))
                 .isValid(value);
 
         if (valid.isValid()) {
-            return Either.right(new LabelFieldValue(fieldId, new LabelValues(value.labels)));
+            return Either.right(new LabelFieldValue(fieldId, LabelValues.of(value.getLabels())));
         }
 
         return Either.left(valid);
@@ -63,8 +63,8 @@ class LabelField implements Field<LabelField.LabelValues> {
                 .fieldName(fieldName.getFieldName())
                 .fieldDescription(fieldName.getFieldDescription())
                 .required(required)
-                .allowedValues(allowedLabels.stream()
-                        .map(l -> new LabelFieldSnapshot.Label(l.id, l.value))
+                .allowedValues(allowedLabels.getIdentifiableLabels().stream()
+                        .map(l -> new LabelFieldSnapshot.Label(l.getId(), l.getValue()))
                         .collect(Collectors.toList()))
                 .build();
     }
@@ -103,54 +103,38 @@ class LabelField implements Field<LabelField.LabelValues> {
         private final LabelValues value;
     }
 
-    @EqualsAndHashCode
-    static class LabelValues {
-        private final List<LabelValue> labels;
+    private static class AllowableLabelValues implements LabelValues {
+        @Getter
+        private final List<IdentifiableLabelValue> labels;
 
-        private LabelValues(Collection<LabelValue> labels) {
+        private AllowableLabelValues(Collection<IdentifiableLabelValue> labels) {
             this.labels = new ArrayList<>(labels);
         }
 
-        public static LabelValues of(Collection<LabelValue> labels) {
-            return new LabelValues(labels);
+        public static AllowableLabelValues empty() {
+            return new AllowableLabelValues(emptyList());
         }
 
-        public static LabelValues of(LabelValue... labels) {
-            return new LabelValues(asList(labels));
-        }
-
-        public static LabelValues empty() {
-            return new LabelValues(emptyList());
-        }
-
-        private boolean isEmpty() {
-            return labels.isEmpty();
+        public List<IdentifiableLabelValue> getIdentifiableLabels() {
+            return labels;
         }
 
         private LabelValues findNotAllowed(LabelValues other) {
             Set<String> allowedValues = labels.stream()
-                    .map(l -> StringUtils.lowerCase(l.value))
+                    .map(l -> StringUtils.lowerCase(l.getValue()))
                     .collect(Collectors.toSet());
-            List<LabelValue> notAllowedValues = other.stream()
-                    .filter(l -> !allowedValues.contains(StringUtils.lowerCase(l.value)))
+            List<LabelValue> notAllowedValues = other.getLabels().stream()
+                    .filter(l -> !allowedValues.contains(StringUtils.lowerCase(l.getValue())))
                     .collect(Collectors.toList());
-            return new LabelValues(notAllowedValues);
-        }
-
-        private Stream<LabelValue> stream() {
-            return labels.stream();
+            return LabelValues.of(notAllowedValues);
         }
     }
 
-    @EqualsAndHashCode
+    @Getter
     @RequiredArgsConstructor
-    public static class LabelValue {
+    static class IdentifiableLabelValue implements LabelValues.LabelValue {
         private final UUID id;
         private final String value;
-
-        public LabelValue(String value) {
-            this(UUID.randomUUID(), value);
-        }
     }
 
     @EqualsAndHashCode
@@ -166,7 +150,7 @@ class LabelField implements Field<LabelField.LabelValues> {
 
         private String formatLabels(LabelValues notAllowedValues) {
             return notAllowedValues.stream()
-                    .map(l -> l.value)
+                    .map(LabelValues.LabelValue::getValue)
                     .collect(Collectors.joining(", "));
         }
     }
@@ -177,7 +161,7 @@ class LabelField implements Field<LabelField.LabelValues> {
 
         @Override
         public ValidationResult isValid(LabelValues value) {
-            if (required && value.isEmpty()) {
+            if (required && value.getLabels().isEmpty()) {
                 return new SimpleValidationError(LabelIsRequiredError.LABEL_IS_REQUIRED_ERROR);
             }
             return FieldValidator.noError();
@@ -186,7 +170,7 @@ class LabelField implements Field<LabelField.LabelValues> {
 
     @RequiredArgsConstructor
     private static class FixedValuesValidator implements FieldValidator<LabelValues> {
-        private final LabelValues allowedLabels;
+        private final AllowableLabelValues allowedLabels;
 
         @Override
         public ValidationResult isValid(LabelValues value) {

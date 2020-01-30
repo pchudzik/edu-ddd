@@ -4,6 +4,7 @@ import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -31,9 +32,9 @@ class FieldCreationImpl implements FieldCreation {
                     new FieldId(),
                     new FieldName(fieldCreationCommand.getFieldName(), fieldCreationCommand.getFieldDescription()),
                     fieldCreationCommand.isRequired(),
-                    LabelField.LabelValues.of(fieldCreationCommand.getAllowedValues().stream()
-                            .map(LabelField.LabelValue::new)
-                            .collect(Collectors.toSet())));
+                    fieldCreationCommand.getAllowedValues().stream()
+                            .map(l -> new LabelField.IdentifiableLabelValue(UUID.randomUUID(), l))
+                            .collect(Collectors.toSet()));
             LabelField.LabelFieldSnapshot snapshot = label.getSnapshot();
             labelFieldRepository.saveField(snapshot);
             labelFieldRepository.saveLabels(label.getFieldId(), snapshot.getAllowedValues());

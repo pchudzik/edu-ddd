@@ -20,6 +20,7 @@ class FieldValueRepository {
                 .bind("fieldId", value.getFieldId().getValue())
                 .bind("project", issueId.getProject().getValue())
                 .bind("issue", issueId.getIssue())
+                //TODO how to handle label value here?
                 .bind("value", value.getValue())
                 .execute());
     }

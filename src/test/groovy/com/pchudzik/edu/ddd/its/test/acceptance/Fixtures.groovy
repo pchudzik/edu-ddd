@@ -42,7 +42,13 @@ class Fixtures {
                     .minLength(2)
                     .maxLength(20)
                     .build())
+        }
 
+        FieldId createNewLabelField() {
+            return fieldCreationFacade.createLabelField(FieldCreation.LabelFieldCreationCommand.builder()
+                    .fieldName("label field")
+                    .required(true)
+                    .build())
         }
     }
 

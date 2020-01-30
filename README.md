@@ -52,7 +52,7 @@ Available field types:
   Null value (non defined, N/A) is also available and user can define custom text for it and if it's available for the user. 
 * Label field - field for which values can be populated on the fly and in case value exist it'll be proposed by the system
 * Choice field - field along with available choices and if field can be multiple choice or single choice user can also include additional icons associated with the field
-* Date time field - field which stores data or time or data and time depending on user configuration
+* Date time field - field which stores date and time or only date depending on user configuration
 
 As a system administrator I'd like to define fields added by default to every project created.
 As a system administrator I'd like to change fields added to every project created at any time. 

@@ -2,6 +2,7 @@ package com.pchudzik.edu.ddd.its.field;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface FieldCreation {
         private final String fieldName;
         private final String fieldDescription;
         private final boolean required;
+        @Singular
         private final List<String> allowedValues;
     }
 }

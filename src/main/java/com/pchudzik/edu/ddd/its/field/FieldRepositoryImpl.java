@@ -8,6 +8,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.UUID;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -37,6 +38,8 @@ class FieldRepositoryImpl {
             switch (fieldType) {
                 case STRING_FIELD:
                     return (Field<T>) new StringFieldRowMapper().map(rs, ctx);
+                case LABEL_FIELD:
+                    return (Field<T>) new LabelFieldMapper(jdbi).map(rs, ctx);
                 default:
                     throw new IllegalArgumentException("Unsupported field type " + fieldType);
             }
@@ -56,6 +59,38 @@ class FieldRepositoryImpl {
                     rs.getBoolean("required"),
                     rs.getInt("min_length"),
                     rs.getInt("max_length"));
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class LabelFieldMapper implements RowMapper<LabelField> {
+        private final Jdbi jdbi;
+
+        @Override
+        public LabelField map(ResultSet rs, StatementContext ctx) throws SQLException {
+            FieldId labelFieldId = new FieldId(
+                    UUID.fromString(rs.getString("id")),
+                    rs.getInt("version"));
+            return new LabelField(
+                    labelFieldId,
+                    new FieldName(
+                            rs.getString("name"),
+                            rs.getString("description")),
+                    rs.getBoolean("required"),
+                    loadLabelValues(labelFieldId));
+        }
+
+        private Collection<LabelField.IdentifiableLabelValue> loadLabelValues(FieldId fieldId) {
+            return jdbi.withHandle(h -> h
+                    .select("" +
+                            "select id, value from allowed_labels " +
+                            "where field_id = :id and field_version = :version")
+                    .bind("id", fieldId.getValue())
+                    .bind("version", fieldId.getVersion())
+                    .map((rs, ctx) -> new LabelField.IdentifiableLabelValue(
+                            UUID.fromString(rs.getString("id")),
+                            rs.getString("value")))
+                    .list());
         }
     }
 }
