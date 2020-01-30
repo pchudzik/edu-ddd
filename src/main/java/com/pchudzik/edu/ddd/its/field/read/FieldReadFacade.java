@@ -1,5 +1,7 @@
-package com.pchudzik.edu.ddd.its.field;
+package com.pchudzik.edu.ddd.its.field.read;
 
+import com.pchudzik.edu.ddd.its.field.FieldId;
+import com.pchudzik.edu.ddd.its.field.FieldType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

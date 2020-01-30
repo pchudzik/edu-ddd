@@ -1,5 +1,7 @@
-package com.pchudzik.edu.ddd.its.field;
+package com.pchudzik.edu.ddd.its.field.read;
 
+import com.pchudzik.edu.ddd.its.field.FieldId;
+import com.pchudzik.edu.ddd.its.field.FieldType;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;

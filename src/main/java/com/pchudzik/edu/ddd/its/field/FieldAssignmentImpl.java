@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class FieldAssignmentFacadeImpl implements FieldAssignmentFacade {
+class FieldAssignmentImpl implements FieldAssignment {
 
     private final TransactionManager txManager;
 
@@ -16,7 +16,7 @@ class FieldAssignmentFacadeImpl implements FieldAssignmentFacade {
 
     public <T> void assignFieldToIssue(FieldAssignmentCommand<T> assignmentCommand) {
         txManager.useTransaction(() -> {
-            CustomField<T> field = fieldRepository.findOne(assignmentCommand.getFieldId());
+            Field<T> field = fieldRepository.findOne(assignmentCommand.getFieldId());
             FieldValue<T> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));

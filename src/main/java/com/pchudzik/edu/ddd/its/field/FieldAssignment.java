@@ -4,7 +4,7 @@ import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import lombok.Builder;
 import lombok.Getter;
 
-public interface FieldAssignmentFacade {
+public interface FieldAssignment {
     <T> void assignFieldToIssue(FieldAssignmentCommand<T> assignmentCommand);
 
     @Builder

@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.Optional;
 
-class StringField implements CustomField<String> {
+class StringField implements Field<String> {
     @Getter
     private FieldId fieldId;
 

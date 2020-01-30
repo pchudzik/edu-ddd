@@ -5,7 +5,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-public interface FieldCreationFacade {
+public interface FieldCreation {
     FieldId createStringField(StringFieldCreationCommand command);
 
     FieldId createLabelField(LabelFieldCreationCommand fieldCreationCommand);

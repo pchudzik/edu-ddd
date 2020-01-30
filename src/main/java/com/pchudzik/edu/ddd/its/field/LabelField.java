@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
-class LabelField implements CustomField<LabelField.LabelValues> {
+class LabelField implements Field<LabelField.LabelValues> {
     @Getter
     private FieldId fieldId;
 

@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class FieldCreationFacadeImpl implements FieldCreationFacade {
+class FieldCreationImpl implements FieldCreation {
     private final TransactionManager txManager;
     private final StringFieldRepository stringFieldRepository;
     private final LabelFieldRepository labelFieldRepository;

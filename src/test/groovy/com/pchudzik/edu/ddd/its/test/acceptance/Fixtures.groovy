@@ -1,6 +1,6 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
-import com.pchudzik.edu.ddd.its.field.FieldCreationFacade
+import com.pchudzik.edu.ddd.its.field.FieldCreation
 import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.issue.IssueFacade
@@ -27,16 +27,16 @@ class Fixtures {
     static FieldFixture fieldFixture() {
         if (fieldFixture == null) {
             def injector = InjectorFactory.injector()
-            fieldFixture = new FieldFixture(fieldCreationFacade: injector.getInstance(FieldCreationFacade))
+            fieldFixture = new FieldFixture(fieldCreationFacade: injector.getInstance(FieldCreation))
         }
         return fieldFixture
     }
 
     static class FieldFixture {
-        private FieldCreationFacade fieldCreationFacade
+        private FieldCreation fieldCreationFacade
 
         FieldId createNewStringField() {
-            return fieldCreationFacade.createStringField(FieldCreationFacade.StringFieldCreationCommand.builder()
+            return fieldCreationFacade.createStringField(FieldCreation.StringFieldCreationCommand.builder()
                     .fieldName("string field")
                     .required(true)
                     .minLength(2)

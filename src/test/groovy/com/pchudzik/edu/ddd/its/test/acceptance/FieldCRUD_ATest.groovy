@@ -1,17 +1,17 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
-import com.pchudzik.edu.ddd.its.field.FieldCreationFacade
-import com.pchudzik.edu.ddd.its.field.FieldReadFacade
+import com.pchudzik.edu.ddd.its.field.FieldCreation
+import com.pchudzik.edu.ddd.its.field.read.FieldReadFacade
 import com.pchudzik.edu.ddd.its.field.FieldType
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 
 class FieldCRUD_ATest extends DbSpecification {
-    def fieldCreationFacade = injector.getInstance(FieldCreationFacade)
+    def fieldCreationFacade = injector.getInstance(FieldCreation)
     def fieldReadFacade = injector.getInstance(FieldReadFacade)
 
     def "new string field is created"() {
         when:
-        def fieldId = fieldCreationFacade.createStringField(FieldCreationFacade.StringFieldCreationCommand.builder()
+        def fieldId = fieldCreationFacade.createStringField(FieldCreation.StringFieldCreationCommand.builder()
                 .fieldName("string field")
                 .required(true)
                 .minLength(2)
@@ -33,7 +33,7 @@ class FieldCRUD_ATest extends DbSpecification {
 
     def "new label field is created"() {
         when:
-        def fieldId = fieldCreationFacade.createLabelField(FieldCreationFacade.LabelFieldCreationCommand.builder()
+        def fieldId = fieldCreationFacade.createLabelField(FieldCreation.LabelFieldCreationCommand.builder()
                 .fieldName("label")
                 .fieldDescription("simple required label of two values")
                 .required(true)

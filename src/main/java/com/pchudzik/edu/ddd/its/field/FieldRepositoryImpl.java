@@ -15,8 +15,8 @@ class FieldRepositoryImpl {
 
     private final Jdbi jdbi;
 
-    public <T> CustomField<T> findOne(FieldId fieldId) {
-        final CustomField<T> field = (CustomField<T>) jdbi.withHandle(h -> h
+    public <T> Field<T> findOne(FieldId fieldId) {
+        final Field<T> field = (Field<T>) jdbi.withHandle(h -> h
                 .select("" +
                         "select field.* " +
                         "from field " +
@@ -31,12 +31,12 @@ class FieldRepositoryImpl {
         return field;
     }
 
-    private <T> RowMapper<? extends CustomField<T>> selectFieldMapperFromFieldType() {
+    private <T> RowMapper<? extends Field<T>> selectFieldMapperFromFieldType() {
         return (rs, ctx) -> {
             final FieldType fieldType = FieldType.valueOf(rs.getString("type"));
             switch (fieldType) {
                 case STRING_FIELD:
-                    return (CustomField<T>) new StringFieldRowMapper().map(rs, ctx);
+                    return (Field<T>) new StringFieldRowMapper().map(rs, ctx);
                 default:
                     throw new IllegalArgumentException("Unsupported field type " + fieldType);
             }

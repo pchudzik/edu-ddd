@@ -1,12 +1,12 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
-import com.pchudzik.edu.ddd.its.field.FieldAssignmentFacade
+import com.pchudzik.edu.ddd.its.field.FieldAssignment
 import com.pchudzik.edu.ddd.its.field.FieldType
-import com.pchudzik.edu.ddd.its.field.FieldValuesFacade
+import com.pchudzik.edu.ddd.its.field.read.FieldValuesFacade
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 
 class FieldValues_ATest extends DbSpecification {
-    def fieldAssignmentFacade = injector.getInstance(FieldAssignmentFacade)
+    def fieldAssignmentFacade = injector.getInstance(FieldAssignment)
     def fieldValuesFacade = injector.getInstance(FieldValuesFacade)
 
     def "new string field is created"() {
@@ -18,7 +18,7 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         when:
-        fieldAssignmentFacade.assignFieldToIssue(FieldAssignmentFacade.FieldAssignmentCommand.builder()
+        fieldAssignmentFacade.assignFieldToIssue(FieldAssignment.FieldAssignmentCommand.builder()
                 .fieldId(fieldId)
                 .issueId(issueId)
                 .value("ala ma kota")

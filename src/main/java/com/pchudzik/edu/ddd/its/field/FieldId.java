@@ -1,6 +1,5 @@
 package com.pchudzik.edu.ddd.its.field;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -8,7 +7,7 @@ import java.util.UUID;
 
 @EqualsAndHashCode
 public class FieldId {
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final UUID value;
 
     @Getter
