@@ -9,7 +9,7 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
-public interface FieldReadFacade {
+public interface AvailableFields {
     List<FieldDto> listAllFields();
 
     @Getter

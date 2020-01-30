@@ -8,7 +8,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
-class CompositeFieldValidator<T> implements FieldValidator<T> {
+class FieldCompositeValidator<T> implements FieldValidator<T> {
     private final FieldValidator<T> a;
     private final FieldValidator<T> b;
 

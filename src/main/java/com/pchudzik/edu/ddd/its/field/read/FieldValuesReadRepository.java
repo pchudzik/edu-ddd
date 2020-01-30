@@ -15,7 +15,7 @@ import java.util.UUID;
 class FieldValuesReadRepository {
     private final Jdbi jdbi;
 
-    public List<FieldValuesFacade.FieldValueDto> findValues(IssueId issueId) {
+    public List<FieldValues.FieldValueDto> findValues(IssueId issueId) {
         return jdbi.withHandle(h -> h
                 .select("" +
                         "select " +
@@ -33,7 +33,7 @@ class FieldValuesReadRepository {
                         "  and issue=:issue")
                 .bind("project", issueId.getProject().getValue())
                 .bind("issue", issueId.getIssue())
-                .map((rs, ctx) -> new FieldValuesFacade.FieldValueDto(
+                .map((rs, ctx) -> new FieldValues.FieldValueDto(
                         new FieldId(
                                 UUID.fromString(rs.getString("fieldId")),
                                 rs.getInt("version")),
@@ -41,7 +41,7 @@ class FieldValuesReadRepository {
                                 new ProjectId(rs.getString("project")),
                                 rs.getInt("issue")),
                         FieldType.valueOf(rs.getString("type")),
-                        new FieldValuesFacade.Value(rs.getString("value"))))
+                        new FieldValues.Value(rs.getString("value"))))
                 .list());
     }
 }

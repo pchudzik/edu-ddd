@@ -11,7 +11,7 @@ interface FieldValidator<T> {
     ValidationResult isValid(T value);
 
     default FieldValidator<T> and(FieldValidator<T> other) {
-        return new CompositeFieldValidator<>(this, other);
+        return new FieldCompositeValidator<>(this, other);
     }
 
     interface ValidationResult {

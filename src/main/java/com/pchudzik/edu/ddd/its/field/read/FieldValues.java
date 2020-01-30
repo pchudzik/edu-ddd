@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public interface FieldValuesFacade {
+public interface FieldValues {
     List<FieldValueDto> findFieldsAssignedToIssue(IssueId issueId);
 
     @Builder

@@ -21,7 +21,7 @@ import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class FieldReadFacadeImpl implements FieldReadFacade {
+class AvailableFieldsImpl implements AvailableFields {
 
     private final Jdbi jdbi;
 

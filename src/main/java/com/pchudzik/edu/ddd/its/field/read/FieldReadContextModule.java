@@ -5,8 +5,8 @@ import com.google.inject.AbstractModule;
 public class FieldReadContextModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(FieldValuesFacade.class).to(FieldValuesFacadeImpl.class);
-        bind(FieldReadFacade.class).to(FieldReadFacadeImpl.class);
+        bind(FieldValues.class).to(FieldValuesImpl.class);
+        bind(AvailableFields.class).to(AvailableFieldsImpl.class);
         bind(FieldValuesReadRepository.class);
     }
 }

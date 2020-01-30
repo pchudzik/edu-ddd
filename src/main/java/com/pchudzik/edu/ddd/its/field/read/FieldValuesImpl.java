@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class FieldValuesFacadeImpl implements FieldValuesFacade {
+class FieldValuesImpl implements FieldValues {
     private final TransactionManager txManager;
     private final FieldValuesReadRepository fieldValueRepository;
 
