@@ -7,16 +7,15 @@ import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldAssignmentImpl implements FieldAssignment {
-
     private final TransactionManager txManager;
 
-    private final FieldRepository fieldRepository;
-
+    private final StringFieldRepository stringFieldRepository;
+    private final LabelFieldRepository labelFieldRepository;
     private final FieldValueRepository fieldValueRepository;
 
     public void assignStringToIssue(StringFieldAssignmentCommand assignmentCommand) {
         txManager.useTransaction(() -> {
-            StringField field = fieldRepository.findStringField(assignmentCommand.getFieldId());
+            StringField field = stringFieldRepository.findStringField(assignmentCommand.getFieldId());
             FieldValue<String> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
@@ -28,7 +27,7 @@ class FieldAssignmentImpl implements FieldAssignment {
     @Override
     public void assignLabelFieldToIssue(LabelFieldAssignmentCommand assignmentCommand) {
         txManager.useTransaction(() -> {
-            LabelField field = fieldRepository.findLabelField(assignmentCommand.getFieldId());
+            LabelField field = labelFieldRepository.findLabelField(assignmentCommand.getFieldId());
             FieldValue<LabelValues> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));

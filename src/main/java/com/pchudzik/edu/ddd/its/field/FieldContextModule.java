@@ -8,7 +8,6 @@ public class FieldContextModule extends AbstractModule {
         bind(FieldCreation.class).to(FieldCreationImpl.class);
         bind(FieldAssignment.class).to(FieldAssignmentImpl.class);
 
-        bind(FieldRepository.class);
         bind(FieldValueRepository.class);
         bind(LabelFieldRepository.class);
     }

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldCreationImpl implements FieldCreation {
     private final TransactionManager txManager;
-    private final FieldRepository fieldRepository;
     private final StringFieldRepository stringFieldRepository;
     private final LabelFieldRepository labelFieldRepository;
     private final MessageQueue messageQueue;
@@ -31,7 +30,7 @@ class FieldCreationImpl implements FieldCreation {
     @Override
     public FieldId updateStringField(FieldId fieldId, StringFieldConfigurationUpdateCommand cmd) {
         return txManager.inTransaction(() -> {
-            var stringField = fieldRepository.findStringField(fieldId);
+            var stringField = stringFieldRepository.findStringField(fieldId);
             stringField.applyConfiguration(cmd);
             stringFieldRepository.save(stringField.getSnapshot());
             return stringField.getFieldId();
@@ -50,7 +49,6 @@ class FieldCreationImpl implements FieldCreation {
                             .collect(Collectors.toSet()));
             LabelField.LabelFieldSnapshot snapshot = label.getSnapshot();
             labelFieldRepository.saveField(snapshot);
-            labelFieldRepository.saveLabels(label.getFieldId(), snapshot.getAllowedValues());
             return label.getFieldId();
         });
     }
@@ -58,11 +56,10 @@ class FieldCreationImpl implements FieldCreation {
     @Override
     public FieldId updateLabelField(FieldId fieldId, LabelFieldConfigurationUpdateCommand cmd) {
         return txManager.inTransaction(() -> {
-            var labelField = fieldRepository.findLabelField(fieldId);
+            var labelField = labelFieldRepository.findLabelField(fieldId);
             labelField.applyConfiguration(cmd);
             LabelField.LabelFieldSnapshot snapshot = labelField.getSnapshot();
             labelFieldRepository.saveField(snapshot);
-            labelFieldRepository.saveLabels(labelField.getFieldId(), snapshot.getAllowedValues());
             return labelField.getFieldId();
         });
     }
