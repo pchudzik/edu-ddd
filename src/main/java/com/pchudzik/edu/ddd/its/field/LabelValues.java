@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface LabelValues {
@@ -27,6 +28,10 @@ public interface LabelValues {
 
     default Stream<? extends LabelValue> stream() {
         return getLabels().stream();
+    }
+
+    default void forEach(Consumer<? super LabelValue> action) {
+        getLabels().forEach(action);
     }
 
     interface LabelValue {

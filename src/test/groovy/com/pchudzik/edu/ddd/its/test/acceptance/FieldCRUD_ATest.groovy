@@ -1,9 +1,10 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.FieldCreation
-import com.pchudzik.edu.ddd.its.field.read.AvailableFields
 import com.pchudzik.edu.ddd.its.field.FieldType
+import com.pchudzik.edu.ddd.its.field.read.AvailableFields
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
+import spock.lang.PendingFeature
 
 class FieldCRUD_ATest extends DbSpecification {
     def fieldCreationFacade = injector.getInstance(FieldCreation)
@@ -31,6 +32,11 @@ class FieldCRUD_ATest extends DbSpecification {
         ]
     }
 
+    @PendingFeature
+    def "string field configuration is updated"() {
+        expect: false
+    }
+
     def "new label field is created"() {
         when:
         def fieldId = fieldCreationFacade.createLabelField(FieldCreation.LabelFieldCreationCommand.builder()
@@ -47,6 +53,11 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields[0].id == fieldId
         allFields[0].configuration.required == true
         allFields[0].configuration.allowedLabels.collect { it.value } == ["First", "Second"]
-        allFields[0].configuration.allowedLabels.every {it.id != null && it.id instanceof UUID}
+        allFields[0].configuration.allowedLabels.every { it.id != null && it.id instanceof UUID }
+    }
+
+    @PendingFeature
+    def "label field configuration is updated"() {
+        expect: false
     }
 }

@@ -10,17 +10,28 @@ class FieldAssignmentImpl implements FieldAssignment {
 
     private final TransactionManager txManager;
 
-    private final FieldRepositoryImpl fieldRepository;
+    private final FieldRepository fieldRepository;
 
     private final FieldValueRepository fieldValueRepository;
 
-    public <T> void assignFieldToIssue(FieldAssignmentCommand<T> assignmentCommand) {
+    public void assignStringToIssue(StringFieldAssignmentCommand assignmentCommand) {
         txManager.useTransaction(() -> {
-            Field<T> field = fieldRepository.findOne(assignmentCommand.getFieldId());
-            FieldValue<T> value = field
+            StringField field = fieldRepository.findStringField(assignmentCommand.getFieldId());
+            FieldValue<String> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
-            fieldValueRepository.save(assignmentCommand.getIssueId(), value);
+            fieldValueRepository.saveStringValue(assignmentCommand.getIssueId(), value);
+        });
+    }
+
+    @Override
+    public void assignLabelFieldToIssue(LabelFieldAssignmentCommand assignmentCommand) {
+        txManager.useTransaction(() -> {
+            LabelField field = fieldRepository.findLabelField(assignmentCommand.getFieldId());
+            FieldValue<LabelValues> value = field
+                    .value(assignmentCommand.getValue())
+                    .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
+            fieldValueRepository.saveLabelValue(assignmentCommand.getIssueId(), value);
         });
     }
 }

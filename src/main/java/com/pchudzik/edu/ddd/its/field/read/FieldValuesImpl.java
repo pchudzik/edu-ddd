@@ -13,7 +13,7 @@ class FieldValuesImpl implements FieldValues {
     private final FieldValuesReadRepository fieldValueRepository;
 
     @Override
-    public List<FieldValueDto> findFieldsAssignedToIssue(IssueId issueId) {
+    public List<FieldValueDto<?>> findFieldsAssignedToIssue(IssueId issueId) {
         return txManager.inTransaction(() -> fieldValueRepository.findValues(issueId));
     }
 }

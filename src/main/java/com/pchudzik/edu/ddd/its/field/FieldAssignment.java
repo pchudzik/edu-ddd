@@ -5,13 +5,23 @@ import lombok.Builder;
 import lombok.Getter;
 
 public interface FieldAssignment {
-    <T> void assignFieldToIssue(FieldAssignmentCommand<T> assignmentCommand);
+    void assignStringToIssue(StringFieldAssignmentCommand assignmentCommand);
 
-    @Builder
+    void assignLabelFieldToIssue(LabelFieldAssignmentCommand assignmentCommand);
+
     @Getter
-    class FieldAssignmentCommand<T> {
+    @Builder
+    class StringFieldAssignmentCommand {
         private final FieldId fieldId;
         private final IssueId issueId;
-        private final T value;
+        private final String value;
+    }
+
+    @Getter
+    @Builder
+    class LabelFieldAssignmentCommand {
+        private final FieldId fieldId;
+        private final IssueId issueId;
+        private final LabelValues value;
     }
 }
