@@ -3,6 +3,7 @@ package com.pchudzik.edu.ddd.its.field;
 import io.vavr.control.Either;
 import lombok.*;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 class StringField implements Field<String> {
@@ -19,28 +20,16 @@ class StringField implements Field<String> {
                 RequiredValidator.NOT_REQUIRED, StringFieldConfiguration.ZERO, StringFieldConfiguration.EVERYTHING);
     }
 
-    public StringField(FieldId fieldId, FieldName fieldName, boolean required, int minLength, int maxLength) {
+    public StringField(FieldId fieldId, FieldName fieldName, boolean required, Integer minLength, Integer maxLength) {
         this.fieldId = fieldId;
         this.fieldName = fieldName;
         this.configuration = new StringFieldConfiguration(required, minLength, maxLength);
     }
 
-    public StringField required(boolean required) {
-        this.configuration = configuration.required(required);
-        this.fieldId = fieldId.nextVersion();
-        return this;
-    }
-
-    public StringField length(int min, int max) {
-        this.configuration = configuration.length(min, max);
-        this.fieldId = fieldId.nextVersion();
-        return this;
-    }
-
     public <A> Either<FieldValidator.ValidationResult, StringFieldValue<A>> value(String value) {
         var validationResult = configuration.getValidator().isValid(value);
         if (validationResult.isValid()) {
-            return Either.right(new StringFieldValue<A>(fieldId, value));
+            return Either.right(new StringFieldValue<>(fieldId, value));
         } else {
             return Either.left(validationResult);
         }
@@ -53,6 +42,14 @@ class StringField implements Field<String> {
                 .fieldDescription(fieldName.getFieldDescription())
                 .configuration(configuration.getSnapshot())
                 .build();
+    }
+
+    public StringField applyConfiguration(FieldCreation.StringFieldConfigurationUpdateCommand cfg) {
+        configuration = configuration
+                .required(cfg.isRequired())
+                .length(cfg.getMinLength(), cfg.getMaxLength());
+        fieldId = fieldId.nextVersion();
+        return this;
     }
 
     @Getter(AccessLevel.PACKAGE)
@@ -72,20 +69,23 @@ class StringField implements Field<String> {
         }
     }
 
-    @RequiredArgsConstructor
     private static class StringFieldConfiguration {
         private static final int ZERO = 0;
         private static final int EVERYTHING = Integer.MAX_VALUE;
 
         private final boolean isRequired;
-        private final int minLength;
-        private final int maxLength;
+        private final Length length;
 
-        public StringFieldConfiguration required(boolean required) {
-            return new StringFieldConfiguration(required, minLength, maxLength);
+        private StringFieldConfiguration(boolean isRequired, Integer minLength, Integer maxLength) {
+            this.isRequired = isRequired;
+            this.length = Length.of(minLength, maxLength);
         }
 
-        public StringFieldConfiguration length(int min, int max) {
+        public StringFieldConfiguration required(boolean required) {
+            return new StringFieldConfiguration(required, this.length.minLength, this.length.maxLength);
+        }
+
+        public StringFieldConfiguration length(@Nullable Integer min, @Nullable Integer max) {
             return new StringFieldConfiguration(isRequired, min, max);
         }
 
@@ -98,9 +98,28 @@ class StringField implements Field<String> {
         public StringFieldSnapshot.StringFieldConfigurationSnapshot getSnapshot() {
             return StringFieldSnapshot.StringFieldConfigurationSnapshot.builder()
                     .isRequired(isRequired)
-                    .minLength(minLength)
-                    .maxLength(maxLength)
+                    .minLength(length.minLength)
+                    .maxLength(length.maxLength)
                     .build();
+        }
+
+        @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+        private static class Length {
+            private final int minLength;
+            private final int maxLength;
+
+            public static Length of(@Nullable Integer min, @Nullable Integer max) {
+                var minLength = Optional.ofNullable(min).orElse(ZERO);
+                var maxLength = Optional.ofNullable(max).orElse(EVERYTHING);
+
+                if (minLength > maxLength) {
+                    throw new IllegalArgumentException(String.format(
+                            "Min string length of %s can not be smaller than max length of %s",
+                            minLength, maxLength));
+                }
+
+                return new Length(minLength, maxLength);
+            }
         }
 
         private class MinLengthValidator implements FieldValidator<String> {
@@ -108,12 +127,12 @@ class StringField implements Field<String> {
             public ValidationResult isValid(String value) {
                 boolean isValid = Optional
                         .ofNullable(value)
-                        .map(v -> v.length() >= minLength)
+                        .map(v -> v.length() >= length.minLength)
                         .orElse(true);
 
                 return isValid
                         ? FieldValidator.noError()
-                        : new SimpleValidationError(new StringValidationMessage(minLength, maxLength));
+                        : new SimpleValidationError(new StringValidationMessage(length));
             }
         }
 
@@ -122,12 +141,12 @@ class StringField implements Field<String> {
             public ValidationResult isValid(String value) {
                 boolean isValid = Optional
                         .ofNullable(value)
-                        .map(v -> v.length() < maxLength)
+                        .map(v -> v.length() < length.maxLength)
                         .orElse(true);
 
                 return isValid
                         ? FieldValidator.noError()
-                        : new SimpleValidationError(new StringValidationMessage(minLength, maxLength));
+                        : new SimpleValidationError(new StringValidationMessage(length));
             }
         }
     }
@@ -144,12 +163,13 @@ class StringField implements Field<String> {
     @EqualsAndHashCode
     @RequiredArgsConstructor
     static class StringValidationMessage implements FieldValidator.ValidationMessage {
-        private final int min;
-        private final int max;
+        private final StringFieldConfiguration.Length length;
 
         @Override
         public String getMessageKey() {
-            return "Value must be between " + min + " and " + max + " characters";
+            return String.format(
+                    "Value must be between %s and %s characters",
+                    length.minLength, length.maxLength);
         }
     }
 

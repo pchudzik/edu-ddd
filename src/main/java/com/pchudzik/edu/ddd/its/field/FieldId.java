@@ -2,6 +2,8 @@ package com.pchudzik.edu.ddd.its.field;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.UUID;
 
@@ -24,5 +26,15 @@ public class FieldId {
 
     public FieldId nextVersion() {
         return new FieldId(this.value, version + 1);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE)
+                .append("version")
+                .append(version)
+                .append("value")
+                .append(value)
+                .toString();
     }
 }

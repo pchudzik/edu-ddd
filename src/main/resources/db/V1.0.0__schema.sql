@@ -42,7 +42,7 @@ create table last_field
   id      uuid    not null,
   version integer not null,
   primary key (id),
-  foreign key (id) references field(id)
+  foreign key (id, version) references field(id, version)
 );
 
 create table allowed_labels
@@ -52,19 +52,20 @@ create table allowed_labels
     field_version integer      not null,
     value         varchar(255) not null,
     primary key (id),
-    foreign key (field_id)      references field(id),
-    foreign key (field_version) references field(version)
+    foreign key (field_id, field_version) references field(id, version),
+    foreign key (field_version)           references field(version)
 );
 
 create table field_value
 (
-  id       uuid       not null,
-  field_id uuid       not null,
-  project  varchar(7) not null,
-  issue    integer,
-  value    text,
+  id            uuid       not null,
+  field_id      uuid       not null,
+  field_version integer    not null,
+  project       varchar(7) not null,
+  issue         integer,
+  value         text,
   primary key (id),
-  foreign key (field_id) references field(id),
-  foreign key (project)  references project(id),
-  foreign key (issue)    references issue(issue_sequence)
+  foreign key (field_id, field_version) references field(id, version),
+  foreign key (project)                 references project(id),
+  foreign key (issue)                   references issue(issue_sequence)
 );

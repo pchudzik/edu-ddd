@@ -46,17 +46,16 @@ class FieldValuesReadRepository {
                         "select " +
                         "  value.id id, " +
                         "  value.field_id fieldId, " +
-                        "  last_field.version version, " +
+                        "  value.field_version version, " +
                         "  value.project project, " +
                         "  value.issue issue, " +
                         "  value.value value, " +
                         "  field.type type " +
                         "from field_value value " +
-                        "join last_field last_field on last_field.id = value.field_id " +
-                        "join field field on field.id = value.field_id " +
+                        "left join field on value.field_id = field.id and field.version = value.field_version " +
                         "where " +
-                        "  project=:project " +
-                        "  and issue=:issue ")
+                        "  project = :project " +
+                        "  and issue = :issue ")
                 .bind("project", issueId.getProject().getValue())
                 .bind("issue", issueId.getIssue())
                 .map((rs, ctx) -> new ValueRow(

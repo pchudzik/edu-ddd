@@ -39,8 +39,6 @@ class Fixtures {
             return fieldCreationFacade.createStringField(FieldCreation.StringFieldCreationCommand.builder()
                     .fieldName("string field")
                     .required(true)
-                    .minLength(2)
-                    .maxLength(20)
                     .build())
         }
 

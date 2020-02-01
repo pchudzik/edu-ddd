@@ -30,15 +30,10 @@ class LabelField implements Field<LabelValues> {
         this.allowedLabels = new AllowableLabelValues(allowedValues);
     }
 
-    public LabelField required(boolean required) {
-        this.required = required;
-        this.fieldId = fieldId.nextVersion();
-        return this;
-    }
-
-    public LabelField allowedValues(Collection<LabelValues.LabelValue> values) {
-        this.allowedLabels = new AllowableLabelValues(values.stream()
-                .map(l -> new IdentifiableLabelValue(UUID.randomUUID(), l.getValue()))
+    public LabelField applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand cfg) {
+        this.required = cfg.isRequired();
+        this.allowedLabels = new AllowableLabelValues(cfg.getAllowedLabels().stream()
+                .map(l -> new IdentifiableLabelValue(UUID.randomUUID(), l))
                 .collect(Collectors.toList()));
         this.fieldId = fieldId.nextVersion();
         return this;

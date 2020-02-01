@@ -20,6 +20,7 @@ class FieldAssignmentImpl implements FieldAssignment {
             FieldValue<String> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
+            fieldValueRepository.removeOldValues(assignmentCommand.getFieldId(), assignmentCommand.getIssueId());
             fieldValueRepository.saveStringValue(assignmentCommand.getIssueId(), value);
         });
     }
@@ -31,6 +32,7 @@ class FieldAssignmentImpl implements FieldAssignment {
             FieldValue<LabelValues> value = field
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
+            fieldValueRepository.removeOldValues(assignmentCommand.getFieldId(), assignmentCommand.getIssueId());
             fieldValueRepository.saveLabelValue(assignmentCommand.getIssueId(), value);
         });
     }

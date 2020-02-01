@@ -21,9 +21,10 @@ class LabelFieldTest extends Specification {
 
     def "only allowed labels can be assigned"() {
         given:
-        def allowedLabel = LabelValues.LabelValue.of("allowed")
         def field = new LabelField("label")
-                .allowedValues([allowedLabel])
+                .applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                        .allowedLabel("allowed")
+                        .build())
 
         and:
         def label = LabelValues.LabelValue.of("other")
@@ -38,9 +39,10 @@ class LabelFieldTest extends Specification {
 
     def "allowed labels comparison is case insensitive"() {
         given:
-        def allowedLabel =LabelValues.LabelValue.of("Allowed")
         def field = new LabelField("label")
-                .allowedValues([allowedLabel])
+                .applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                        .allowedLabel("allowed")
+                        .build())
 
         and:
         def label = LabelValues.LabelValue.of("aLLoWeD")
@@ -54,10 +56,10 @@ class LabelFieldTest extends Specification {
 
     def "not allowed labels message is formatted"() {
         given:
-        def allowedLabel1 =LabelValues.LabelValue.of("First")
-        def allowedLabel2 = LabelValues.LabelValue.of("Second")
         def field = new LabelField("label")
-                .allowedValues([allowedLabel1, allowedLabel2])
+                .applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                        .allowedLabels(["First", "Second"])
+                        .build())
 
         and:
         def notAllowed = LabelValues.LabelValue.of("Third")
@@ -73,7 +75,10 @@ class LabelFieldTest extends Specification {
 
     def "label can be required"() {
         given:
-        def field = new LabelField("label").required(true)
+        def field = new LabelField("label")
+                .applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                        .required(true)
+                        .build())
 
         when:
         def value = field.value(LabelValues.empty())
@@ -89,13 +94,17 @@ class LabelFieldTest extends Specification {
         def field = new LabelField("field")
 
         when:
-        field.required(true)
+        field.applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                .required(true)
+                .build())
 
         then:
         field.fieldId.version == 2
 
         when:
-        field.allowedValues([LabelValues.LabelValue.of("abc")])
+        field.applyConfiguration(FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                .allowedLabel("abc")
+                .build())
 
         then:
         field.fieldId.version == 3
