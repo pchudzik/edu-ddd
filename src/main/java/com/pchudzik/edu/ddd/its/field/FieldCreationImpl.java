@@ -16,7 +16,7 @@ class FieldCreationImpl implements FieldCreation {
     @Override
     public FieldId createStringField(StringFieldCreationCommand command) {
         return txManager.inTransaction(() -> {
-            StringField field = new StringField(
+            var field = new StringField(
                     new FieldId(),
                     new FieldName(command.getFieldName(), command.getFieldDescription()),
                     command.isRequired(), command.getMinLength(), command.getMaxLength());
@@ -28,7 +28,7 @@ class FieldCreationImpl implements FieldCreation {
     @Override
     public FieldId createLabelField(LabelFieldCreationCommand fieldCreationCommand) {
         return txManager.inTransaction(() -> {
-            LabelField label = new LabelField(
+            var label = new LabelField(
                     new FieldId(),
                     new FieldName(fieldCreationCommand.getFieldName(), fieldCreationCommand.getFieldDescription()),
                     fieldCreationCommand.isRequired(),

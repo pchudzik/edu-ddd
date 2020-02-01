@@ -38,7 +38,7 @@ class StringField implements Field<String> {
     }
 
     public <A> Either<FieldValidator.ValidationResult, StringFieldValue<A>> value(String value) {
-        FieldValidator.ValidationResult validationResult = configuration.getValidator().isValid(value);
+        var validationResult = configuration.getValidator().isValid(value);
         if (validationResult.isValid()) {
             return Either.right(new StringFieldValue<A>(fieldId, value));
         } else {

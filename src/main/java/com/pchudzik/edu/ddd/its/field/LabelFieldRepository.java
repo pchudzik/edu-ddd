@@ -2,12 +2,9 @@ package com.pchudzik.edu.ddd.its.field;
 
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.PreparedBatch;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class LabelFieldRepository {
@@ -15,14 +12,8 @@ class LabelFieldRepository {
     private final LastFieldPointerRepository lastFieldPointerRepository;
 
     public void saveLabels(FieldId fieldId, List<LabelField.LabelFieldSnapshot.Label> allowedValues) {
-        List<UUID> ids = allowedValues.stream()
-                .map(LabelField.LabelFieldSnapshot.Label::getId)
-                .collect(Collectors.toList());
-        List<String> values = allowedValues.stream()
-                .map(LabelField.LabelFieldSnapshot.Label::getValue)
-                .collect(Collectors.toList());
         jdbi.withHandle(h -> {
-            PreparedBatch batch = h.prepareBatch("" +
+            var batch = h.prepareBatch("" +
                     "insert into allowed_labels(id, field_id, field_version, value) " +
                     "values(:id, :fieldId, :fieldVersion, :value)");
             allowedValues.forEach(l -> batch

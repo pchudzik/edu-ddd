@@ -35,7 +35,7 @@ class FieldRepository {
 
     public LabelField findLabelField(FieldId fieldId) {
         return jdbi.withHandle(handle -> {
-            List<LabelField.IdentifiableLabelValue> allowedLabels = handle
+            var allowedLabels = handle
                     .select("" +
                             "select label.id, label.value " +
                             "from allowed_labels label " +
@@ -94,7 +94,7 @@ class FieldRepository {
         }
         @Override
         public LabelField map(ResultSet rs, StatementContext ctx) throws SQLException {
-            FieldId labelFieldId = new FieldId(
+            var labelFieldId = new FieldId(
                     UUID.fromString(rs.getString("id")),
                     rs.getInt("version"));
             return new LabelField(

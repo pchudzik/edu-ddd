@@ -120,10 +120,10 @@ class LabelField implements Field<LabelValues> {
         }
 
         private LabelValues findNotAllowed(LabelValues other) {
-            Set<String> allowedValues = labels.stream()
+            var allowedValues = labels.stream()
                     .map(l -> StringUtils.lowerCase(l.getValue()))
                     .collect(Collectors.toSet());
-            List<LabelValue> notAllowedValues = other.getLabels().stream()
+            var notAllowedValues = other.getLabels().stream()
                     .filter(l -> !allowedValues.contains(StringUtils.lowerCase(l.getValue())))
                     .collect(Collectors.toList());
             return LabelValues.of(notAllowedValues);
@@ -178,7 +178,7 @@ class LabelField implements Field<LabelValues> {
                 return FieldValidator.noError();
             }
 
-            LabelValues notAllowed = allowedLabels.findNotAllowed(value);
+            var notAllowed = allowedLabels.findNotAllowed(value);
 
             if (notAllowed.isEmpty()) {
                 return FieldValidator.noError();

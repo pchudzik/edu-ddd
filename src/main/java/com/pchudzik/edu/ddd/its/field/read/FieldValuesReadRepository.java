@@ -106,8 +106,8 @@ class FieldValuesReadRepository {
                     .collect(Collectors.groupingBy(LabelGroupKey::from))
                     .entrySet().stream()
                     .map(entry -> {
-                        LabelGroupKey labelKey = entry.getKey();
-                        List<FieldValues.LabelValue> labelValues = entry.getValue().stream()
+                        var labelKey = entry.getKey();
+                        var labelValues = entry.getValue().stream()
                                 .map(r -> new FieldValues.LabelValue(
                                         r.getValueId(),
                                         r.getValue()))

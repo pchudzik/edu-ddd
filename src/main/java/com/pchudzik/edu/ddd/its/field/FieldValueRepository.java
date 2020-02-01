@@ -3,7 +3,6 @@ package com.pchudzik.edu.ddd.its.field;
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.PreparedBatch;
 
 import javax.inject.Inject;
 import java.util.UUID;
@@ -27,7 +26,7 @@ class FieldValueRepository {
 
     public void saveLabelValue(IssueId issueId, FieldValue<LabelValues> value) {
         jdbi.useHandle(handle -> {
-            PreparedBatch batch = handle
+            var batch = handle
                     .prepareBatch("" +
                             "insert into field_value(id, field_id, project, issue, value) " +
                             "values(:id, :fieldId, :project, :issue, :value)");
