@@ -99,7 +99,6 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields[0].configuration.allowedLabels.every { it.id != null && it.id instanceof UUID }
     }
 
-    @PendingFeature
     def "no longer used string field definitions are removed when not used"() {
         given:
         def fieldId = Fixtures.fieldFixture().createNewStringField()
@@ -112,6 +111,24 @@ class FieldCRUD_ATest extends DbSpecification {
                 .build())
 
         then:
-        FieldLookup.findNumberOfFieldsInAnyVersion(fieldId) == 1
+        def allFields = FieldLookup.findAllFieldIds()
+        allFields.size() == 1
+        allFields[0] == new FieldId(fieldId.value, fieldId.version+1)
+    }
+
+    def "no longer used label field definitions are removed when not used"() {
+        given:
+            def fieldId = Fixtures.fieldFixture().createNewLabelField()
+
+        when:
+            fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                    .required(false)
+                    .allowedLabels(["First", "Second"])
+                    .build())
+
+        then:
+        def allFields = FieldLookup.findAllFieldIds()
+        allFields.size() == 1
+        allFields[0] == new FieldId(fieldId.value, fieldId.version+1)
     }
 }

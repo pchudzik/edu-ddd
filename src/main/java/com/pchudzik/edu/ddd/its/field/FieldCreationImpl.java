@@ -33,6 +33,7 @@ class FieldCreationImpl implements FieldCreation {
             var stringField = stringFieldRepository.findStringField(fieldId);
             stringField.applyConfiguration(cmd);
             stringFieldRepository.save(stringField.getSnapshot());
+            messageQueue.publish(new FieldUpdatedMessage(stringField.getFieldId()));
             return stringField.getFieldId();
         });
     }
@@ -60,6 +61,7 @@ class FieldCreationImpl implements FieldCreation {
             labelField.applyConfiguration(cmd);
             LabelField.LabelFieldSnapshot snapshot = labelField.getSnapshot();
             labelFieldRepository.saveField(snapshot);
+            messageQueue.publish(new FieldUpdatedMessage(labelField.getFieldId()));
             return labelField.getFieldId();
         });
     }
