@@ -1,9 +1,11 @@
 package com.pchudzik.edu.ddd.its.field;
 
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
+import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
+import java.util.Collections;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldAssignmentImpl implements FieldAssignment {
@@ -12,6 +14,7 @@ class FieldAssignmentImpl implements FieldAssignment {
     private final StringFieldRepository stringFieldRepository;
     private final LabelFieldRepository labelFieldRepository;
     private final FieldValueRepository fieldValueRepository;
+    private final MessageQueue messageQueue;
 
     public void assignStringToIssue(StringFieldAssignmentCommand assignmentCommand) {
         txManager.useTransaction(() -> {
@@ -20,7 +23,8 @@ class FieldAssignmentImpl implements FieldAssignment {
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
             fieldValueRepository.removeOldValues(assignmentCommand.getFieldId(), assignmentCommand.getIssueId());
-            fieldValueRepository.saveStringValue(assignmentCommand.getIssueId(), value);
+            var fieldValueId = fieldValueRepository.saveStringValue(assignmentCommand.getIssueId(), value);
+            messageQueue.publish(new FieldAssignedMessage(Collections.singleton(fieldValueId)));
         });
     }
 
@@ -32,7 +36,8 @@ class FieldAssignmentImpl implements FieldAssignment {
                     .value(assignmentCommand.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
             fieldValueRepository.removeOldValues(assignmentCommand.getFieldId(), assignmentCommand.getIssueId());
-            fieldValueRepository.saveLabelValue(assignmentCommand.getIssueId(), value);
+            var valueIds = fieldValueRepository.saveLabelValue(assignmentCommand.getIssueId(), value);
+            messageQueue.publish(new FieldAssignedMessage(valueIds));
         });
     }
 }

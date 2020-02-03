@@ -6,7 +6,6 @@ import com.pchudzik.edu.ddd.its.field.FieldType
 import com.pchudzik.edu.ddd.its.field.LabelValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import spock.lang.PendingFeature
 
 class FieldValues_ATest extends DbSpecification {
     def fieldAssignmentFacade = injector.getInstance(FieldAssignment)
@@ -140,7 +139,6 @@ class FieldValues_ATest extends DbSpecification {
         extractAssignedStringValues(fieldValuesFacade.findFieldsAssignedToIssue(issue1)) == ["updated value"]
     }
 
-    @PendingFeature
     def "no longer used string field definition is removed when field is not used"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -308,7 +306,6 @@ class FieldValues_ATest extends DbSpecification {
         extractAssignedLabelValues(fieldValuesFacade.findFieldsAssignedToIssue(issue)) == ["updated"]
     }
 
-    @PendingFeature
     def "no longer used label field definition is removed when field is not used"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()

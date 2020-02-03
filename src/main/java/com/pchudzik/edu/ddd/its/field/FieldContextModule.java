@@ -10,7 +10,7 @@ public class FieldContextModule extends AbstractModule {
 
         bind(FieldValueRepository.class);
         bind(LabelFieldRepository.class);
-        bind(NoLongerUsedFieldDefinitionCleaner.class);
+        bind(NoLongerUsedFieldDefinitionCleanerRepository.class);
         bind(FieldUpdateListener.class);
     }
 }
