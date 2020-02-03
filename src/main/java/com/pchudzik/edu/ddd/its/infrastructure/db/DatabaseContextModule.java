@@ -3,6 +3,8 @@ package com.pchudzik.edu.ddd.its.infrastructure.db;
 import com.google.inject.AbstractModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.jdbi.v3.core.Jdbi;
@@ -30,12 +32,20 @@ public class DatabaseContextModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        DataSource dataSource = dataSource();
+        DataSource dataSource = loggingDataSource(dataSource());
 
         bind(DataSource.class).toInstance(dataSource);
         bind(Jdbi.class).toInstance(Jdbi.create(dataSource));
         bind(Flyway.class).toInstance(flyway(dataSource));
 
         bind(TransactionManager.class).to(TransactionManagerImpl.class);
+    }
+
+    private DataSource loggingDataSource(DataSource dataSource) {
+        return ProxyDataSourceBuilder
+                .create(dataSource)
+                .logQueryBySlf4j(SLF4JLogLevel.INFO)
+                .name("h2")
+                .build();
     }
 }

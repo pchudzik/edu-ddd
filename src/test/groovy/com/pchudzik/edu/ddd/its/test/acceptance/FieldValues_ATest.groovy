@@ -198,7 +198,7 @@ class FieldValues_ATest extends DbSpecification {
         fieldsForIssue[0].fieldId == fieldId
         fieldsForIssue[0].issueId == issueId
         fieldsForIssue[0].fieldType == FieldType.LABEL_FIELD
-        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } == ["first", "second"]
+        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["first", "second"] as Set
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
     }
 
@@ -238,7 +238,7 @@ class FieldValues_ATest extends DbSpecification {
         fieldsForIssue[0].fieldId == fieldId
         fieldsForIssue[0].issueId == issueId
         fieldsForIssue[0].fieldType == FieldType.LABEL_FIELD
-        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } == ["new 1", "new 2"]
+        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["new 1", "new 2"]  as Set
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
     }
 

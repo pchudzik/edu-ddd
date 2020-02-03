@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <Console name="SqlConsoleLog" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] SQL - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger level="info" name="net.ttddyy.dsproxy">
+            <AppenderRef ref="SqlConsoleLog" />
+        </Logger>
+
+        <Logger level="debug" name="com.pchudzik">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
