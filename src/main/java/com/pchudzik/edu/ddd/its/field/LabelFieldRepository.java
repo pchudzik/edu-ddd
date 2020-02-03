@@ -52,7 +52,7 @@ class LabelFieldRepository {
                             "join last_field on field.id = last_field.id and field.version = last_field.version " +
                             "where " +
                             "  field.id = :id " +
-                            "  and last_field.version = :version" +
+                            "  and field.version = :version" +
                             "  and field.type = :labelField")
                     .bind("id", fieldId.getValue())
                     .bind("version", fieldId.getVersion())

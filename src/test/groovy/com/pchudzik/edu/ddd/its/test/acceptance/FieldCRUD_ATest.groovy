@@ -5,13 +5,10 @@ import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.field.FieldType
 import com.pchudzik.edu.ddd.its.field.read.AvailableFields
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import org.jdbi.v3.core.Jdbi
-import spock.lang.PendingFeature
 
 class FieldCRUD_ATest extends DbSpecification {
     def fieldCreation = injector.getInstance(FieldCreation)
     def fieldRead = injector.getInstance(AvailableFields)
-    def jdbi = injector.getInstance(Jdbi)
 
     def "new string field is created"() {
         when:
@@ -113,22 +110,45 @@ class FieldCRUD_ATest extends DbSpecification {
         then:
         def allFields = FieldLookup.findAllFieldIds()
         allFields.size() == 1
-        allFields[0] == new FieldId(fieldId.value, fieldId.version+1)
+        allFields[0] == new FieldId(fieldId.value, fieldId.version + 1)
     }
 
     def "no longer used label field definitions are removed when not used"() {
         given:
-            def fieldId = Fixtures.fieldFixture().createNewLabelField()
+        def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         when:
-            fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
-                    .required(false)
-                    .allowedLabels(["First", "Second"])
-                    .build())
+        fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                .required(false)
+                .allowedLabels(["First", "Second"])
+                .build())
 
         then:
         def allFields = FieldLookup.findAllFieldIds()
         allFields.size() == 1
-        allFields[0] == new FieldId(fieldId.value, fieldId.version+1)
+        allFields[0] == fieldId
+    }
+
+    def "no longer used allowed labels are removed when field is updated"() {
+        given:
+        def fieldId = Fixtures.fieldFixture().createNewLabelField()
+
+        and:
+        fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                .required(false)
+                .allowedLabels(["first"])
+                .build())
+
+        when:
+        fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
+                .required(false)
+                .allowedLabels(["updated"])
+                .build())
+
+        then:
+        def allAllowed = FieldLookup.findAllAllowedLabels()
+        allAllowed.size() == 1
+        allAllowed[0].fieldId == fieldId
+        allAllowed[0].value == "updated"
     }
 }
