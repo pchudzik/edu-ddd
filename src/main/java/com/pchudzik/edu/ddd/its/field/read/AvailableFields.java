@@ -11,6 +11,7 @@ import java.util.Map;
 
 public interface AvailableFields {
     List<FieldDto> listAllFields();
+    List<FieldDto> findByIds(List<FieldId> ids);
 
     @Getter
     @Builder(access = AccessLevel.PACKAGE)

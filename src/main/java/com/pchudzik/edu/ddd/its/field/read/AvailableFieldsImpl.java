@@ -34,6 +34,11 @@ class AvailableFieldsImpl implements AvailableFields {
                 .collect(Collectors.toList()));
     }
 
+    @Override
+    public List<FieldDto> findByIds(List<FieldId> ids) {
+        return emptyList();
+    }
+
     @RequiredArgsConstructor
     private static class GenericFieldDtoLoader {
         private final Handle handle;
