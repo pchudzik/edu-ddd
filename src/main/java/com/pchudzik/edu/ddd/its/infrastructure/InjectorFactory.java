@@ -3,7 +3,7 @@ package com.pchudzik.edu.ddd.its.infrastructure;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.pchudzik.edu.ddd.its.field.FieldContextModule;
-import com.pchudzik.edu.ddd.its.field.definitions.FieldDefinitionsContextModule;
+import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitionsContextModule;
 import com.pchudzik.edu.ddd.its.field.read.FieldReadContextModule;
 import com.pchudzik.edu.ddd.its.infrastructure.db.DatabaseContextModule;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessagingContextModule;

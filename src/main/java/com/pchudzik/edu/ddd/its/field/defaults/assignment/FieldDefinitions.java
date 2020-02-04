@@ -1,4 +1,4 @@
-package com.pchudzik.edu.ddd.its.field.definitions;
+package com.pchudzik.edu.ddd.its.field.defaults.assignment;
 
 import com.pchudzik.edu.ddd.its.field.FieldId;
 import com.pchudzik.edu.ddd.its.field.read.AvailableFields;
@@ -14,7 +14,7 @@ public interface FieldDefinitions {
 
     void removeDefaultFields(ProjectId projectId, FieldId fieldId);
 
-    void removeDefaultFields(IssueId projectId, FieldId fieldId);
+    void removeDefaultFields(IssueId issueId, FieldId fieldId);
 
     Collection<AvailableFields.FieldDto> findDefaultFields(ProjectId projectId);
 

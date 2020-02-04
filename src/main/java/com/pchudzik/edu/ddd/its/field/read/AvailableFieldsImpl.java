@@ -140,6 +140,9 @@ class AvailableFieldsImpl implements AvailableFields {
 
         @Override
         public Stream<FieldDto> loadFields(Set<FieldId> fieldIds) {
+            if (fieldIds.isEmpty()) {
+                return Stream.empty();
+            }
             return processLoadedFields(handle
                     .select("select field.* " +
                             "from field " +

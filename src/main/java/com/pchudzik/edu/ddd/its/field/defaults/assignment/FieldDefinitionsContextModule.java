@@ -1,4 +1,4 @@
-package com.pchudzik.edu.ddd.its.field.definitions;
+package com.pchudzik.edu.ddd.its.field.defaults.assignment;
 
 import com.google.inject.AbstractModule;
 

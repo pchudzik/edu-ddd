@@ -1,8 +1,9 @@
-package com.pchudzik.edu.ddd.its.field.definitions;
+package com.pchudzik.edu.ddd.its.field.defaults.assignment;
 
 import com.pchudzik.edu.ddd.its.field.FieldId;
 import com.pchudzik.edu.ddd.its.field.read.AvailableFields;
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
+import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Getter;
@@ -27,6 +28,7 @@ class FieldDefinitionsImpl implements FieldDefinitions {
     private final TransactionManager txManager;
     private final Jdbi jdbi;
     private final AvailableFields availableFields;
+    private final MessageQueue messageQueue;
 
     @Override
     public void assignDefaultFields(ProjectId projectId, Collection<FieldId> fieldIds) {
@@ -44,12 +46,41 @@ class FieldDefinitionsImpl implements FieldDefinitions {
 
     @Override
     public void removeDefaultFields(ProjectId projectId, FieldId fieldId) {
-
+        txManager.useTransaction(() -> {
+            jdbi.withHandle(h -> h
+                    .createUpdate("" +
+                            "delete from field_definitions " +
+                            "where " +
+                            "    field_id = :fieldId " +
+                            "    and field_version = :fieldVersion " +
+                            "    and project = :project " +
+                            "    and issue is null")
+                    .bind("fieldId", fieldId.getValue())
+                    .bind("fieldVersion", fieldId.getVersion())
+                    .bind("project", projectId.getValue())
+                    .execute());
+            messageQueue.publish(new Messages.FieldAssignmentRemovedFromProject(fieldId, projectId));
+        });
     }
 
     @Override
-    public void removeDefaultFields(IssueId projectId, FieldId fieldId) {
-
+    public void removeDefaultFields(IssueId issueId, FieldId fieldId) {
+        txManager.useTransaction(() -> {
+            jdbi.withHandle(h -> h
+                    .createUpdate("" +
+                            "delete from field_definitions " +
+                            "where " +
+                            "    field_id = :fieldId " +
+                            "    and field_version = :fieldVersion " +
+                            "    and project = :project " +
+                            "    and issue = :issue")
+                    .bind("fieldId", fieldId.getValue())
+                    .bind("fieldVersion", fieldId.getVersion())
+                    .bind("project", issueId.getProject().getValue())
+                    .bind("issue", issueId.getIssue())
+                    .execute());
+            messageQueue.publish(new Messages.FieldAssignmentRemovedFromIssue(fieldId, issueId));
+        });
     }
 
     @Override
@@ -59,7 +90,7 @@ class FieldDefinitionsImpl implements FieldDefinitions {
                     "select field_id, field_version " +
                     "from field_definitions " +
                     "where " +
-                    "    project=:project " +
+                    "    project = :project " +
                     "    and issue is null")
                     .bind("project", projectId.getValue())
                     .map(new FieldIdRowMapper())
