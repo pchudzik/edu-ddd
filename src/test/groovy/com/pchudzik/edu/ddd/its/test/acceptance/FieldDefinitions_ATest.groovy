@@ -2,12 +2,10 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.definitions.FieldDefinitions
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import spock.lang.PendingFeature
 
-class FieldAssignment_ATest extends DbSpecification {
+class FieldDefinitions_ATest extends DbSpecification {
     def fieldDefinitions = injector.getInstance(FieldDefinitions)
 
-    @PendingFeature
     def "assigns field to project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -22,7 +20,6 @@ class FieldAssignment_ATest extends DbSpecification {
         fields[0].id == fieldId
     }
 
-    @PendingFeature
     def "assigns field to issue"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -38,7 +35,6 @@ class FieldAssignment_ATest extends DbSpecification {
         fields[0].id == fieldId
     }
 
-    @PendingFeature
     def "removed field assignment from project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -56,7 +52,6 @@ class FieldAssignment_ATest extends DbSpecification {
         fields[0].id == fieldId
     }
 
-    @PendingFeature
     def "removed field assignment from issue"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()

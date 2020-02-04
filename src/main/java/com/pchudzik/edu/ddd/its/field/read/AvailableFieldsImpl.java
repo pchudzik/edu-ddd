@@ -11,9 +11,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,20 +28,32 @@ class AvailableFieldsImpl implements AvailableFields {
         return jdbi.withHandle(h -> Stream
                 .concat(
                         new GenericFieldDtoLoader(h).loadFields(),
-                        new LabelFieldDtoLoader(h).loadLabelFields())
+                        new LabelFieldDtoLoader(h).loadFields())
                 .collect(Collectors.toList()));
     }
 
     @Override
     public List<FieldDto> findByIds(List<FieldId> ids) {
-        return emptyList();
+        var idsSet = new HashSet<>(ids);
+        return jdbi.withHandle(h -> Stream
+                .concat(
+                        new GenericFieldDtoLoader(h).loadFields(idsSet),
+                        new LabelFieldDtoLoader(h).loadFields(idsSet))
+                .collect(Collectors.toList()));
+    }
+
+    private interface FieldLoader {
+        Stream<FieldDto> loadFields(Set<FieldId> fieldIds);
+
+        Stream<FieldDto> loadFields();
     }
 
     @RequiredArgsConstructor
-    private static class GenericFieldDtoLoader {
+    private static class GenericFieldDtoLoader implements FieldLoader {
         private final Handle handle;
 
-        Stream<FieldDto> loadFields() {
+        @Override
+        public Stream<FieldDto> loadFields() {
             return handle
                     .select("select field.* " +
                             "from field " +
@@ -52,6 +62,28 @@ class AvailableFieldsImpl implements AvailableFields {
                     .bindList("excluded", singleton(FieldType.LABEL_FIELD))
                     .map(new FieldDtoMapper())
                     .stream();
+        }
+
+        @Override
+        public Stream<FieldDto> loadFields(Set<FieldId> fieldIds) {
+            if (fieldIds.isEmpty()) {
+                return Stream.empty();
+            }
+
+            return handle
+                    .select("select field.* " +
+                            "from field " +
+                            "join last_field on field.id = last_field.id and field.version = last_field.version " +
+                            "where " +
+                            "    type not in(<excluded>) " +
+                            "    and field.id in(<ids>) " +
+                            "    and field.version in (<versions>)")
+                    .bindList("excluded", singleton(FieldType.LABEL_FIELD))
+                    .bindList("ids", fieldIds.stream().map(FieldId::getValue).collect(Collectors.toSet()))
+                    .bindList("versions", fieldIds.stream().map(FieldId::getVersion).collect(Collectors.toSet()))
+                    .map(new FieldDtoMapper())
+                    .stream()
+                    .filter(f -> fieldIds.contains(f.getId()));
         }
 
         private static class FieldDtoMapper implements RowMapper<FieldDto> {
@@ -91,20 +123,43 @@ class AvailableFieldsImpl implements AvailableFields {
     }
 
     @RequiredArgsConstructor
-    private static class LabelFieldDtoLoader {
+    private static class LabelFieldDtoLoader implements FieldLoader {
         private final Handle handle;
 
-        Stream<FieldDto> loadLabelFields() {
-            List<TmpField> labelFields = handle
+        @Override
+        public Stream<FieldDto> loadFields() {
+            return processLoadedFields(handle
                     .select("select field.* " +
                             "from field " +
                             "join last_field on field.id = last_field.id and field.version = last_field.version " +
                             "where type = :labelField")
                     .bind("labelField", FieldType.LABEL_FIELD)
                     .map(new TmpFieldMapper())
-                    .list();
-            Map<FieldId, List<AllowedLabel>> allowedLabels = loadAllowedLabels(labelFields.stream().map(f -> f.fieldId).collect(toList()));
-            return labelFields.stream()
+                    .list());
+        }
+
+        @Override
+        public Stream<FieldDto> loadFields(Set<FieldId> fieldIds) {
+            return processLoadedFields(handle
+                    .select("select field.* " +
+                            "from field " +
+                            "join last_field on field.id = last_field.id and field.version = last_field.version " +
+                            "where " +
+                            "    type = :labelField" +
+                            "    and field.id in (<ids>)" +
+                            "    and field.version in (<versions>)")
+                    .bind("labelField", FieldType.LABEL_FIELD)
+                    .bindList("ids", fieldIds.stream().map(FieldId::getValue).collect(toList()))
+                    .bindList("versions", fieldIds.stream().map(FieldId::getVersion).collect(Collectors.toSet()))
+                    .map(new TmpFieldMapper())
+                    .stream()
+                    .filter(f -> fieldIds.contains(f.fieldId))
+                    .collect(toList()));
+        }
+
+        private Stream<FieldDto> processLoadedFields(List<TmpField> fieldsWithoutLabels) {
+            Map<FieldId, List<AllowedLabel>> allowedLabels = loadAllowedLabels(fieldsWithoutLabels.stream().map(f -> f.fieldId).collect(toList()));
+            return fieldsWithoutLabels.stream()
                     .map(f -> createFieldDto(f, allowedLabels.getOrDefault(f.fieldId, emptyList())));
         }
 

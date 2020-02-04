@@ -16,7 +16,10 @@ import javax.inject.Inject;
 import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -55,8 +58,9 @@ class FieldDefinitionsImpl implements FieldDefinitions {
             List<FieldId> fieldsForProject = jdbi.withHandle(h -> h.select("" +
                     "select field_id, field_version " +
                     "from field_definitions " +
-                    "where project=:project " +
-                    "and issue is null")
+                    "where " +
+                    "    project=:project " +
+                    "    and issue is null")
                     .bind("project", projectId.getValue())
                     .map(new FieldIdRowMapper())
                     .list());
@@ -66,7 +70,19 @@ class FieldDefinitionsImpl implements FieldDefinitions {
 
     @Override
     public Collection<AvailableFields.FieldDto> findDefaultFields(IssueId issueId) {
-        return Collections.emptySet();
+        return txManager.inTransaction(() -> {
+            List<FieldId> fieldsForProject = jdbi.withHandle(h -> h.select("" +
+                    "select field_id, field_version " +
+                    "from field_definitions " +
+                    "where " +
+                    "    project = :project " +
+                    "    and issue = :issue")
+                    .bind("project", issueId.getProject().getValue())
+                    .bind("issue", issueId.getIssue())
+                    .map(new FieldIdRowMapper())
+                    .list());
+            return availableFields.findByIds(fieldsForProject);
+        });
     }
 
     private void saveAllFieldAssignments(Collection<DefaultFieldAssignment> assignments) {
