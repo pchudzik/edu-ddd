@@ -1,27 +1,69 @@
 package com.pchudzik.edu.ddd.its.field;
 
-import com.pchudzik.edu.ddd.its.issue.id.IssueId;
-import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collection;
+
 public interface FieldAssignment {
-    void assignStringToIssue(StringFieldAssignmentCommand assignmentCommand);
+    void assignToField(Collection<FieldAssignmentCommand> assignments);
 
-    void assignLabelFieldToIssue(LabelFieldAssignmentCommand assignmentCommand);
+    interface FieldAssignmentCommand<V, A> {
+        FieldId getFieldId();
 
-    @Getter
-    @Builder
-    class StringFieldAssignmentCommand {
-        private final FieldId fieldId;
-        private final IssueId issueId;
-        private final String value;
+        A getAssigneeId(Class<A> clazz);
+
+        V getValue();
+
+        AssignmentType getAssignmentType();
+
+        FieldType getFieldType();
     }
 
-    @Getter
-    @Builder
-    class LabelFieldAssignmentCommand {
+    abstract class AbstractFieldAssignmentCommand<V, A> implements FieldAssignmentCommand<V, A> {
+        @Getter
+        private final FieldType fieldType;
+
+        @Getter
+        private final AssignmentType assignmentType;
+
+        @Getter
         private final FieldId fieldId;
-        private final IssueId issueId;
+
+        private final A assigneeId;
+
+        protected AbstractFieldAssignmentCommand(FieldType fieldType, FieldId fieldId, A assigneeId) {
+            this.fieldType = fieldType;
+            this.assignmentType = AssignmentType.typeFor(assigneeId.getClass());
+            this.fieldId = fieldId;
+            this.assigneeId = assigneeId;
+        }
+
+        @Override
+        public A getAssigneeId(Class<A> clazz) {
+            if (!clazz.isAssignableFrom(assigneeId.getClass())) {
+                throw new IllegalArgumentException("Assignee is not of type " + clazz);
+            }
+            return assigneeId;
+        }
+    }
+
+    class StringFieldAssignmentCommand<A> extends AbstractFieldAssignmentCommand<String, A> {
+        @Getter
+        private final String value;
+
+        public StringFieldAssignmentCommand(FieldId fieldId, A assigneeId, String value) {
+            super(FieldType.STRING_FIELD, fieldId, assigneeId);
+            this.value = value;
+        }
+    }
+
+    class LabelFieldAssignmentCommand<A> extends AbstractFieldAssignmentCommand<LabelValues, A> {
+        @Getter
         private final LabelValues value;
+
+        public LabelFieldAssignmentCommand(FieldId fieldId, A assigneeId, LabelValues value) {
+            super(FieldType.LABEL_FIELD, fieldId, assigneeId);
+            this.value = value;
+        }
     }
 }

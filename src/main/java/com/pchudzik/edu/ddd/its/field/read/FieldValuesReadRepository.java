@@ -28,7 +28,7 @@ class FieldValuesReadRepository {
 
     private final Jdbi jdbi;
 
-    public List<FieldValues.FieldValueDto<?>> findValues(IssueId issueId) {
+    public List<FieldValues.FieldValueDto<?, IssueId>> findValues(IssueId issueId) {
         return jdbi.withHandle(handle -> findAllFields(handle, issueId)
                 .collect(Collectors.groupingBy(ValueRow::getFieldType))
                 .entrySet()
@@ -39,6 +39,9 @@ class FieldValuesReadRepository {
                 .collect(toList()));
     }
 
+    public List<FieldValues.FieldValueDto<?, ProjectId>> findValues(ProjectId projectId) {
+        return null;
+    }
 
     private Stream<ValueRow> findAllFields(Handle handle, IssueId issueId) {
         return handle
@@ -71,7 +74,7 @@ class FieldValuesReadRepository {
                 .stream();
     }
 
-    private interface FieldValuesTransformer<T> extends Function<List<ValueRow>, Stream<FieldValues.FieldValueDto<T>>> {
+    private interface FieldValuesTransformer<T> extends Function<List<ValueRow>, Stream<FieldValues.FieldValueDto<T, IssueId>>> {
     }
 
     @Getter
@@ -85,9 +88,10 @@ class FieldValuesReadRepository {
     }
 
     private static class StringFieldTransformer implements FieldValuesTransformer<FieldValues.StringValue> {
+
         @Override
-        public Stream<FieldValues.FieldValueDto<FieldValues.StringValue>> apply(List<ValueRow> fieldValueDtos) {
-            return fieldValueDtos.stream()
+        public Stream<FieldValues.FieldValueDto<FieldValues.StringValue, IssueId>> apply(List<ValueRow> valueRows) {
+            return valueRows.stream()
                     .map(r -> new FieldValues.FieldValueDto<>(
                             r.getFieldId(),
                             r.getIssueId(),
@@ -100,7 +104,7 @@ class FieldValuesReadRepository {
 
     private static class LabelFieldTransformer implements FieldValuesTransformer<FieldValues.LabelValues> {
         @Override
-        public Stream<FieldValues.FieldValueDto<FieldValues.LabelValues>> apply(List<ValueRow> fieldValueDtos) {
+        public Stream<FieldValues.FieldValueDto<FieldValues.LabelValues, IssueId>> apply(List<ValueRow> fieldValueDtos) {
             return fieldValueDtos.stream()
                     .collect(Collectors.groupingBy(LabelGroupKey::from))
                     .entrySet().stream()

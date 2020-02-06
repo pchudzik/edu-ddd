@@ -6,6 +6,9 @@ import com.pchudzik.edu.ddd.its.field.FieldType
 import com.pchudzik.edu.ddd.its.field.LabelValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
+import com.pchudzik.edu.ddd.its.issue.id.IssueId
+import com.pchudzik.edu.ddd.its.project.ProjectId
+import spock.lang.PendingFeature
 
 class FieldValues_ATest extends DbSpecification {
     def fieldAssignmentFacade = injector.getInstance(FieldAssignment)
@@ -21,11 +24,8 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         when:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value("ala ma kota")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issueId, "ala ma kota")])
 
         then:
         def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToIssue(issueId)
@@ -33,7 +33,31 @@ class FieldValues_ATest extends DbSpecification {
         and:
         fieldsForIssue.size() == 1
         fieldsForIssue[0].fieldId == fieldId
-        fieldsForIssue[0].issueId == issueId
+        fieldsForIssue[0].getAssignee(IssueId) == issueId
+        fieldsForIssue[0].fieldType == FieldType.STRING_FIELD
+        fieldsForIssue[0].getValue(FieldValues.StringValue).value == "ala ma kota"
+        fieldsForIssue[0].getValue(FieldValues.StringValue).id instanceof UUID
+    }
+
+    @PendingFeature
+    def "string field value is assigned to project"() {
+        given:
+        def projectId = Fixtures.projectFixture().createNewProject()
+
+        and:
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
+
+        when:
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, projectId, "ala ma kota")])
+
+        then:
+        def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToProject(projectId)
+
+        and:
+        fieldsForIssue.size() == 1
+        fieldsForIssue[0].fieldId == fieldId
+        fieldsForIssue[0].getAssignee(ProjectId) == projectId
         fieldsForIssue[0].fieldType == FieldType.STRING_FIELD
         fieldsForIssue[0].getValue(FieldValues.StringValue).value == "ala ma kota"
         fieldsForIssue[0].getValue(FieldValues.StringValue).id instanceof UUID
@@ -48,18 +72,12 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         and:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value("ala ma kota")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issueId, "ala ma kota")])
 
         when:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value("updated value")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issueId, "updated value")])
 
         then:
         def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToIssue(issueId)
@@ -67,7 +85,7 @@ class FieldValues_ATest extends DbSpecification {
         and:
         fieldsForIssue.size() == 1
         fieldsForIssue[0].fieldId == fieldId
-        fieldsForIssue[0].issueId == issueId
+        fieldsForIssue[0].getAssignee(IssueId) == issueId
         fieldsForIssue[0].fieldType == FieldType.STRING_FIELD
         fieldsForIssue[0].getValue(FieldValues.StringValue).value == "updated value"
         fieldsForIssue[0].getValue(FieldValues.StringValue).id instanceof UUID
@@ -83,12 +101,8 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         and:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value("a")
-                .build())
-
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue1, "a")])
         and:
         fieldId = fieldCreation.updateStringField(fieldId, FieldCreation.StringFieldConfigurationUpdateCommand.builder()
                 .minLength(4)
@@ -96,11 +110,8 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue2)
-                .value("second value")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue2, "second value")])
 
         then:
         extractAssignedStringValues(fieldValuesFacade.findFieldsAssignedToIssue(issue1)) == ["a"]
@@ -116,11 +127,8 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         and:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value("a")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue1, "a")])
 
         and:
         fieldId = fieldCreation.updateStringField(fieldId, FieldCreation.StringFieldConfigurationUpdateCommand.builder()
@@ -129,11 +137,8 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value("updated value")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue1, "updated value")])
 
         then:
         extractAssignedStringValues(fieldValuesFacade.findFieldsAssignedToIssue(issue1)) == ["updated value"]
@@ -148,11 +153,8 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewStringField()
 
         and:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value("a")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue1, "a")])
 
         and:
         fieldId = fieldCreation.updateStringField(fieldId, FieldCreation.StringFieldConfigurationUpdateCommand.builder()
@@ -161,11 +163,8 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignStringToIssue(FieldAssignment.StringFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value("updated value")
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.StringFieldAssignmentCommand(
+                fieldId, issue1, "updated value")])
 
         then:
         FieldLookup.findNumberOfFieldsInAnyVersion(fieldId) == 1
@@ -181,14 +180,12 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         when:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value(LabelValues.of([
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issueId,
+                LabelValues.of([
                         LabelValues.LabelValue.of("first"),
                         LabelValues.LabelValue.of("second"),
-                ]))
-                .build())
+                ]))])
 
         then:
         def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToIssue(issueId)
@@ -196,7 +193,35 @@ class FieldValues_ATest extends DbSpecification {
         and:
         fieldsForIssue.size() == 1
         fieldsForIssue[0].fieldId == fieldId
-        fieldsForIssue[0].issueId == issueId
+        fieldsForIssue[0].getAssignee(IssueId) == issueId
+        fieldsForIssue[0].fieldType == FieldType.LABEL_FIELD
+        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["first", "second"] as Set
+        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
+    }
+
+    @PendingFeature
+    def "label field value is assigned to project"() {
+        given:
+        def projectId = Fixtures.projectFixture().createNewProject()
+
+        and:
+        def fieldId = Fixtures.fieldFixture().createNewLabelField()
+
+        when:
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, projectId,
+                LabelValues.of([
+                        LabelValues.LabelValue.of("first"),
+                        LabelValues.LabelValue.of("second"),
+                ]))])
+
+        then:
+        def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToProject(projectId)
+
+        and:
+        fieldsForIssue.size() == 1
+        fieldsForIssue[0].fieldId == fieldId
+        fieldsForIssue[0].getAssignee(ProjectId) == projectId
         fieldsForIssue[0].fieldType == FieldType.LABEL_FIELD
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["first", "second"] as Set
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
@@ -211,24 +236,20 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         and:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value(LabelValues.of([
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issueId,
+                LabelValues.of([
                         LabelValues.LabelValue.of("first"),
                         LabelValues.LabelValue.of("second"),
-                ]))
-                .build())
+                ]))])
 
         when:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issueId)
-                .value(LabelValues.of([
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issueId,
+                LabelValues.of([
                         LabelValues.LabelValue.of("new 1"),
                         LabelValues.LabelValue.of("new 2"),
-                ]))
-                .build())
+                ]))])
 
         then:
         def fieldsForIssue = fieldValuesFacade.findFieldsAssignedToIssue(issueId)
@@ -236,9 +257,9 @@ class FieldValues_ATest extends DbSpecification {
         and:
         fieldsForIssue.size() == 1
         fieldsForIssue[0].fieldId == fieldId
-        fieldsForIssue[0].issueId == issueId
+        fieldsForIssue[0].getAssignee(IssueId) == issueId
         fieldsForIssue[0].fieldType == FieldType.LABEL_FIELD
-        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["new 1", "new 2"]  as Set
+        fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.collect { it.value } as Set == ["new 1", "new 2"] as Set
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
     }
 
@@ -252,11 +273,9 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         and:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue1)
-                .value(LabelValues.of([LabelValues.LabelValue.of("some value")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue1,
+                LabelValues.of([LabelValues.LabelValue.of("some value")]))])
 
         and:
         fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
@@ -264,11 +283,9 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue2)
-                .value(LabelValues.of([LabelValues.LabelValue.of("label")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue2,
+                LabelValues.of([LabelValues.LabelValue.of("label")]))])
 
         then:
         extractAssignedLabelValues(fieldValuesFacade.findFieldsAssignedToIssue(issue1)) == ["some value"]
@@ -284,11 +301,9 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         and:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue)
-                .value(LabelValues.of([LabelValues.LabelValue.of("label")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue,
+                LabelValues.of([LabelValues.LabelValue.of("label")]))])
 
         and:
         fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
@@ -296,11 +311,9 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue)
-                .value(LabelValues.of([LabelValues.LabelValue.of("updated")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue,
+                LabelValues.of([LabelValues.LabelValue.of("updated")]))])
 
         then:
         extractAssignedLabelValues(fieldValuesFacade.findFieldsAssignedToIssue(issue)) == ["updated"]
@@ -315,11 +328,9 @@ class FieldValues_ATest extends DbSpecification {
         def fieldId = Fixtures.fieldFixture().createNewLabelField()
 
         and:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue)
-                .value(LabelValues.of([LabelValues.LabelValue.of("label")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue,
+                LabelValues.of([LabelValues.LabelValue.of("label")]))])
 
         and:
         fieldId = fieldCreation.updateLabelField(fieldId, FieldCreation.LabelFieldConfigurationUpdateCommand.builder()
@@ -327,21 +338,19 @@ class FieldValues_ATest extends DbSpecification {
                 .build())
 
         when:
-        fieldAssignmentFacade.assignLabelFieldToIssue(FieldAssignment.LabelFieldAssignmentCommand.builder()
-                .fieldId(fieldId)
-                .issueId(issue)
-                .value(LabelValues.of([LabelValues.LabelValue.of("updated")]))
-                .build())
+        fieldAssignmentFacade.assignToField([new FieldAssignment.LabelFieldAssignmentCommand(
+                fieldId, issue,
+                LabelValues.of([LabelValues.LabelValue.of("updated")]))])
 
         then:
         FieldLookup.findNumberOfFieldsInAnyVersion(fieldId) == 1
     }
 
-    private static List<String> extractAssignedStringValues(Collection<FieldValues.FieldValueDto<?>> values) {
+    private static List<String> extractAssignedStringValues(Collection<FieldValues.IssueFieldValueDto<?>> values) {
         values.collect { it.getValue(FieldValues.StringValue).value }
     }
 
-    private static List<String> extractAssignedLabelValues(Collection<FieldValues.FieldValueDto<?>> values) {
+    private static List<String> extractAssignedLabelValues(Collection<FieldValues.FieldValueDto<?, ?>> values) {
         values
                 .collect() { it.getValue(FieldValues.StringValue).labels.collect { it.value } }
                 .flatten()
