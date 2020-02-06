@@ -42,7 +42,6 @@ create table field_definitions
   field_id      uuid       not null,
   field_version integer    not null,
   project       varchar(7) not null,
-  issue         integer,
   primary key (field_id, project)
 );
 

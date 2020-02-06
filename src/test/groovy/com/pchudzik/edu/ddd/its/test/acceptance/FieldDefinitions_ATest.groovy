@@ -20,21 +20,6 @@ class FieldDefinitions_ATest extends DbSpecification {
         fields[0].id == fieldId
     }
 
-    def "assigns field to issue"() {
-        given:
-        def projectId = Fixtures.projectFixture().createNewProject()
-        def issueId = Fixtures.issueFixture().createNewIssue(projectId)
-        def fieldId = Fixtures.fieldFixture().createNewStringField()
-
-        when:
-        fieldDefinitions.assignDefaultFields(issueId, [fieldId])
-
-        then:
-        def fields = fieldDefinitions.findDefaultFields(issueId)
-        fields.size() == 1
-        fields[0].id == fieldId
-    }
-
     def "removed field assignment from project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -48,21 +33,5 @@ class FieldDefinitions_ATest extends DbSpecification {
 
         then:
         fieldDefinitions.findDefaultFields(projectId).isEmpty()
-    }
-
-    def "removed field assignment from issue"() {
-        given:
-        def projectId = Fixtures.projectFixture().createNewProject()
-        def issueId = Fixtures.issueFixture().createNewIssue(projectId)
-        def fieldId = Fixtures.fieldFixture().createNewStringField()
-
-        and:
-        fieldDefinitions.assignDefaultFields(issueId, [fieldId])
-
-        when:
-        fieldDefinitions.removeDefaultFields(issueId, fieldId)
-
-        then:
-        fieldDefinitions.findDefaultFields(issueId).isEmpty()
     }
 }
