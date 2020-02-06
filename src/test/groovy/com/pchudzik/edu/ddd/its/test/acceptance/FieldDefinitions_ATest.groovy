@@ -2,7 +2,6 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import spock.lang.PendingFeature
 
 class FieldDefinitions_ATest extends DbSpecification {
     def fieldDefinitions = injector.getInstance(FieldDefinitions)
@@ -65,38 +64,5 @@ class FieldDefinitions_ATest extends DbSpecification {
 
         then:
         fieldDefinitions.findDefaultFields(issueId).isEmpty()
-    }
-
-    @PendingFeature
-    def "removed field definition after field is removed from project"() {
-        given:
-        def projectId = Fixtures.projectFixture().createNewProject()
-        def fieldId = Fixtures.fieldFixture().createNewStringField()
-
-        and:
-        fieldDefinitions.assignDefaultFields(projectId, [fieldId])
-
-        when:
-        fieldDefinitions.removeDefaultFields(projectId, fieldId)
-
-        then:
-        FieldLookup.findAllFieldIds().isEmpty()
-    }
-
-    @PendingFeature
-    def "removed field definition after field is removed from issue"() {
-        given:
-        def projectId = Fixtures.projectFixture().createNewProject()
-        def issueId = Fixtures.issueFixture().createNewIssue(projectId)
-        def fieldId = Fixtures.fieldFixture().createNewStringField()
-
-        and:
-        fieldDefinitions.assignDefaultFields(issueId, [fieldId])
-
-        when:
-        fieldDefinitions.removeDefaultFields(issueId, fieldId)
-
-        then:
-        FieldLookup.findAllFieldIds().isEmpty()
     }
 }

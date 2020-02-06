@@ -51,7 +51,7 @@ create table last_field
   id      uuid    not null,
   version integer not null,
   primary key (id),
-  foreign key (id, version) references field(id, version)
+  foreign key (id, version) references field(id, version) on delete cascade
 );
 
 create table allowed_labels
@@ -61,8 +61,7 @@ create table allowed_labels
     field_version integer      not null,
     value         varchar(255) not null,
     primary key (id),
-    foreign key (field_id, field_version) references field(id, version) on delete cascade ,
-    foreign key (field_version)           references field(version)
+    foreign key (field_id, field_version) references field(id, version) on delete cascade
 );
 
 create table field_value

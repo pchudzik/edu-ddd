@@ -54,20 +54,26 @@ class NoLongerUsedFieldDefinitionCleanerRepository {
                         "delete from field " +
                         "where " +
                         "    id = :id " +
-                        "    and version != :version " +
                         "    and not exists (" +
                         "      select value.id " +
                         "      from field_value value " +
                         "      where " +
                         "          value.field_id = :id" +
-                        "          and value.field_version != :version " +
+                        "          and value.field_version = field.version " +
                         "    )" +
                         "    and not exists (" +
                         "        select field_definitions.field_id " +
                         "        from field_definitions" +
                         "        where " +
                         "            field_definitions.field_id = :id " +
-                        "            and field_definitions.field_version = :version " +
+                        "            and field_definitions.field_version = field.version " +
+                        "    )" +
+                        "    and not exists (" +
+                        "        select last_field.id " +
+                        "        from last_field " +
+                        "        where " +
+                        "            last_field.id = :id " +
+                        "            and last_field.version = field.version " +
                         "    )")
                 .bind("id", fieldId.getValue())
                 .bind("version", fieldId.getVersion())
