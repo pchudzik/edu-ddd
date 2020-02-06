@@ -2,20 +2,20 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 
 
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
-import com.pchudzik.edu.ddd.its.project.ProjectFacade
+import com.pchudzik.edu.ddd.its.project.ProjectCreation
 import com.pchudzik.edu.ddd.its.project.ProjectId
-import com.pchudzik.edu.ddd.its.project.read.ProjectViewFacade
+import com.pchudzik.edu.ddd.its.project.read.ProjectView
 
 class ProjectCRUD_ATest extends DbSpecification {
-    def projectFacade = injector.getInstance(ProjectFacade)
-    def projectViewFacade = injector.getInstance(ProjectViewFacade)
+    def projectFacade = injector.getInstance(ProjectCreation)
+    def projectViewFacade = injector.getInstance(ProjectView)
 
     def "new project is created"() {
         given:
         def projectId = new ProjectId("ABCD")
 
         when:
-        projectFacade.createNewProject(ProjectFacade.ProjectCreationCommand.builder()
+        projectFacade.createNewProject(ProjectCreation.ProjectCreationCommand.builder()
                 .id(projectId)
                 .name("Some Project")
                 .description("Some description")
@@ -26,7 +26,7 @@ class ProjectCRUD_ATest extends DbSpecification {
 
         and:
         allProjects.size() == 1
-        allProjects.contains(ProjectViewFacade.ProjectDto.builder()
+        allProjects.contains(ProjectView.ProjectDto.builder()
                 .id(projectId)
                 .name("Some Project")
                 .description("Some description")

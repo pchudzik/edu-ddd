@@ -3,9 +3,9 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 import com.pchudzik.edu.ddd.its.field.FieldCreation
 import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
-import com.pchudzik.edu.ddd.its.issue.IssueFacade
+import com.pchudzik.edu.ddd.its.issue.IssueCreation
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
-import com.pchudzik.edu.ddd.its.project.ProjectFacade
+import com.pchudzik.edu.ddd.its.project.ProjectCreation
 import com.pchudzik.edu.ddd.its.project.ProjectId
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,7 +18,7 @@ class Fixtures {
     static ProjectFixture projectFixture() {
         if (projectFixture == null) {
             def injector = InjectorFactory.injector()
-            projectFixture = new ProjectFixture(projectFacade: injector.getInstance(ProjectFacade))
+            projectFixture = new ProjectFixture(projectFacade: injector.getInstance(ProjectCreation))
         }
 
         return projectFixture
@@ -53,16 +53,16 @@ class Fixtures {
     static IssueFixture issueFixture() {
         if (issueFixture == null) {
             def injector = InjectorFactory.injector()
-            issueFixture = new IssueFixture(issueFacade: injector.getInstance(IssueFacade))
+            issueFixture = new IssueFixture(issueFacade: injector.getInstance(IssueCreation))
         }
         return issueFixture
     }
 
     static class IssueFixture {
-        private IssueFacade issueFacade
+        private IssueCreation issueFacade
 
         IssueId createNewIssue(ProjectId projectId) {
-            return issueFacade.createIssue(IssueFacade.IssueCreationCommand.builder()
+            return issueFacade.createIssue(IssueCreation.IssueCreationCommand.builder()
                     .projectId(projectId)
                     .title("some issue")
                     .build())
@@ -72,10 +72,10 @@ class Fixtures {
 
     static class ProjectFixture {
         private final AtomicInteger index = new AtomicInteger(0)
-        private ProjectFacade projectFacade
+        private ProjectCreation projectFacade
 
         ProjectId createNewProject(String name) {
-            projectFacade.createNewProject(ProjectFacade.ProjectCreationCommand.builder()
+            projectFacade.createNewProject(ProjectCreation.ProjectCreationCommand.builder()
                     .id(new ProjectId(name))
                     .name("some project")
                     .description("test project")

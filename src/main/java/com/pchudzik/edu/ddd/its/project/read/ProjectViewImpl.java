@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class ProjectViewFacadeImpl implements ProjectViewFacade {
+class ProjectViewImpl implements ProjectView {
     private final ProjectViewRepository projectViewRepository;
 
     @Override

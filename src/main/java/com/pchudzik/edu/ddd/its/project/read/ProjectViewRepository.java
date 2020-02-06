@@ -3,5 +3,5 @@ package com.pchudzik.edu.ddd.its.project.read;
 import java.util.List;
 
 interface ProjectViewRepository {
-    List<ProjectViewFacade.ProjectDto> listProjects();
+    List<ProjectView.ProjectDto> listProjects();
 }

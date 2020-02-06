@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class ProjectFacadeImpl implements ProjectFacade {
+class ProjectCreationImpl implements ProjectCreation {
     private final ProjectRepository projectRepository;
     private final MessageQueue messageQueue;
     private final TransactionManager txManager;

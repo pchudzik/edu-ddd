@@ -4,7 +4,7 @@ import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-public interface IssueReadFacade {
+public interface IssueRead {
     IssueDto findIssue(IssueId issueId);
 
     @Getter

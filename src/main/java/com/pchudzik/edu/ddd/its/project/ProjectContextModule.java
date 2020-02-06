@@ -5,7 +5,7 @@ import com.google.inject.AbstractModule;
 public class ProjectContextModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(ProjectFacade.class).to(ProjectFacadeImpl.class);
+        bind(ProjectCreation.class).to(ProjectCreationImpl.class);
         bind(ProjectRepository.class).to(ProjectRepositoryImpl.class);
     }
 }

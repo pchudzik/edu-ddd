@@ -5,7 +5,7 @@ import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Builder;
 import lombok.Getter;
 
-public interface IssueFacade {
+public interface IssueCreation {
     IssueId createIssue(IssueCreationCommand cmd);
 
     @Builder

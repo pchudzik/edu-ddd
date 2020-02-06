@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Jdbi;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class IssueReadFacadeImpl implements IssueReadFacade {
+class IssueReadImpl implements IssueRead {
     private final Jdbi jdbi;
 
     @Override

@@ -5,6 +5,6 @@ import com.google.inject.AbstractModule;
 public class IssueReadFacadeContextModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(IssueReadFacade.class).to(IssueReadFacadeImpl.class);
+        bind(IssueRead.class).to(IssueReadImpl.class);
     }
 }

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-public interface ProjectViewFacade {
+public interface ProjectView {
     List<ProjectDto> listProjects();
 
     @Data

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-class IssueFacadeImpl implements IssueFacade {
+class IssueCreationImpl implements IssueCreation {
     private final TransactionManager txManager;
     private final IssueRepository issueRepository;
     private final IssueIdGenerator idGenerator;

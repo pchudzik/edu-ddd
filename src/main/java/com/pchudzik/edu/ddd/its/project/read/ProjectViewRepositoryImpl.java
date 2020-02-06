@@ -12,10 +12,10 @@ class ProjectViewRepositoryImpl implements ProjectViewRepository {
     private final Jdbi jdbi;
 
     @Override
-    public List<ProjectViewFacade.ProjectDto> listProjects() {
+    public List<ProjectView.ProjectDto> listProjects() {
         return jdbi.withHandle(h -> h
                 .createQuery("select id, name, description from project")
-                .map((rs, ctx) -> ProjectViewFacade.ProjectDto.builder()
+                .map((rs, ctx) -> ProjectView.ProjectDto.builder()
                         .id(new ProjectId(rs.getNString("id")))
                         .name(rs.getNString("name"))
                         .description(rs.getString("description"))

@@ -3,7 +3,7 @@ package com.pchudzik.edu.ddd.its.project;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import lombok.*;
 
-public interface ProjectFacade {
+public interface ProjectCreation {
     ProjectId createNewProject(ProjectCreationCommand creationCommand);
 
     @Data

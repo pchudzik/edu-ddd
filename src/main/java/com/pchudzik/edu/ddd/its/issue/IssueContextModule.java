@@ -6,7 +6,7 @@ public class IssueContextModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(IssueFacade.class).to(IssueFacadeImpl.class);
+        bind(IssueCreation.class).to(IssueCreationImpl.class);
         bind(IssueRepository.class);
     }
 }
