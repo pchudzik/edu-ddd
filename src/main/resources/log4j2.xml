@@ -3,6 +3,9 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <filters>
+                <RegexFilter regex="Name:h2.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </filters>
         </Console>
         <Console name="SqlConsoleLog" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] SQL - %msg%n"/>
