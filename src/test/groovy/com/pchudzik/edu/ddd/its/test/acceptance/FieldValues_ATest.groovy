@@ -8,7 +8,6 @@ import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.project.ProjectId
-import spock.lang.PendingFeature
 
 class FieldValues_ATest extends DbSpecification {
     def fieldAssignmentFacade = injector.getInstance(FieldAssignment)
@@ -39,7 +38,6 @@ class FieldValues_ATest extends DbSpecification {
         fieldsForIssue[0].getValue(FieldValues.StringValue).id instanceof UUID
     }
 
-    @PendingFeature
     def "string field value is assigned to project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -199,7 +197,6 @@ class FieldValues_ATest extends DbSpecification {
         fieldsForIssue[0].getValue(FieldValues.LabelValues).labels.every { it.id != null && it.id instanceof UUID }
     }
 
-    @PendingFeature
     def "label field value is assigned to project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()

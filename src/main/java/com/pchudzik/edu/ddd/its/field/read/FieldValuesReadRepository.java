@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,8 +30,16 @@ class FieldValuesReadRepository {
 
     private final Jdbi jdbi;
 
-    public List<FieldValues.FieldValueDto<?, IssueId>> findValues(IssueId issueId) {
-        return jdbi.withHandle(handle -> findAllFields(handle, issueId)
+    public List<FieldValues.FieldValueDto<?, ?>> findValuesAssignedToIssue(IssueId issueId) {
+        return findValues(issueId.getProject(), issueId);
+    }
+
+    public List<FieldValues.FieldValueDto<?, ?>> findValuesAssignedToProject(ProjectId projectId) {
+        return findValues(projectId, null);
+    }
+
+    private List<FieldValues.FieldValueDto<?, ?>> findValues(ProjectId projectId, @Nullable IssueId issueId) {
+        return jdbi.withHandle(handle -> findAllFields(handle, projectId, issueId)
                 .collect(Collectors.groupingBy(ValueRow::getFieldType))
                 .entrySet()
                 .stream()
@@ -39,12 +49,8 @@ class FieldValuesReadRepository {
                 .collect(toList()));
     }
 
-    public List<FieldValues.FieldValueDto<?, ProjectId>> findValues(ProjectId projectId) {
-        return null;
-    }
-
-    private Stream<ValueRow> findAllFields(Handle handle, IssueId issueId) {
-        return handle
+    private Stream<ValueRow> findAllFields(Handle handle, ProjectId projectId, @Nullable IssueId issueId) {
+        var update = handle
                 .select("" +
                         "select " +
                         "  value.id id, " +
@@ -58,23 +64,36 @@ class FieldValuesReadRepository {
                         "left join field on value.field_id = field.id and field.version = value.field_version " +
                         "where " +
                         "  project = :project " +
-                        "  and issue = :issue ")
-                .bind("project", issueId.getProject().getValue())
-                .bind("issue", issueId.getIssue())
-                .map((rs, ctx) -> new ValueRow(
-                        UUID.fromString(rs.getString("id")),
-                        new FieldId(
-                                UUID.fromString(rs.getString("fieldId")),
-                                rs.getInt("version")),
-                        new IssueId(
-                                new ProjectId(rs.getString("project")),
-                                rs.getInt("issue")),
-                        FieldType.valueOf(rs.getString("type")),
-                        rs.getString("value")))
+                        "  and <issue_selector> ")
+                .define("issue_selector", Optional.ofNullable(issueId)
+                        .map(i -> "issue = :issue")
+                        .orElse("issue is null"))
+                .bind("project", projectId.getValue());
+
+        if (issueId != null) {
+            update.bind("issue", issueId.getIssue());
+        }
+
+        return update
+                .map((rs, ctx) -> {
+                    Integer issue = rs.getInt("issue");
+                    if (rs.wasNull()) {
+                        issue = null;
+                    }
+                    return new ValueRow(
+                            UUID.fromString(rs.getString("id")),
+                            new FieldId(
+                                    UUID.fromString(rs.getString("fieldId")),
+                                    rs.getInt("version")),
+                            new ProjectId(rs.getString("project")),
+                            issue,
+                            FieldType.valueOf(rs.getString("type")),
+                            rs.getString("value"));
+                })
                 .stream();
     }
 
-    private interface FieldValuesTransformer<T> extends Function<List<ValueRow>, Stream<FieldValues.FieldValueDto<T, IssueId>>> {
+    private interface FieldValuesTransformer<T> extends Function<List<ValueRow>, Stream<FieldValues.FieldValueDto<T, ?>>> {
     }
 
     @Getter
@@ -82,19 +101,27 @@ class FieldValuesReadRepository {
     private static class ValueRow {
         private final UUID valueId;
         private final FieldId fieldId;
-        private final IssueId issueId;
+        private final ProjectId projectId;
+        private final Integer issue;
         private final FieldType fieldType;
         private final String value;
+
+        public Object getAssignee() {
+            if (issue != null) {
+                return new IssueId(projectId, issue);
+            }
+            return projectId;
+        }
     }
 
     private static class StringFieldTransformer implements FieldValuesTransformer<FieldValues.StringValue> {
 
         @Override
-        public Stream<FieldValues.FieldValueDto<FieldValues.StringValue, IssueId>> apply(List<ValueRow> valueRows) {
+        public Stream<FieldValues.FieldValueDto<FieldValues.StringValue, ?>> apply(List<ValueRow> valueRows) {
             return valueRows.stream()
                     .map(r -> new FieldValues.FieldValueDto<>(
                             r.getFieldId(),
-                            r.getIssueId(),
+                            r.getAssignee(),
                             r.getFieldType(),
                             new FieldValues.StringValue(
                                     r.getValueId(),
@@ -104,7 +131,7 @@ class FieldValuesReadRepository {
 
     private static class LabelFieldTransformer implements FieldValuesTransformer<FieldValues.LabelValues> {
         @Override
-        public Stream<FieldValues.FieldValueDto<FieldValues.LabelValues, IssueId>> apply(List<ValueRow> fieldValueDtos) {
+        public Stream<FieldValues.FieldValueDto<FieldValues.LabelValues, ?>> apply(List<ValueRow> fieldValueDtos) {
             return fieldValueDtos.stream()
                     .collect(Collectors.groupingBy(LabelGroupKey::from))
                     .entrySet().stream()
@@ -117,7 +144,7 @@ class FieldValuesReadRepository {
                                 .collect(toList());
                         return new FieldValues.FieldValueDto<>(
                                 labelKey.fieldId,
-                                labelKey.issueId,
+                                labelKey.assignee,
                                 labelKey.fieldType,
                                 new FieldValues.LabelValues(labelValues));
                     });
@@ -127,13 +154,13 @@ class FieldValuesReadRepository {
         @RequiredArgsConstructor
         private static class LabelGroupKey {
             private final FieldId fieldId;
-            private final IssueId issueId;
+            private final Object assignee;
             private final FieldType fieldType;
 
             static LabelGroupKey from(ValueRow valueDto) {
                 return new LabelGroupKey(
                         valueDto.getFieldId(),
-                        valueDto.getIssueId(),
+                        valueDto.getAssignee(),
                         valueDto.getFieldType());
             }
         }

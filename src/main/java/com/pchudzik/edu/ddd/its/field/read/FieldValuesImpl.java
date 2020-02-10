@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldValuesImpl implements FieldValues {
@@ -15,11 +16,18 @@ class FieldValuesImpl implements FieldValues {
 
     @Override
     public List<FieldValueDto<?, IssueId>> findFieldsAssignedToIssue(IssueId issueId) {
-        return txManager.inTransaction(() -> fieldValueRepository.findValues(issueId));
+        return txManager.inTransaction(() -> fieldValueRepository
+                .findValuesAssignedToIssue(issueId)).stream()
+                .map(v -> (FieldValueDto<?, IssueId>)v)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<FieldValueDto<?, ProjectId>> findFieldsAssignedToProject(ProjectId projectId) {
-        return txManager.inTransaction(() -> fieldValueRepository.findValues(projectId));
+        return txManager.inTransaction(() -> fieldValueRepository
+                .findValuesAssignedToProject(projectId)
+                .stream()
+                .map(v -> (FieldValueDto<?, ProjectId>) v)
+                .collect(Collectors.toList()));
     }
 }
