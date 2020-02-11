@@ -1,10 +1,25 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
+import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 
 class FieldDefinitions_ATest extends DbSpecification {
     def fieldDefinitions = injector.getInstance(FieldDefinitions)
+
+    def "assigns field to every project project"() {
+        given:
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
+
+        when:
+        fieldDefinitions.assignDefaultFields([fieldId])
+
+        then:
+        def fields = fieldDefinitions.findDefaultFields()
+        fields.size() == 1
+        fields[0].id == fieldId
+    }
+
 
     def "assigns field to project"() {
         given:
@@ -20,6 +35,31 @@ class FieldDefinitions_ATest extends DbSpecification {
         fields[0].id == fieldId
     }
 
+    def "detects all required fields in project"() {
+        given:
+        def projectId = Fixtures.projectFixture().createNewProject()
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
+
+        and:
+        fieldDefinitions.assignDefaultFields(projectId, [fieldId])
+
+        expect:
+        !fieldDefinitions.allRequiredFieldsProvided(projectId, [new FieldId(UUID.randomUUID(), 1)])
+        fieldDefinitions.allRequiredFieldsProvided(projectId, [fieldId])
+    }
+
+    def "detects all required fields for project"() {
+        given:
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
+
+        and:
+        fieldDefinitions.assignDefaultFields([fieldId])
+
+        expect:
+        !fieldDefinitions.allRequiredFieldsProvided([new FieldId(UUID.randomUUID(), 1)])
+        fieldDefinitions.allRequiredFieldsProvided([fieldId])
+    }
+
     def "removed field assignment from project"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
@@ -33,5 +73,19 @@ class FieldDefinitions_ATest extends DbSpecification {
 
         then:
         fieldDefinitions.findDefaultFields(projectId).isEmpty()
+    }
+
+    def "removed field assignment"() {
+        given:
+        def fieldId = Fixtures.fieldFixture().createNewStringField()
+
+        and:
+        fieldDefinitions.assignDefaultFields([fieldId])
+
+        when:
+        fieldDefinitions.removeDefaultFields(fieldId)
+
+        then:
+        fieldDefinitions.findDefaultFields().isEmpty()
     }
 }

@@ -33,7 +33,7 @@ class AvailableFieldsImpl implements AvailableFields {
     }
 
     @Override
-    public List<FieldDto> findByIds(List<FieldId> ids) {
+    public List<FieldDto> findByIds(Collection<FieldId> ids) {
         var idsSet = new HashSet<>(ids);
         return jdbi.withHandle(h -> Stream
                 .concat(
@@ -97,6 +97,7 @@ class AvailableFieldsImpl implements AvailableFields {
                         .type(fieldType)
                         .name(rs.getString("name"))
                         .description(rs.getString("description"))
+                        .required(rs.getBoolean("required"))
                         .configuration(resolveFieldConfigurationMapper(fieldType).map(rs, ctx))
                         .build();
             }
@@ -114,7 +115,6 @@ class AvailableFieldsImpl implements AvailableFields {
                 @Override
                 public Map<String, Object> map(ResultSet rs, StatementContext ctx) throws SQLException {
                     return Map.of(
-                            "required", rs.getBoolean("required"),
                             "minLength", rs.getInt("min_length"),
                             "maxLength", rs.getInt("max_length"));
                 }
@@ -172,8 +172,8 @@ class AvailableFieldsImpl implements AvailableFields {
                     tmpField.fieldId,
                     tmpField.name,
                     tmpField.description,
+                    tmpField.required,
                     Map.of(
-                            "required", tmpField.required,
                             "allowedLabels", allowedLabels.stream()
                                     .map(this::allowedLabelAsConfiguration)
                                     .collect(toList())));

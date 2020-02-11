@@ -25,8 +25,8 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.STRING_FIELD
         allFields[0].id == fieldId
+        allFields[0].required == true
         allFields[0].configuration == [
-                required : true,
                 minLength: 2,
                 maxLength: 20
         ]
@@ -49,8 +49,8 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.STRING_FIELD
         allFields[0].id == new FieldId(fieldId.value, fieldId.version + 1)
+        allFields[0].required == false
         allFields[0].configuration == [
-                required : false,
                 minLength: 100,
                 maxLength: 200
         ]
@@ -70,7 +70,7 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.LABEL_FIELD
         allFields[0].id == fieldId
-        allFields[0].configuration.required == true
+        allFields[0].required == true
         allFields[0].configuration.allowedLabels.collect { it.value } == ["First", "Second"]
         allFields[0].configuration.allowedLabels.every { it.id != null && it.id instanceof UUID }
     }
@@ -91,7 +91,7 @@ class FieldCRUD_ATest extends DbSpecification {
         allFields.size() == 1
         allFields[0].type == FieldType.LABEL_FIELD
         allFields[0].id == new FieldId(fieldId.value, fieldId.version + 1)
-        allFields[0].configuration.required == false
+        allFields[0].required == false
         allFields[0].configuration.allowedLabels.collect { it.value } == ["First", "Second"]
         allFields[0].configuration.allowedLabels.every { it.id != null && it.id instanceof UUID }
     }
