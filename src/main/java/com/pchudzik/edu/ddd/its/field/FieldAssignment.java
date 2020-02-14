@@ -1,68 +1,52 @@
 package com.pchudzik.edu.ddd.its.field;
 
+import com.pchudzik.edu.ddd.its.issue.id.IssueId;
+import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Getter;
 
 import java.util.Collection;
 
 public interface FieldAssignment {
-    void assignToField(Collection<FieldAssignmentCommand> assignments);
+    void assignToField(ProjectId projectId, Collection<FieldAssignmentCommand> assignments);
+    void assignToField(IssueId issue, Collection<FieldAssignmentCommand> assignments);
 
-    interface FieldAssignmentCommand<V, A> {
+    interface FieldAssignmentCommand<V> {
         FieldId getFieldId();
 
-        A getAssigneeId(Class<A> clazz);
-
         V getValue();
-
-        AssignmentType getAssignmentType();
 
         FieldType getFieldType();
     }
 
-    abstract class AbstractFieldAssignmentCommand<V, A> implements FieldAssignmentCommand<V, A> {
+    abstract class AbstractFieldAssignmentCommand<V> implements FieldAssignmentCommand<V> {
         @Getter
         private final FieldType fieldType;
 
         @Getter
-        private final AssignmentType assignmentType;
-
-        @Getter
         private final FieldId fieldId;
 
-        private final A assigneeId;
-
-        protected AbstractFieldAssignmentCommand(FieldType fieldType, FieldId fieldId, A assigneeId) {
+        protected AbstractFieldAssignmentCommand(FieldType fieldType, FieldId fieldId) {
             this.fieldType = fieldType;
-            this.assignmentType = AssignmentType.typeFor(assigneeId.getClass());
             this.fieldId = fieldId;
-            this.assigneeId = assigneeId;
-        }
-
-        @Override
-        public A getAssigneeId(Class<A> clazz) {
-            if (!clazz.isAssignableFrom(assigneeId.getClass())) {
-                throw new IllegalArgumentException("Assignee is not of type " + clazz);
-            }
-            return assigneeId;
         }
     }
 
-    class StringFieldAssignmentCommand<A> extends AbstractFieldAssignmentCommand<String, A> {
+    class StringFieldAssignmentCommand extends AbstractFieldAssignmentCommand<String> {
         @Getter
         private final String value;
 
-        public StringFieldAssignmentCommand(FieldId fieldId, A assigneeId, String value) {
-            super(FieldType.STRING_FIELD, fieldId, assigneeId);
+        public StringFieldAssignmentCommand(FieldId fieldId, String value) {
+            super(FieldType.STRING_FIELD, fieldId);
             this.value = value;
         }
     }
 
-    class LabelFieldAssignmentCommand<A> extends AbstractFieldAssignmentCommand<LabelValues, A> {
+    class LabelFieldAssignmentCommand extends AbstractFieldAssignmentCommand<LabelValues> {
         @Getter
         private final LabelValues value;
 
-        public LabelFieldAssignmentCommand(FieldId fieldId, A assigneeId, LabelValues value) {
-            super(FieldType.LABEL_FIELD, fieldId, assigneeId);
+        public LabelFieldAssignmentCommand(FieldId fieldId, LabelValues value) {
+            super(FieldType.LABEL_FIELD, fieldId);
             this.value = value;
         }
     }

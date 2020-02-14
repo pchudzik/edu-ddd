@@ -95,21 +95,23 @@ class FieldDefinitionsImpl implements FieldDefinitions {
     }
 
     @Override
-    public boolean allRequiredFieldsProvided(Collection<FieldId> fields) {
-        return allRequiredFieldsProvided(
+    public List<FieldId> findMissingRequiredFields(Collection<FieldId> fields) {
+        return findMissingRequiredFields(
                 findFieldIds(emptyProject),
                 fields);
     }
 
     @Override
-    public boolean allRequiredFieldsProvided(ProjectId projectId, Collection<FieldId> fields) {
-        return allRequiredFieldsProvided(
+    public List<FieldId> findMissingRequiredFields(ProjectId projectId, Collection<FieldId> fields) {
+        return findMissingRequiredFields(
                 findFieldIds(projectId.getValue()),
                 fields);
     }
 
-    private boolean allRequiredFieldsProvided(Collection<FieldId> requiredFields, Collection<FieldId> providedFields) {
-        return providedFields.containsAll(requiredFields);
+    private List<FieldId> findMissingRequiredFields(Collection<FieldId> requiredFields, Collection<FieldId> providedFields) {
+        return requiredFields.stream()
+                .filter(f -> !providedFields.contains(f))
+                .collect(Collectors.toList());
     }
 
     private void saveAllFieldAssignments(Collection<DefaultFieldAssignment> assignments) {

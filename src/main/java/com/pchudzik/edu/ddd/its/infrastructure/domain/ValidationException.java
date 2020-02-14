@@ -1,6 +1,6 @@
 package com.pchudzik.edu.ddd.its.infrastructure.domain;
 
-public class ValidationException extends RuntimeException {
+public class ValidationException extends DomainException {
     public ValidationException(String message) {
         super(message);
     }

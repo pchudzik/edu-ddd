@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.field;
 
+import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions;
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
 
@@ -23,21 +25,50 @@ class FieldAssignmentImpl implements FieldAssignment {
     private final LabelFieldRepository labelFieldRepository;
     private final FieldValueRepository fieldValueRepository;
     private final MessageQueue messageQueue;
+    private final FieldDefinitions fieldDefinitions;
 
     @Override
-    public void assignToField(Collection<FieldAssignmentCommand> assignments) {
+    public void assignToField(ProjectId projectId, Collection<FieldAssignmentCommand> assignments) {
         var strategyFactory = new AssignmentStrategyFactory();
-        txManager.useTransaction(() -> assignments
-                .forEach(cmd -> {
-                    Collection<MessageQueue.Message> msgs = strategyFactory
-                            .getAssignmentStrategy(cmd.getAssignmentType(), cmd.getFieldType())
-                            .assign(cmd);
-                    msgs.forEach(messageQueue::publish);
-                }));
+        txManager.useTransaction(() -> {
+            assignments
+                    .forEach(cmd -> {
+                        Collection<MessageQueue.Message> msgs = strategyFactory
+                                .getAssignmentStrategy(AssignmentType.PROJECT, cmd.getFieldType())
+                                .assign(projectId, cmd);
+                        msgs.forEach(messageQueue::publish);
+                    });
+        });
+
+    }
+
+    @Override
+    public void assignToField(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
+        var strategyFactory = new AssignmentStrategyFactory();
+        txManager.useTransaction(() -> {
+            checkRequiredFieldsProvided(issueId, assignments);
+
+            assignments
+                    .forEach(cmd -> {
+                        Collection<MessageQueue.Message> msgs = strategyFactory
+                                .getAssignmentStrategy(AssignmentType.ISSUE, cmd.getFieldType())
+                                .assign(issueId, cmd);
+                        msgs.forEach(messageQueue::publish);
+                    });
+        });
+    }
+
+    private void checkRequiredFieldsProvided(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
+        var missingRequiredFields = fieldDefinitions.findMissingRequiredFields(
+                issueId.getProject(),
+                assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()));
+        if(!missingRequiredFields.isEmpty()) {
+            throw new RequiredFieldsMissingException(missingRequiredFields);
+        }
     }
 
     private interface AssignFieldStrategy<V, A> {
-        Collection<MessageQueue.Message> assign(FieldAssignmentCommand<V, A> cmd);
+        Collection<MessageQueue.Message> assign(A assignee, FieldAssignmentCommand<V> cmd);
     }
 
     private class AssignmentStrategyFactory {
@@ -65,51 +96,56 @@ class FieldAssignmentImpl implements FieldAssignment {
 
     private class AssignStringFieldToProject implements AssignFieldStrategy<String, ProjectId> {
         @Override
-        public Collection<MessageQueue.Message> assign(FieldAssignmentCommand<String, ProjectId> cmd) {
+        public Collection<MessageQueue.Message> assign(ProjectId projectId, FieldAssignmentCommand<String> cmd) {
             StringField field = stringFieldRepository.findStringField(cmd.getFieldId());
             FieldValue<String> value = field
                     .value(cmd.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
-            fieldValueRepository.removeOldValues(cmd.getFieldId(), cmd.getAssigneeId(ProjectId.class));
-            var fieldValueId = fieldValueRepository.saveStringValue(cmd.getAssigneeId(ProjectId.class), value);
+            fieldValueRepository.removeOldValues(cmd.getFieldId(), projectId);
+            var fieldValueId = fieldValueRepository.saveStringValue(projectId, value);
             return singleton(new FieldAssignedMessage(singleton(fieldValueId)));
         }
     }
 
     private class AssignStringFieldToIssue implements AssignFieldStrategy<String, IssueId> {
-        public Collection<MessageQueue.Message> assign(FieldAssignmentCommand<String, IssueId> cmd) {
+        public Collection<MessageQueue.Message> assign(IssueId issueId, FieldAssignmentCommand<String> cmd) {
             StringField field = stringFieldRepository.findStringField(cmd.getFieldId());
             FieldValue<String> value = field
                     .value(cmd.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
-            fieldValueRepository.removeOldValues(cmd.getFieldId(), cmd.getAssigneeId(IssueId.class));
-            var fieldValueId = fieldValueRepository.saveStringValue(cmd.getAssigneeId(IssueId.class), value);
+            fieldValueRepository.removeOldValues(cmd.getFieldId(), issueId);
+            var fieldValueId = fieldValueRepository.saveStringValue(issueId, value);
             return singleton(new FieldAssignedMessage(singleton(fieldValueId)));
         }
     }
 
     private class AssignLabelFieldToProject implements AssignFieldStrategy<LabelValues, ProjectId> {
         @Override
-        public Collection<MessageQueue.Message> assign(FieldAssignmentCommand<LabelValues, ProjectId> cmd) {
+        public Collection<MessageQueue.Message> assign(ProjectId projectId, FieldAssignmentCommand<LabelValues> cmd) {
             LabelField field = labelFieldRepository.findLabelField(cmd.getFieldId());
             FieldValue<LabelValues> value = field
                     .value(cmd.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
-            fieldValueRepository.removeOldValues(cmd.getFieldId(), cmd.getAssigneeId(ProjectId.class));
-            var valueIds = fieldValueRepository.saveLabelValue(cmd.getAssigneeId(ProjectId.class), value);
+            fieldValueRepository.removeOldValues(cmd.getFieldId(), projectId);
+            var valueIds = fieldValueRepository.saveLabelValue(projectId, value);
             return singleton(new FieldAssignedMessage(valueIds));
         }
     }
 
     private class AssignLabelFieldToIssue implements AssignFieldStrategy<LabelValues, IssueId> {
-        public Collection<MessageQueue.Message> assign(FieldAssignmentCommand<LabelValues, IssueId> cmd) {
+        public Collection<MessageQueue.Message> assign(IssueId issueId, FieldAssignmentCommand<LabelValues> cmd) {
             LabelField field = labelFieldRepository.findLabelField(cmd.getFieldId());
             FieldValue<LabelValues> value = field
                     .value(cmd.getValue())
                     .getOrElseThrow(validationResult -> new IllegalStateException("TODO"));
-            fieldValueRepository.removeOldValues(cmd.getFieldId(), cmd.getAssigneeId(IssueId.class));
-            var valueIds = fieldValueRepository.saveLabelValue(cmd.getAssigneeId(IssueId.class), value);
+            fieldValueRepository.removeOldValues(cmd.getFieldId(), issueId);
+            var valueIds = fieldValueRepository.saveLabelValue(issueId, value);
             return singleton(new FieldAssignedMessage(valueIds));
         }
+    }
+
+    private enum AssignmentType {
+        ISSUE,
+        PROJECT
     }
 }

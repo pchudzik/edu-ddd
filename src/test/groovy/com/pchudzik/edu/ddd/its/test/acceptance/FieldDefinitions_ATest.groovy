@@ -44,8 +44,8 @@ class FieldDefinitions_ATest extends DbSpecification {
         fieldDefinitions.assignDefaultFields(projectId, [fieldId])
 
         expect:
-        !fieldDefinitions.allRequiredFieldsProvided(projectId, [new FieldId(UUID.randomUUID(), 1)])
-        fieldDefinitions.allRequiredFieldsProvided(projectId, [fieldId])
+        fieldDefinitions.findMissingRequiredFields(projectId, [new FieldId(UUID.randomUUID(), 1)]) == [fieldId]
+        fieldDefinitions.findMissingRequiredFields(projectId, [fieldId]) == []
     }
 
     def "detects all required fields for project"() {
@@ -56,8 +56,8 @@ class FieldDefinitions_ATest extends DbSpecification {
         fieldDefinitions.assignDefaultFields([fieldId])
 
         expect:
-        !fieldDefinitions.allRequiredFieldsProvided([new FieldId(UUID.randomUUID(), 1)])
-        fieldDefinitions.allRequiredFieldsProvided([fieldId])
+        fieldDefinitions.findMissingRequiredFields([new FieldId(UUID.randomUUID(), 1)]) == [fieldId]
+        fieldDefinitions.findMissingRequiredFields([fieldId]) == []
     }
 
     def "removed field assignment from project"() {

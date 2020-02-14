@@ -29,6 +29,5 @@ public interface IssueCreation {
         private final FieldId fieldId;
         private final V value;
         private final FieldType fieldType;
-
     }
 }
