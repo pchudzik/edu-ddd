@@ -22,7 +22,8 @@ class IssueCreationImpl implements IssueCreation {
     public IssueId createIssue(IssueCreationCommand cmd) {
         return txManager.inTransaction(() -> {
             IssueId issueId = idGenerator.next(cmd.getProjectId());
-            issueRepository.saveIssue(issueId, cmd.getTitle());
+            Issue issue = new Issue(issueId, cmd.getTitle());
+            issueRepository.saveIssue(issue);
 
             fieldAssignment
                     .assignFieldValues(
@@ -33,6 +34,23 @@ class IssueCreationImpl implements IssueCreation {
                                     .collect(Collectors.toList()));
 
             return issueId;
+        });
+    }
+
+    @Override
+    public void updateIssue(IssueId issueId, IssueUpdateCommand cmd) {
+        txManager.useTransaction(() -> {
+            Issue issue = issueRepository.findIssue(issueId);
+            issue.title(cmd.getTitle());
+            issueRepository.saveIssue(issue);
+
+            fieldAssignment
+                    .assignFieldValues(
+                            issueId,
+                            cmd
+                                    .getFieldAssignments().stream()
+                                    .map(FieldAssignmentCommandFactory::buildAssignmentCommand)
+                                    .collect(Collectors.toList()));
         });
     }
 }

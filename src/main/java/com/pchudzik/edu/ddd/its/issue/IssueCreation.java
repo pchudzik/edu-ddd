@@ -12,10 +12,20 @@ import java.util.List;
 public interface IssueCreation {
     IssueId createIssue(IssueCreationCommand cmd);
 
+    void updateIssue(IssueId issueId, IssueUpdateCommand issueUpdateCommand);
+
     @Builder
     @Getter
     class IssueCreationCommand {
         private final ProjectId projectId;
+        private final String title;
+        @Singular
+        private final List<FieldValueAssignmentCommand> fieldAssignments;
+    }
+
+    @Getter
+    @Builder
+    class IssueUpdateCommand {
         private final String title;
         @Singular
         private final List<FieldValueAssignmentCommand> fieldAssignments;

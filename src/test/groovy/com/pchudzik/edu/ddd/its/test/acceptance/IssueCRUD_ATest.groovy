@@ -2,6 +2,7 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.FieldAssignmentException
 import com.pchudzik.edu.ddd.its.field.FieldType
+import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues.LabelValues
@@ -9,8 +10,8 @@ import com.pchudzik.edu.ddd.its.field.read.FieldValues.StringValue
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
-import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueCreationCommand
+import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueUpdateCommand
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.issue.read.IssueRead
 
@@ -109,4 +110,37 @@ class IssueCRUD_ATest extends DbSpecification {
         then:
         thrown(Exception)
     }
+
+    def "issue fields can be updated"() {
+        given:
+        def field1Id = Fixtures.fieldFixture().stringFieldCreator().name("field1").create()
+        def field2Id = Fixtures.fieldFixture().stringFieldCreator().name("field2").create()
+        def projectId = Fixtures.projectFixture().createNewProject(field1Id, field2Id)
+
+        and:
+        def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
+                .projectId(projectId)
+                .title("issue title")
+                .fieldAssignment(new FieldValueAssignmentCommand(field1Id, "value 1", FieldType.STRING_FIELD))
+                .fieldAssignment(new FieldValueAssignmentCommand(field2Id, "value 2", FieldType.STRING_FIELD))
+                .build())
+
+        when:
+        issueCreation.updateIssue(issueId, IssueUpdateCommand.builder()
+                .title("new title")
+                .fieldAssignment(new FieldValueAssignmentCommand(field1Id, "new value 1", FieldType.STRING_FIELD))
+                .build())
+
+        then:
+        def issue = issueReadFacade.findIssue(issueId)
+        issue.id == issueId
+        issue.title == "new title"
+
+        and:
+        def fields = fieldValues.findFieldsAssignedToIssue(issueId)
+        fields.size() == 2
+        fields.collect { it.getAssignee(IssueId) } == [issueId, issueId]
+        fields.collect { it.getValue(StringValue).value } as Set == ["value 2", "new value 1"] as Set
+    }
+
 }
