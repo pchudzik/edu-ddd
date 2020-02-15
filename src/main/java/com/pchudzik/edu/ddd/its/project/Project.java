@@ -2,7 +2,6 @@ package com.pchudzik.edu.ddd.its.project;
 
 import com.pchudzik.edu.ddd.its.infrastructure.domain.ValidationException;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,8 +19,13 @@ class Project {
     }
 
     Project(ProjectId projectId, String projectName) {
+        this(projectId, projectName, null);
+    }
+
+    Project(ProjectId projectId, String projectName, String description) {
         this.id = projectId;
         projectName(projectName);
+        projectDescription(description);
     }
 
     public void projectName(String newProjectName) {

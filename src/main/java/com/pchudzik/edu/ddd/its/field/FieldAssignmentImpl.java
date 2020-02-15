@@ -33,7 +33,8 @@ class FieldAssignmentImpl implements FieldAssignment {
         var strategyFactory = new AssignmentStrategyFactory();
         txManager.useTransaction(() -> {
             validateAssignment(fieldDefinitions.checkAssignments(
-                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList())));
+                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()),
+                    projectId));
 
             assignments
                     .forEach(cmd -> {
@@ -50,9 +51,11 @@ class FieldAssignmentImpl implements FieldAssignment {
     public void assignFieldValues(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
         var strategyFactory = new AssignmentStrategyFactory();
         txManager.useTransaction(() -> {
-            validateAssignment(fieldDefinitions.checkAssignments(
-                    issueId.getProject(),
-                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList())));
+            validateAssignment(
+                    fieldDefinitions.checkAssignments(
+                            issueId.getProject(),
+                            assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()),
+                            issueId));
 
             assignments
                     .forEach(cmd -> {

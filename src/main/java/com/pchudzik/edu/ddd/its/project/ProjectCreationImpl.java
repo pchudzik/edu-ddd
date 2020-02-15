@@ -36,4 +36,20 @@ class ProjectCreationImpl implements ProjectCreation {
             return project.getId();
         });
     }
+
+    @Override
+    public void updateProject(ProjectId projectId, ProjectUpdateCommand updateCommand) {
+        txManager.useTransaction(() -> {
+            var project = projectRepository.findOne(projectId);
+            project.projectDescription(updateCommand.getDescription());
+            project.projectName(updateCommand.getName());
+            projectRepository.save(project);
+
+            fieldAssignment.assignFieldValues(
+                    projectId,
+                    updateCommand.getFieldAssignments().stream()
+                            .map(FieldAssignmentCommandFactory::buildAssignmentCommand)
+                            .collect(Collectors.toList()));
+        });
+    }
 }

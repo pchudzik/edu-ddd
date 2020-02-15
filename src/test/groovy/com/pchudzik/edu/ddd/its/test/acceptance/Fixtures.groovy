@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.FieldCreation
+import com.pchudzik.edu.ddd.its.field.FieldCreation.LabelFieldCreationCommand
 import com.pchudzik.edu.ddd.its.field.FieldCreation.StringFieldCreationCommand
 import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
@@ -40,18 +41,65 @@ class Fixtures {
     static class FieldFixture {
         private FieldCreation fieldCreationFacade
 
+        StringFieldCreator stringFieldCreator() {
+            return new StringFieldCreator()
+        }
+
+        LabelFieldCreator labelFieldCreator() {
+            return new LabelFieldCreator()
+        }
+
         FieldId createNewStringField() {
-            return fieldCreationFacade.createStringField(StringFieldCreationCommand.builder()
-                    .fieldName("string field")
-                    .required(true)
-                    .build())
+            stringFieldCreator().create()
         }
 
         FieldId createNewLabelField() {
-            return fieldCreationFacade.createLabelField(FieldCreation.LabelFieldCreationCommand.builder()
-                    .fieldName("label field")
-                    .required(true)
-                    .build())
+            return labelFieldCreator().create()
+        }
+
+        class StringFieldCreator {
+            String name = "string field"
+            boolean required = true
+
+            StringFieldCreator name(String name) {
+                this.name = name
+                return this
+            }
+
+            StringFieldCreator required(boolean required) {
+                this.required = required
+                return this
+            }
+
+            FieldId create() {
+                return fieldCreationFacade.createStringField(StringFieldCreationCommand.builder()
+                        .fieldName(name)
+                        .required(required)
+                        .build())
+            }
+        }
+
+        class LabelFieldCreator {
+            String name = "label field"
+            boolean required = true
+
+            StringFieldCreator name(String name) {
+                this.name = name
+                return this
+            }
+
+            StringFieldCreator required(boolean required) {
+                this.required = required
+                return this
+            }
+
+            FieldId create() {
+                return fieldCreationFacade.createLabelField(LabelFieldCreationCommand.builder()
+                        .fieldName(name)
+                        .required(required)
+                        .build())
+            }
+
         }
     }
 

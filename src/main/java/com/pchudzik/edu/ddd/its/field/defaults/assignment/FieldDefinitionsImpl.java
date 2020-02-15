@@ -2,8 +2,10 @@ package com.pchudzik.edu.ddd.its.field.defaults.assignment;
 
 import com.pchudzik.edu.ddd.its.field.FieldId;
 import com.pchudzik.edu.ddd.its.field.read.AvailableFields;
+import com.pchudzik.edu.ddd.its.field.read.FieldValues;
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
+import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,15 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class FieldDefinitionsImpl implements FieldDefinitions {
@@ -24,20 +30,21 @@ class FieldDefinitionsImpl implements FieldDefinitions {
     private final TransactionManager txManager;
     private final Jdbi jdbi;
     private final AvailableFields availableFields;
+    private final FieldValues fieldValues;
     private final MessageQueue messageQueue;
 
     @Override
     public void assignDefaultFields(Collection<FieldId> fieldIds) {
         txManager.useTransaction(() -> saveAllFieldAssignments(fieldIds.stream()
                 .map(DefaultFieldAssignment::new)
-                .collect(Collectors.toList())));
+                .collect(toList())));
     }
 
     @Override
     public void assignDefaultFields(ProjectId projectId, Collection<FieldId> fieldIds) {
         txManager.useTransaction(() -> saveAllFieldAssignments(fieldIds.stream()
                 .map(f -> new DefaultFieldAssignment(projectId, f))
-                .collect(Collectors.toList())));
+                .collect(toList())));
     }
 
     @Override
@@ -79,15 +86,25 @@ class FieldDefinitionsImpl implements FieldDefinitions {
     }
 
     @Override
-    public AssignmentValidator checkAssignments(Collection<FieldId> toAssignFieldIds) {
+    public AssignmentValidator checkAssignments(Collection<FieldId> toAssignFieldIds, @Nullable ProjectId projectId) {
         var availableFields = findDefaultFields();
-        return new FieldsAssignmentValidator(availableFields, toAssignFieldIds);
+        var alreadyAssignedFields = Optional
+                .ofNullable(projectId)
+                .map(fieldValues::findFieldsAssignedToProject)
+                .map(values -> values.stream().map(FieldValues.FieldValueDto::getFieldId).collect(toList()))
+                .orElse(emptyList());
+        return new FieldsAssignmentValidator(availableFields, alreadyAssignedFields, toAssignFieldIds);
     }
 
     @Override
-    public AssignmentValidator checkAssignments(ProjectId projectId, Collection<FieldId> toAssignFieldIds) {
+    public AssignmentValidator checkAssignments(ProjectId projectId, Collection<FieldId> toAssignFieldIds, @Nullable IssueId issueId) {
         var availableFields = findDefaultFields(projectId);
-        return new FieldsAssignmentValidator(availableFields, toAssignFieldIds);
+        var alreadyAssignedFields = Optional
+                .ofNullable(issueId)
+                .map(fieldValues::findFieldsAssignedToIssue)
+                .map(values -> values.stream().map(FieldValues.FieldValueDto::getFieldId).collect(toList()))
+                .orElse(emptyList());
+        return new FieldsAssignmentValidator(availableFields, alreadyAssignedFields, toAssignFieldIds);
     }
 
     private Collection<AvailableFields.FieldDto> findDefaultFields(String projectId) {
@@ -123,6 +140,7 @@ class FieldDefinitionsImpl implements FieldDefinitions {
     @RequiredArgsConstructor
     private static class FieldsAssignmentValidator implements AssignmentValidator {
         private final Collection<AvailableFields.FieldDto> availableFields;
+        private final Collection<FieldId> alreadyAssignedFields;
         private final Collection<FieldId> toAssignFieldIds;
 
         @Override
@@ -133,7 +151,8 @@ class FieldDefinitionsImpl implements FieldDefinitions {
                     .collect(Collectors.toSet());
             return requiredFields.stream()
                     .filter(f -> !toAssignFieldIds.contains(f))
-                    .collect(Collectors.toList());
+                    .filter(f -> !alreadyAssignedFields.contains(f))
+                    .collect(toList());
         }
 
         @Override
@@ -143,7 +162,7 @@ class FieldDefinitionsImpl implements FieldDefinitions {
                     .collect(Collectors.toSet());
             return toAssignFieldIds.stream()
                     .filter(f -> !availableFieldIds.contains(f))
-                    .collect(Collectors.toList());
+                    .collect(toList());
         }
     }
 
