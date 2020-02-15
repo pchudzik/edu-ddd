@@ -1,19 +1,22 @@
 package com.pchudzik.edu.ddd.its.project
 
-
-import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager
+import com.pchudzik.edu.ddd.its.field.FieldAssignment
+import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager.NoTransactionManager
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue
+import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectCreatedMessage
+import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectCreationCommand
 import spock.lang.Specification
 
 class ProjectCreationTest extends Specification {
     def projectRepository = Mock(ProjectRepository)
     def queue = Mock(MessageQueue)
-    def facade = new ProjectCreationImpl(projectRepository, queue, new TransactionManager.NoTransactionManager())
+    def fieldAssignment = Mock(FieldAssignment)
+    def facade = new ProjectCreationImpl(projectRepository, queue, new NoTransactionManager(), fieldAssignment)
 
     def "event is boradcasted after project is created"() {
         given:
         def id = new ProjectId("ABC")
-        def project = ProjectCreation.ProjectCreationCommand.builder()
+        def project = ProjectCreationCommand.builder()
                 .id(id)
                 .name("asd")
                 .build()
@@ -22,6 +25,6 @@ class ProjectCreationTest extends Specification {
         facade.createNewProject(project)
 
         then:
-        1 * queue.publish(new ProjectCreation.ProjectCreatedMessage(id))
+        1 * queue.publish(new ProjectCreatedMessage(id))
     }
 }

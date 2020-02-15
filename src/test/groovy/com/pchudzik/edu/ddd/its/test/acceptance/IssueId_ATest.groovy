@@ -8,7 +8,9 @@ class IssueId_ATest extends DbSpecification {
 
     def "can create issue ids when new project is created"() {
         given:
-        def projectId = Fixtures.projectFixture().createNewProject("ABC")
+        def projectId = Fixtures.projectFixture().creator()
+                    .id("ABC")
+                    .create()
 
         when:
         def id1 = issueIdGenerator.next(projectId)

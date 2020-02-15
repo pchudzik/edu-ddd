@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.field;
 
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions;
+import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions.AssignmentValidator;
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
@@ -28,9 +29,12 @@ class FieldAssignmentImpl implements FieldAssignment {
     private final FieldDefinitions fieldDefinitions;
 
     @Override
-    public void assignToField(ProjectId projectId, Collection<FieldAssignmentCommand> assignments) {
+    public void assignFieldValues(ProjectId projectId, Collection<FieldAssignmentCommand> assignments) {
         var strategyFactory = new AssignmentStrategyFactory();
         txManager.useTransaction(() -> {
+            validateAssignment(fieldDefinitions.checkAssignments(
+                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList())));
+
             assignments
                     .forEach(cmd -> {
                         Collection<MessageQueue.Message> msgs = strategyFactory
@@ -43,15 +47,12 @@ class FieldAssignmentImpl implements FieldAssignment {
     }
 
     @Override
-    public void assignToField(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
+    public void assignFieldValues(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
         var strategyFactory = new AssignmentStrategyFactory();
         txManager.useTransaction(() -> {
-            var assignmentValidator = fieldDefinitions.checkAssignments(
+            validateAssignment(fieldDefinitions.checkAssignments(
                     issueId.getProject(),
-                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()));
-
-            checkRequiredFieldsProvided(assignmentValidator);
-            checkOnlyAvailableFieldsProvided(assignmentValidator);
+                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList())));
 
             assignments
                     .forEach(cmd -> {
@@ -63,13 +64,18 @@ class FieldAssignmentImpl implements FieldAssignment {
         });
     }
 
-    private void checkOnlyAvailableFieldsProvided(FieldDefinitions.AssignmentValidator assignmentValidator) {
-        if(!assignmentValidator.onlyAvailableFieldsProvided()) {
+    private void validateAssignment(AssignmentValidator assignmentValidator) {
+        checkRequiredFieldsProvided(assignmentValidator);
+        checkOnlyAvailableFieldsProvided(assignmentValidator);
+    }
+
+    private void checkOnlyAvailableFieldsProvided(AssignmentValidator assignmentValidator) {
+        if (!assignmentValidator.onlyAvailableFieldsProvided()) {
             throw new NotAvailableFieldsException(assignmentValidator.notAvailableFields());
         }
     }
 
-    private void checkRequiredFieldsProvided(FieldDefinitions.AssignmentValidator assignmentValidator) {
+    private void checkRequiredFieldsProvided(AssignmentValidator assignmentValidator) {
         if (!assignmentValidator.allRequiredFieldsProvided()) {
             throw new RequiredFieldsMissingException(assignmentValidator.missingRequiredFields());
         }

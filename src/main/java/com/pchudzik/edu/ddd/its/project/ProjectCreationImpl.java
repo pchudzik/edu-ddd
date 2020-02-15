@@ -1,10 +1,13 @@
 package com.pchudzik.edu.ddd.its.project;
 
+import com.pchudzik.edu.ddd.its.field.FieldAssignment;
+import com.pchudzik.edu.ddd.its.field.FieldAssignmentCommandFactory;
 import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 class ProjectCreationImpl implements ProjectCreation {
@@ -12,12 +15,23 @@ class ProjectCreationImpl implements ProjectCreation {
     private final MessageQueue messageQueue;
     private final TransactionManager txManager;
 
+    private final FieldAssignment fieldAssignment;
+
     @Override
     public ProjectId createNewProject(ProjectCreationCommand creationCommand) {
         return txManager.inTransaction(() -> {
             Project project = new Project(creationCommand.getId(), creationCommand.getName());
             project.projectDescription(creationCommand.getDescription());
             projectRepository.save(project);
+
+            fieldAssignment
+                    .assignFieldValues(
+                            project.getId(),
+                            creationCommand.getFieldAssignments().stream()
+                                    .map(FieldAssignmentCommandFactory::buildAssignmentCommand)
+                                    .collect(Collectors.toList()));
+
+
             messageQueue.publish(new ProjectCreatedMessage(project.getId()));
             return project.getId();
         });

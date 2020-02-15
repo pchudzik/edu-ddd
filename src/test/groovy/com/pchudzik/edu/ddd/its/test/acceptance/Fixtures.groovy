@@ -3,10 +3,10 @@ package com.pchudzik.edu.ddd.its.test.acceptance
 import com.pchudzik.edu.ddd.its.field.FieldCreation
 import com.pchudzik.edu.ddd.its.field.FieldCreation.StringFieldCreationCommand
 import com.pchudzik.edu.ddd.its.field.FieldId
+import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
-import com.pchudzik.edu.ddd.its.issue.IssueCreation.FieldToIssueAssignmentCommand
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.project.ProjectCreation
 import com.pchudzik.edu.ddd.its.project.ProjectId
@@ -66,12 +66,12 @@ class Fixtures {
     static class IssueFixture {
         private IssueCreation issueCreation
 
-        IssueId createNewIssue(ProjectId projectId, FieldToIssueAssignmentCommand ... assignments) {
+        IssueId createNewIssue(ProjectId projectId, FieldValueAssignmentCommand... assignments) {
             def cmd = IssueCreation.IssueCreationCommand.builder()
                     .projectId(projectId)
                     .title("some issue")
 
-            if(assignments) {
+            if (assignments) {
                 cmd.fieldAssignments(Arrays.asList(assignments))
             }
 
@@ -84,21 +84,56 @@ class Fixtures {
         private ProjectCreation projectFacade
         private FieldDefinitions fieldDefinitions
 
-        ProjectId createNewProject(String name) {
-            projectFacade.createNewProject(ProjectCreation.ProjectCreationCommand.builder()
-                    .id(new ProjectId(name))
-                    .name("some project")
-                    .description("test project")
-                    .build())
+        CreationBuilder creator() {
+            return new CreationBuilder()
+        }
 
+        class CreationBuilder {
+            String id = null
+            String name = "some project"
+            String description = "some project description"
+            Collection<FieldId> definitions = []
+            Collection<FieldValueAssignmentCommand> assignments = []
+
+            CreationBuilder id(String id) {
+                this.id = id
+                return this
+            }
+
+            CreationBuilder addDefinition(FieldId... definitions) {
+                if (definitions) {
+                    definitions.each { this.definitions.add(it) }
+                }
+                return this
+            }
+
+            CreationBuilder addAssignment(FieldValueAssignmentCommand... cmds) {
+                if (cmds) {
+                    cmds.each { assignments.add(it) }
+                }
+                return this
+            }
+
+            ProjectId create() {
+                def projectId = projectFacade.createNewProject(ProjectCreation.ProjectCreationCommand.builder()
+                        .id(new ProjectId(id ?: ("ABC" + index.incrementAndGet())))
+                        .name(name)
+                        .description(description)
+                        .fieldAssignments(new ArrayList<>(assignments))
+                        .build())
+
+                if (definitions) {
+                    fieldDefinitions.assignDefaultFields(projectId, new ArrayList<FieldId>(definitions))
+                }
+
+                return projectId
+            }
         }
 
         ProjectId createNewProject(FieldId... fields) {
-            def projectId = createNewProject("ABC" + index.incrementAndGet())
-            if (fields) {
-                fieldDefinitions.assignDefaultFields(projectId, Arrays.asList(fields))
-            }
-            return projectId
+            return creator()
+                    .addDefinition(fields)
+                    .create()
         }
     }
 }

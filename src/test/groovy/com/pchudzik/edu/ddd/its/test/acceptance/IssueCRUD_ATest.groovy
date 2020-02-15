@@ -9,7 +9,7 @@ import com.pchudzik.edu.ddd.its.field.read.FieldValues.StringValue
 import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
-import com.pchudzik.edu.ddd.its.issue.IssueCreation.FieldToIssueAssignmentCommand
+import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueCreationCommand
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.issue.read.IssueRead
@@ -47,7 +47,7 @@ class IssueCRUD_ATest extends DbSpecification {
         issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
-                .fieldAssignment(new FieldToIssueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
+                .fieldAssignment(new FieldValueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
                 .build())
 
         then:
@@ -63,7 +63,7 @@ class IssueCRUD_ATest extends DbSpecification {
         def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
-                .fieldAssignment(new FieldToIssueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
+                .fieldAssignment(new FieldValueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
                 .build())
 
         then:
@@ -82,7 +82,7 @@ class IssueCRUD_ATest extends DbSpecification {
         def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
-                .fieldAssignment(new FieldToIssueAssignmentCommand(field, ["value1", "value2"], FieldType.LABEL_FIELD))
+                .fieldAssignment(new FieldValueAssignmentCommand(field, ["value1", "value2"], FieldType.LABEL_FIELD))
                 .build())
 
         then:

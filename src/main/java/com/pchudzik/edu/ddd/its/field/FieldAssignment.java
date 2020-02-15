@@ -7,8 +7,8 @@ import lombok.Getter;
 import java.util.Collection;
 
 public interface FieldAssignment {
-    void assignToField(ProjectId projectId, Collection<FieldAssignmentCommand> assignments);
-    void assignToField(IssueId issue, Collection<FieldAssignmentCommand> assignments);
+    void assignFieldValues(ProjectId projectId, Collection<FieldAssignmentCommand> assignments);
+    void assignFieldValues(IssueId issue, Collection<FieldAssignmentCommand> assignments);
 
     interface FieldAssignmentCommand<V> {
         FieldId getFieldId();
