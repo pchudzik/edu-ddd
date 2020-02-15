@@ -46,7 +46,12 @@ class FieldAssignmentImpl implements FieldAssignment {
     public void assignToField(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
         var strategyFactory = new AssignmentStrategyFactory();
         txManager.useTransaction(() -> {
-            checkRequiredFieldsProvided(issueId, assignments);
+            var assignmentValidator = fieldDefinitions.checkAssignments(
+                    issueId.getProject(),
+                    assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()));
+
+            checkRequiredFieldsProvided(assignmentValidator);
+            checkOnlyAvailableFieldsProvided(assignmentValidator);
 
             assignments
                     .forEach(cmd -> {
@@ -58,13 +63,21 @@ class FieldAssignmentImpl implements FieldAssignment {
         });
     }
 
-    private void checkRequiredFieldsProvided(IssueId issueId, Collection<FieldAssignmentCommand> assignments) {
-        var missingRequiredFields = fieldDefinitions.findMissingRequiredFields(
-                issueId.getProject(),
-                assignments.stream().map(FieldAssignmentCommand::getFieldId).collect(Collectors.toList()));
-        if(!missingRequiredFields.isEmpty()) {
-            throw new RequiredFieldsMissingException(missingRequiredFields);
+    private void checkOnlyAvailableFieldsProvided(FieldDefinitions.AssignmentValidator assignmentValidator) {
+        if(!assignmentValidator.onlyAvailableFieldsProvided()) {
+            throw new NotAvailableFieldsException(assignmentValidator.notAvailableFields());
         }
+    }
+
+    private void checkRequiredFieldsProvided(FieldDefinitions.AssignmentValidator assignmentValidator) {
+        if (!assignmentValidator.allRequiredFieldsProvided()) {
+            throw new RequiredFieldsMissingException(assignmentValidator.missingRequiredFields());
+        }
+    }
+
+    private enum AssignmentType {
+        ISSUE,
+        PROJECT
     }
 
     private interface AssignFieldStrategy<V, A> {
@@ -142,10 +155,5 @@ class FieldAssignmentImpl implements FieldAssignment {
             var valueIds = fieldValueRepository.saveLabelValue(issueId, value);
             return singleton(new FieldAssignedMessage(valueIds));
         }
-    }
-
-    private enum AssignmentType {
-        ISSUE,
-        PROJECT
     }
 }

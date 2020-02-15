@@ -62,11 +62,12 @@ class NoLongerUsedFieldDefinitionCleanerRepository {
                         "          and value.field_version = field.version " +
                         "    )" +
                         "    and not exists (" +
-                        "        select field_definitions.field_id " +
-                        "        from field_definitions" +
+                        "        select definitions.field_id " +
+                        "        from field_definitions definitions " +
+                        "        join last_field on definitions.field_id = last_field.id " +
                         "        where " +
-                        "            field_definitions.field_id = :id " +
-                        "            and field_definitions.field_version = field.version " +
+                        "            definitions.field_id = :id " +
+                        "            and last_field.version != :version" +
                         "    )" +
                         "    and not exists (" +
                         "        select last_field.id " +

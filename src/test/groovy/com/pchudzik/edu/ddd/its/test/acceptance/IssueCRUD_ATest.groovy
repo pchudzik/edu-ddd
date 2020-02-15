@@ -13,12 +13,11 @@ import com.pchudzik.edu.ddd.its.issue.IssueCreation.FieldToIssueAssignmentComman
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueCreationCommand
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.issue.read.IssueRead
-import spock.lang.PendingFeature
 
 class IssueCRUD_ATest extends DbSpecification {
     def injector = InjectorFactory.injector()
 
-    def issueFacade = injector.getInstance(IssueCreation)
+    def issueCreation = injector.getInstance(IssueCreation)
     def issueReadFacade = injector.getInstance(IssueRead)
     def fieldValues = injector.getInstance(FieldValues)
     def fieldDefinitions = injector.getInstance(FieldDefinitions)
@@ -28,7 +27,7 @@ class IssueCRUD_ATest extends DbSpecification {
         def projectId = Fixtures.projectFixture().createNewProject()
 
         when:
-        def issueId = issueFacade.createIssue(IssueCreationCommand.builder()
+        def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
                 .build())
@@ -39,14 +38,13 @@ class IssueCRUD_ATest extends DbSpecification {
         issue.title == "some issue"
     }
 
-    @PendingFeature
     def "only fields available for issues in project can be assigned"() {
         given:
         def projectId = Fixtures.projectFixture().createNewProject()
         def field = Fixtures.fieldFixture().createNewStringField()
 
         when:
-        issueFacade.createIssue(IssueCreationCommand.builder()
+        issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
                 .fieldAssignment(new FieldToIssueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
@@ -58,11 +56,11 @@ class IssueCRUD_ATest extends DbSpecification {
 
     def "string fields are assigned in when creating issue"() {
         given:
-        def projectId = Fixtures.projectFixture().createNewProject()
         def field = Fixtures.fieldFixture().createNewStringField()
+        def projectId = Fixtures.projectFixture().createNewProject(field)
 
         when:
-        def issueId = issueFacade.createIssue(IssueCreationCommand.builder()
+        def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
                 .fieldAssignment(new FieldToIssueAssignmentCommand(field, "simple value", FieldType.STRING_FIELD))
@@ -77,11 +75,11 @@ class IssueCRUD_ATest extends DbSpecification {
 
     def "label fields are assigned when creating issue"() {
         given:
-        def projectId = Fixtures.projectFixture().createNewProject()
         def field = Fixtures.fieldFixture().createNewLabelField()
+        def projectId = Fixtures.projectFixture().createNewProject(field)
 
         when:
-        def issueId = issueFacade.createIssue(IssueCreationCommand.builder()
+        def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
                 .fieldAssignment(new FieldToIssueAssignmentCommand(field, ["value1", "value2"], FieldType.LABEL_FIELD))
@@ -91,7 +89,7 @@ class IssueCRUD_ATest extends DbSpecification {
         def fields = fieldValues.findFieldsAssignedToIssue(issueId)
         fields.size() == 1
         fields[0].getAssignee(IssueId) == issueId
-        fields[0].getValue(LabelValues).labels.collect { it.value } == ["value1", "value2"]
+        fields[0].getValue(LabelValues).labels.collect { it.value } as Set == ["value1", "value2"] as Set
     }
 
     def "issue creation fail when required fields not provided when creating issue"() {
@@ -103,7 +101,7 @@ class IssueCRUD_ATest extends DbSpecification {
         fieldDefinitions.assignDefaultFields(projectId, [field])
 
         when:
-        def issueId = issueFacade.createIssue(IssueCreationCommand.builder()
+        def issueId = issueCreation.createIssue(IssueCreationCommand.builder()
                 .projectId(projectId)
                 .title("some issue")
                 .build())

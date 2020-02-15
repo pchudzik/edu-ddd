@@ -44,8 +44,14 @@ class FieldDefinitions_ATest extends DbSpecification {
         fieldDefinitions.assignDefaultFields(projectId, [fieldId])
 
         expect:
-        fieldDefinitions.findMissingRequiredFields(projectId, [new FieldId(UUID.randomUUID(), 1)]) == [fieldId]
-        fieldDefinitions.findMissingRequiredFields(projectId, [fieldId]) == []
+        def missingValidator = fieldDefinitions.checkAssignments(projectId, [new FieldId(UUID.randomUUID(), 1)])
+        !missingValidator.allRequiredFieldsProvided()
+        missingValidator.missingRequiredFields() == [fieldId]
+
+        and:
+        def allGoodValidator = fieldDefinitions.checkAssignments(projectId, [fieldId])
+        allGoodValidator.allRequiredFieldsProvided()
+        allGoodValidator.missingRequiredFields().isEmpty()
     }
 
     def "detects all required fields for project"() {
@@ -56,8 +62,14 @@ class FieldDefinitions_ATest extends DbSpecification {
         fieldDefinitions.assignDefaultFields([fieldId])
 
         expect:
-        fieldDefinitions.findMissingRequiredFields([new FieldId(UUID.randomUUID(), 1)]) == [fieldId]
-        fieldDefinitions.findMissingRequiredFields([fieldId]) == []
+        def missingValidator = fieldDefinitions.checkAssignments([new FieldId(UUID.randomUUID(), 1)])
+        !missingValidator.allRequiredFieldsProvided()
+        missingValidator.missingRequiredFields() == [fieldId]
+
+        and:
+        def allGoodValidator = fieldDefinitions.checkAssignments([fieldId])
+        allGoodValidator.allRequiredFieldsProvided()
+        allGoodValidator.missingRequiredFields().isEmpty()
     }
 
     def "removed field assignment from project"() {

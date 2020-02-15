@@ -62,10 +62,8 @@ class FieldDefinitionsImpl implements FieldDefinitions {
                         "delete from field_definitions " +
                         "where " +
                         "    field_id = :fieldId " +
-                        "    and field_version = :fieldVersion " +
                         "    and project = :project")
                 .bind("fieldId", fieldId.getValue())
-                .bind("fieldVersion", fieldId.getVersion())
                 .bind("project", projectId)
                 .execute());
     }
@@ -80,52 +78,73 @@ class FieldDefinitionsImpl implements FieldDefinitions {
         return findDefaultFields(projectId.getValue());
     }
 
+    @Override
+    public AssignmentValidator checkAssignments(Collection<FieldId> toAssignFieldIds) {
+        var availableFields = findDefaultFields();
+        return new FieldsAssignmentValidator(availableFields, toAssignFieldIds);
+    }
+
+    @Override
+    public AssignmentValidator checkAssignments(ProjectId projectId, Collection<FieldId> toAssignFieldIds) {
+        var availableFields = findDefaultFields(projectId);
+        return new FieldsAssignmentValidator(availableFields, toAssignFieldIds);
+    }
+
     private Collection<AvailableFields.FieldDto> findDefaultFields(String projectId) {
         return txManager.inTransaction(() -> availableFields.findByIds(findFieldIds(projectId)));
     }
 
     private Set<FieldId> findFieldIds(String projectId) {
         return new HashSet<>(jdbi.withHandle(h -> h.select("" +
-                "select field_id, field_version " +
-                "from field_definitions " +
+                "select " +
+                "    definitions.field_id field_id, " +
+                "    last_field.version field_version " +
+                "from field_definitions definitions " +
+                "join last_field on definitions.field_id = last_field.id " +
                 "where project = :project")
                 .bind("project", projectId)
                 .map(new FieldIdRowMapper())
                 .list()));
     }
 
-    @Override
-    public List<FieldId> findMissingRequiredFields(Collection<FieldId> fields) {
-        return findMissingRequiredFields(
-                findFieldIds(emptyProject),
-                fields);
-    }
-
-    @Override
-    public List<FieldId> findMissingRequiredFields(ProjectId projectId, Collection<FieldId> fields) {
-        return findMissingRequiredFields(
-                findFieldIds(projectId.getValue()),
-                fields);
-    }
-
-    private List<FieldId> findMissingRequiredFields(Collection<FieldId> requiredFields, Collection<FieldId> providedFields) {
-        return requiredFields.stream()
-                .filter(f -> !providedFields.contains(f))
-                .collect(Collectors.toList());
-    }
-
     private void saveAllFieldAssignments(Collection<DefaultFieldAssignment> assignments) {
         jdbi.useHandle(handle -> {
             var batch = handle.prepareBatch("" +
-                    "insert into field_definitions(field_id, field_version, project) " +
-                    "values (:fieldId, :fieldVersion, :project)");
+                    "insert into field_definitions(field_id, project) " +
+                    "values (:fieldId, :project)");
             assignments.forEach(a -> batch
                     .bind("fieldId", a.getFieldId().getValue())
-                    .bind("fieldVersion", a.getFieldId().getVersion())
                     .bind("project", a.getProjectId().map(ProjectId::getValue).orElse(emptyProject))
                     .add());
             batch.execute();
         });
+    }
+
+    @RequiredArgsConstructor
+    private static class FieldsAssignmentValidator implements AssignmentValidator {
+        private final Collection<AvailableFields.FieldDto> availableFields;
+        private final Collection<FieldId> toAssignFieldIds;
+
+        @Override
+        public Collection<FieldId> missingRequiredFields() {
+            var requiredFields = availableFields.stream()
+                    .filter(AvailableFields.FieldDto::isRequired)
+                    .map(AvailableFields.FieldDto::getId)
+                    .collect(Collectors.toSet());
+            return requiredFields.stream()
+                    .filter(f -> !toAssignFieldIds.contains(f))
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public Collection<FieldId> notAvailableFields() {
+            var availableFieldIds = availableFields.stream()
+                    .map(AvailableFields.FieldDto::getId)
+                    .collect(Collectors.toSet());
+            return toAssignFieldIds.stream()
+                    .filter(f -> !availableFieldIds.contains(f))
+                    .collect(Collectors.toList());
+        }
     }
 
     @RequiredArgsConstructor
