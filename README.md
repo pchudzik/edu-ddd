@@ -38,7 +38,7 @@ All what's required is served as in memory services.
 
 ### Unexpected changes
 
-#### Dynamic fields (18.01.2020)
+#### Dynamic fields [18012020]
 
 As a user I'd like to add any number of user defined fields to the project.
 As a user I'd like to add any number of user defined fields to the issues created inside project.
@@ -62,12 +62,27 @@ As a project administrator I'd like to change set of default fields for issues a
 
 Field can be modified at any time without affecting existing values [done 15022020]
 
-#### [Future] user & user management
-#### [Future] permissions/roles model
+#### user & user management & permissions [16022020]
+
+As a user I'd like to be able to access it with my credentials.
+
+As system administrator I'd like to define user roles on project basis so I can easily manage users and their permissions in bulk.
+  
+Each role allows to perform certain actions in the system.
+Following actions are defined:
+* Creating/Removing/Updating other users
+* Updating current user data
+* Creating projects
+* Updating project (single)
+* Creating issues within project
+* Viewing issues within project
+
 #### [Future] audit
 #### [Future] watching issues
 #### [Future] time tracking
 #### [Future] workflow which can be defined and field restrictions can be applied on each step + predefined workflows
+#### [Future] comments
+#### [Future] rich text in text fields (comments, descriptions etc)
 
 #### More TBD and documented here
 
