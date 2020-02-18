@@ -1,9 +1,12 @@
 package com.pchudzik.edu.ddd.its.user;
 
 class User {
-    UserId userId;
+    private final UserId userId;
+    private final UserDisplayDetails userDisplayDetails;
 
-    UserDisplayDetails userDisplayDetails;
+    public User(String login) {
+        this(new UserId(), login);
+    }
 
     public User(UserId userId, String login) {
         this.userId = userId;
