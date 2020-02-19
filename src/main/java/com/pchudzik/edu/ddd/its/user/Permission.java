@@ -14,7 +14,8 @@ interface Permission {
     enum PermissionType {
         USER_MANAGER_PERMISSION,
         PROJECT_MANAGER,
-        CREATE_ISSUE
+        PROJECT_CREATOR,
+        UPDATE_USER, ACCESS_ISSUE, CREATE_ISSUE
     }
 
     class EvaluationContext {
@@ -33,8 +34,26 @@ interface Permission {
             return Optional.ofNullable((ProjectId) arguments.get(Keys.projectId));
         }
 
+        public EvaluationContext withActiveUserId(UserId userId) {
+            arguments.put(Keys.activeUserId, userId);
+            return this;
+        }
+
+        public EvaluationContext withOtherUserId(UserId userId) {
+            arguments.put(Keys.otherUserId, userId);
+            return this;
+        }
+
+        public Optional<UserId> getActiveUserId() {
+            return Optional.ofNullable((UserId) arguments.get(Keys.activeUserId));
+        }
+
+        public Optional<UserId> getOtherUserId() {
+            return Optional.ofNullable((UserId) arguments.get(Keys.otherUserId));
+        }
+
         private enum Keys {
-            projectId
+            activeUserId, otherUserId, projectId
         }
     }
 }

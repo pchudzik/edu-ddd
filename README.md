@@ -70,6 +70,7 @@ As system administrator I'd like to define user roles on project basis so I can 
   
 Each role allows to perform certain actions in the system.
 Following actions are defined:
+* super administrator - can to anything
 * Creating/Removing/Updating other users
 * Updating current user data
 * Creating projects
