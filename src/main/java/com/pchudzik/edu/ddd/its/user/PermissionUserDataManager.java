@@ -2,7 +2,7 @@ package com.pchudzik.edu.ddd.its.user;
 
 import java.util.Objects;
 
-public class PermissionUserDataManager implements Permission {
+class PermissionUserDataManager implements Permission {
 
     @Override
     public boolean evaluate(EvaluationContext evaluationContext) {

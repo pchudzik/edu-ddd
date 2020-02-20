@@ -2,11 +2,12 @@ package com.pchudzik.edu.ddd.its.user
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class UserPermissionsTest extends Specification {
-    def "only administrator can modify users"() {
+    def "user creator can modify and create users"() {
         given:
-        def user = user(new PermissionUserCreator())
+        def user = user(PermissionFactory.userCreator())
 
         expect:
         user.canAddUser()
@@ -16,7 +17,7 @@ class UserPermissionsTest extends Specification {
         given:
         def projectToManage = new ProjectId("ABC")
         def otherProject = new ProjectId("ZXC")
-        def user = user(new PermissionSingleProjectManager(projectToManage))
+        def user = user(PermissionFactory.singleProjectManager(projectToManage))
 
         expect:
         user.canManageProject(projectToManage)
@@ -25,18 +26,18 @@ class UserPermissionsTest extends Specification {
 
     def "user with permission to creating issues in current project can create them"() {
         given:
-        def projectToManage = new ProjectId("ABC")
+        def projectWithAccess = new ProjectId("ABC")
         def otherProject = new ProjectId("ZXC")
-        def user = user(new PermissionIssueCreatorWithinProject(projectToManage))
+        def user = user(PermissionFactory.issueCreatorWithinProject(projectWithAccess))
 
         expect:
-        user.canCreateIssue(projectToManage)
+        user.canCreateIssue(projectWithAccess)
         !user.canCreateIssue(otherProject)
     }
 
     def "user with project creator role can create projects"() {
         given:
-        def user = user(new PermissionNewProjectCreator())
+        def user = user(PermissionFactory.newProjectCreator())
 
         expect:
         user.canCreateProject()
@@ -44,10 +45,15 @@ class UserPermissionsTest extends Specification {
 
     def "update user data"() {
         given:
-        def regularUser = user(new PermissionUserDataManager())
-        def adminUser = user(new PermissionUserCreator())
+        def regularUserWithoutPermissions = user()
+        def regularUser = user(PermissionFactory.userDataManager())
+        def adminUser = user(PermissionFactory.userCreator())
 
         expect:
+        regularUserWithoutPermissions.canEditUser(regularUserWithoutPermissions.userId)
+        !regularUserWithoutPermissions.canEditUser(adminUser.userId)
+
+        and:
         !regularUser.canEditUser(adminUser.userId)
         regularUser.canEditUser(regularUser.userId)
 
@@ -60,11 +66,32 @@ class UserPermissionsTest extends Specification {
         given:
         def projectId = new ProjectId("ABC")
         def otherProjectId = new ProjectId("OTHER")
-        def user = this.user(new PermissionAccessIssue(projectId))
+        def user = user(PermissionFactory.accessIssue(projectId))
 
         expect:
         user.canAccessIssue(projectId)
         !user.canAccessIssue(otherProjectId)
+    }
+
+    @Unroll
+    def "administrator can do all"() {
+        given:
+        def projectId = new ProjectId("ABC")
+        def user = user(PermissionFactory.administrator())
+
+        expect:
+        checkAction(user, projectId) == true
+
+        where:
+        checkAction << [
+                { UserPermissions u, ProjectId p -> u.canAccessIssue(p) },
+                { UserPermissions u, ProjectId p -> u.canAddUser() },
+                { UserPermissions u, ProjectId p -> u.canCreateIssue(p) },
+                { UserPermissions u, ProjectId p -> u.canCreateProject() },
+                { UserPermissions u, ProjectId p -> u.canEditUser(u.getUserId()) },
+                { UserPermissions u, ProjectId p -> u.canEditUser(new UserId()) },
+                { UserPermissions u, ProjectId p -> u.canManageProject(p) }
+        ]
     }
 
     private UserPermissions user(Permission... permissions) {

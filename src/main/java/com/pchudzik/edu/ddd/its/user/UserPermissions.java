@@ -6,9 +6,10 @@ import com.pchudzik.edu.ddd.its.user.Permission.PermissionType;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.pchudzik.edu.ddd.its.user.Permission.PermissionType.CREATE_ISSUE;
 import static com.pchudzik.edu.ddd.its.user.Permission.PermissionType.PROJECT_MANAGER;
@@ -16,11 +17,11 @@ import static com.pchudzik.edu.ddd.its.user.Permission.PermissionType.PROJECT_MA
 class UserPermissions {
     @Getter(AccessLevel.PACKAGE)
     private final UserId userId;
-    private final List<Permission> permissions;
+    private final Set<Permission> permissions;
 
     public UserPermissions(UserId userId, Collection<Permission> permissions) {
         this.userId = userId;
-        this.permissions = new ArrayList<>(permissions);
+        this.permissions = new HashSet<>(permissions);
     }
 
     public boolean canAddUser() {
@@ -54,6 +55,10 @@ class UserPermissions {
     }
 
     public boolean canEditUser(UserId userId) {
+        if(Objects.equals(this.userId, userId)) {
+            return true;
+        }
+
         return checkPermission(
                 new EvaluationContext()
                         .withActiveUserId(this.userId)

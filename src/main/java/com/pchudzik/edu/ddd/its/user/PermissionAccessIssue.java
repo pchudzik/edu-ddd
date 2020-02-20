@@ -1,10 +1,12 @@
 package com.pchudzik.edu.ddd.its.user;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class PermissionAccessIssue implements Permission {
     private final ProjectId projectId;
