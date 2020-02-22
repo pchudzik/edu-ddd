@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldCreationImpl implements FieldCreation {
     private final TransactionManager txManager;
     private final StringFieldRepository stringFieldRepository;

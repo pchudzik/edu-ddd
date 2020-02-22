@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class IssueCreationImpl implements IssueCreation {
     private final IssueIdGenerator idGenerator;
     private final IssueRepository issueRepository;

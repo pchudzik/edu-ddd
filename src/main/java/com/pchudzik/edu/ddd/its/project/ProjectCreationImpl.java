@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class ProjectCreationImpl implements ProjectCreation {
     private final ProjectRepository projectRepository;
     private final MessageQueue messageQueue;

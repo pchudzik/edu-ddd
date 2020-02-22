@@ -9,7 +9,7 @@ import org.jdbi.v3.core.Jdbi;
 
 import javax.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldUpdateListener implements MessageQueue.MessageListener {
     private final TransactionManager txManager;
     private final NoLongerUsedFieldDefinitionCleanerRepository cleaner;
@@ -43,7 +43,7 @@ class FieldUpdateListener implements MessageQueue.MessageListener {
     }
 }
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class NoLongerUsedFieldDefinitionCleanerRepository {
 
     private final Jdbi jdbi;

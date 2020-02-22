@@ -7,7 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 import javax.inject.Inject;
 import java.util.List;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class ProjectViewRepositoryImpl implements ProjectViewRepository {
     private final Jdbi jdbi;
 

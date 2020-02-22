@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldAssignmentImpl implements FieldAssignment {
     private final TransactionManager txManager;
 

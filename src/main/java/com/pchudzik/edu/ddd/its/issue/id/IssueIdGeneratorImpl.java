@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class IssueIdGeneratorImpl implements IssueIdGenerator {
     private final TransactionManager txManager;
     private final IssueIdGeneratorRepository repository;

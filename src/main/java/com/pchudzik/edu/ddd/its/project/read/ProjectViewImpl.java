@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 import java.util.List;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class ProjectViewImpl implements ProjectView {
     private final ProjectViewRepository projectViewRepository;
 

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class AvailableFieldsImpl implements AvailableFields {
 
     private final Jdbi jdbi;

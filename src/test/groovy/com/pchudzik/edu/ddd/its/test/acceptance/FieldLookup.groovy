@@ -1,14 +1,14 @@
 package com.pchudzik.edu.ddd.its.test.acceptance
 
 import com.pchudzik.edu.ddd.its.field.FieldId
-import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.TestInjectorFactory
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.mapper.RowMapper
 
 class FieldLookup {
 
     static List<AllowedLabelRow> findAllAllowedLabels() {
-        InjectorFactory
+        TestInjectorFactory
                 .injector()
                 .getInstance(Jdbi)
                 .withHandle({ h ->
@@ -34,7 +34,7 @@ class FieldLookup {
     }
 
     static List<FieldId> findAllFieldIds() {
-        InjectorFactory
+        TestInjectorFactory
                 .injector()
                 .getInstance(Jdbi)
                 .withHandle({ h ->
@@ -51,7 +51,7 @@ class FieldLookup {
     }
 
     static int findNumberOfFieldsInAnyVersion(FieldId fieldId) {
-        InjectorFactory
+        TestInjectorFactory
                 .injector()
                 .getInstance(Jdbi)
                 .withHandle({ h ->

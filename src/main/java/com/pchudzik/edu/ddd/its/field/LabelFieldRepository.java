@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class LabelFieldRepository {
     private final Jdbi jdbi;
     private final LastFieldPointerRepository lastFieldPointerRepository;

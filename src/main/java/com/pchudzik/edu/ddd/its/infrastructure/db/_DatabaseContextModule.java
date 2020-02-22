@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.infrastructure.db;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
@@ -38,7 +39,7 @@ public class _DatabaseContextModule extends AbstractModule {
         bind(Jdbi.class).toInstance(Jdbi.create(dataSource));
         bind(Flyway.class).toInstance(flyway(dataSource));
 
-        bind(TransactionManager.class).to(TransactionManagerImpl.class);
+        bind(TransactionManager.class).to(TransactionManagerImpl.class).in(Singleton.class);
     }
 
     private DataSource loggingDataSource(DataSource dataSource) {

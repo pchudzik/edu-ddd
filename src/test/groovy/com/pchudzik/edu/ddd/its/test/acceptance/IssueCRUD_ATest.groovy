@@ -7,8 +7,8 @@ import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues.LabelValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues.StringValue
-import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.TestInjectorFactory
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueCreationCommand
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueUpdateCommand
@@ -16,7 +16,7 @@ import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.issue.read.IssueRead
 
 class IssueCRUD_ATest extends DbSpecification {
-    def injector = InjectorFactory.injector()
+    def injector = TestInjectorFactory.injector()
 
     def issueCreation = injector.getInstance(IssueCreation)
     def issueReadFacade = injector.getInstance(IssueRead)

@@ -6,7 +6,7 @@ import com.pchudzik.edu.ddd.its.field.FieldCreation.StringFieldCreationCommand
 import com.pchudzik.edu.ddd.its.field.FieldId
 import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand
 import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
-import com.pchudzik.edu.ddd.its.infrastructure.InjectorFactory
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.TestInjectorFactory
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.project.ProjectCreation
@@ -21,7 +21,7 @@ class Fixtures {
 
     static ProjectFixture projectFixture() {
         if (projectFixture == null) {
-            def injector = InjectorFactory.injector()
+            def injector = TestInjectorFactory.injector()
             projectFixture = new ProjectFixture(
                     projectFacade: injector.getInstance(ProjectCreation),
                     fieldDefinitions: injector.getInstance(FieldDefinitions))
@@ -32,7 +32,7 @@ class Fixtures {
 
     static FieldFixture fieldFixture() {
         if (fieldFixture == null) {
-            def injector = InjectorFactory.injector()
+            def injector = TestInjectorFactory.injector()
             fieldFixture = new FieldFixture(fieldCreationFacade: injector.getInstance(FieldCreation))
         }
         return fieldFixture
@@ -105,7 +105,7 @@ class Fixtures {
 
     static IssueFixture issueFixture() {
         if (issueFixture == null) {
-            def injector = InjectorFactory.injector()
+            def injector = TestInjectorFactory.injector()
             issueFixture = new IssueFixture(issueCreation: injector.getInstance(IssueCreation))
         }
         return issueFixture

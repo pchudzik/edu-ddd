@@ -13,6 +13,7 @@ import com.pchudzik.edu.ddd.its.issue.id._IssueIdContextModule;
 import com.pchudzik.edu.ddd.its.issue.read._IssueReadFacadeContextModule;
 import com.pchudzik.edu.ddd.its.project._ProjectContextModule;
 import com.pchudzik.edu.ddd.its.project.read._ProjectReadContextModule;
+import com.pchudzik.edu.ddd.its.user.access._AccessContextModule;
 
 public class InjectorFactory {
     private static Injector injector;
@@ -37,20 +38,6 @@ public class InjectorFactory {
     }
 
     public synchronized static Injector injector() {
-        if (injector == null) {
-            injector = Guice.createInjector(
-                    new _DatabaseContextModule(),
-                    new _MessagingContextModule(),
-                    new _ProjectContextModule(),
-                    new _ProjectReadContextModule(),
-                    new _IssueIdContextModule(),
-                    new _IssueReadFacadeContextModule(),
-                    new _IssueContextModule(),
-                    new _FieldContextModule(),
-                    new _FieldReadContextModule(),
-                    new _FieldDefinitionsContextModule()
-            );
-        }
-        return injector;
+        return injector(new _AccessContextModule());
     }
 }

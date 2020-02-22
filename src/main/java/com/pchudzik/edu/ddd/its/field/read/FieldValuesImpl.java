@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldValuesImpl implements FieldValues {
     private final TransactionManager txManager;
     private final FieldValuesReadRepository fieldValueRepository;

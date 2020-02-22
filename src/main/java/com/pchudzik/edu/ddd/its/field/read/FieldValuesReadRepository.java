@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldValuesReadRepository {
     private static final Map<FieldType, FieldValuesTransformer<?>> valueTransformers = Map.of(
             FieldType.STRING_FIELD, new StringFieldTransformer(),

@@ -7,7 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 
 import javax.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class IssueRepository {
     private final Jdbi jdbi;
 

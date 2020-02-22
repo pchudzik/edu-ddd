@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class FieldDefinitionsImpl implements FieldDefinitions {
     private static final String emptyProject = "_____";
 

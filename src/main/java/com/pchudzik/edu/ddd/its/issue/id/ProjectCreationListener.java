@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 class ProjectCreationListener implements MessageQueue.MessageListener {
     private final TransactionManager txManger;
     private final IssueIdGeneratorRepository issueIdGeneratorRepository;
