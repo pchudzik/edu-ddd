@@ -26,6 +26,7 @@ class IssueCreationAppService implements IssueCreation {
         return txManager.inTransaction(() ->
                 access.ifCanCreateIssue(
                         cmd.getPrincipal(),
+                        cmd.getProjectId(),
                         () -> issueCreation.createIssue(cmd)));
     }
 
@@ -34,6 +35,7 @@ class IssueCreationAppService implements IssueCreation {
         txManager.useTransaction(() ->
                 access.ifCanUpdateIssue(
                         cmd.getPrincipal(),
+                        issueId.getProject(),
                         () -> issueCreation.updateIssue(issueId, cmd)));
     }
 }

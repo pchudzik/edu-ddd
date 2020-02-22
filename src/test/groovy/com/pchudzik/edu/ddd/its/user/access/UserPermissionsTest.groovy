@@ -2,16 +2,13 @@ package com.pchudzik.edu.ddd.its.user.access
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.user.UserId
-import com.pchudzik.edu.ddd.its.user.access.Permission
-import com.pchudzik.edu.ddd.its.user.access.PermissionFactory
-import com.pchudzik.edu.ddd.its.user.access.UserPermissions
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class UserPermissionsTest extends Specification {
     def "user creator can modify and create users"() {
         given:
-        def user = user(PermissionFactory.userCreator())
+        def user = AccessFixtures.user(PermissionFactory.userCreator())
 
         expect:
         user.canAddUser()
@@ -21,27 +18,16 @@ class UserPermissionsTest extends Specification {
         given:
         def projectToManage = new ProjectId("ABC")
         def otherProject = new ProjectId("ZXC")
-        def user = user(PermissionFactory.singleProjectManager(projectToManage))
+        def user = AccessFixtures.user(PermissionFactory.singleProjectManager(projectToManage))
 
         expect:
         user.canManageProject(projectToManage)
         !user.canManageProject(otherProject)
     }
 
-    def "user with permission to creating issues in current project can create them"() {
-        given:
-        def projectWithAccess = new ProjectId("ABC")
-        def otherProject = new ProjectId("ZXC")
-        def user = user(PermissionFactory.issueCreatorWithinProject(projectWithAccess))
-
-        expect:
-        user.canCreateIssue(projectWithAccess)
-        !user.canCreateIssue(otherProject)
-    }
-
     def "user with project creator role can create projects"() {
         given:
-        def user = user(PermissionFactory.newProjectCreator())
+        def user = AccessFixtures.user(PermissionFactory.newProjectCreator())
 
         expect:
         user.canCreateProject()
@@ -49,9 +35,9 @@ class UserPermissionsTest extends Specification {
 
     def "update user data"() {
         given:
-        def regularUserWithoutPermissions = user()
-        def regularUser = user(PermissionFactory.userDataManager())
-        def adminUser = user(PermissionFactory.userCreator())
+        def regularUserWithoutPermissions = AccessFixtures.user()
+        def regularUser = AccessFixtures.user(PermissionFactory.userDataManager())
+        def adminUser = AccessFixtures.user(PermissionFactory.userCreator())
 
         expect:
         regularUserWithoutPermissions.canEditUser(regularUserWithoutPermissions.userId)
@@ -70,7 +56,7 @@ class UserPermissionsTest extends Specification {
         given:
         def projectId = new ProjectId("ABC")
         def otherProjectId = new ProjectId("OTHER")
-        def user = user(PermissionFactory.accessIssue(projectId))
+        def user = AccessFixtures.user(PermissionFactory.accessIssue(projectId))
 
         expect:
         user.canAccessIssue(projectId)
@@ -81,7 +67,7 @@ class UserPermissionsTest extends Specification {
     def "administrator can do all"() {
         given:
         def projectId = new ProjectId("ABC")
-        def user = user(PermissionFactory.administrator())
+        def user = AccessFixtures.user(PermissionFactory.administrator())
 
         expect:
         checkAction(user, projectId) == true
@@ -98,7 +84,4 @@ class UserPermissionsTest extends Specification {
         ]
     }
 
-    private UserPermissions user(Permission... permissions) {
-        new UserPermissions(new UserId(), Arrays.asList(permissions))
-    }
 }

@@ -18,7 +18,8 @@ interface Permission {
         PROJECT_CREATOR,
         UPDATE_USER,
         ACCESS_ISSUE,
-        CREATE_ISSUE
+        CREATE_ISSUE,
+        UPDATE_ISSUE;
     }
 
     class EvaluationContext {

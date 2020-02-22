@@ -56,7 +56,7 @@ class UserPermissions {
     }
 
     public boolean canEditUser(UserId userId) {
-        if(Objects.equals(this.userId, userId)) {
+        if (Objects.equals(this.userId, userId)) {
             return true;
         }
 
@@ -71,5 +71,11 @@ class UserPermissions {
         return checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PermissionType.ACCESS_ISSUE);
+    }
+
+    public boolean canUpdateIssue(ProjectId projectId) {
+        return checkPermission(
+                new EvaluationContext().withProjectId(projectId),
+                PermissionType.UPDATE_ISSUE);
     }
 }

@@ -4,11 +4,15 @@ import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
 class PermissionIssueCreatorWithinProject implements Permission {
+    private static final Set<PermissionType> applicablePermissions = EnumSet.of(PermissionType.CREATE_ISSUE, PermissionType.UPDATE_ISSUE);
+
     private final ProjectId projectId;
 
     @Override
@@ -21,6 +25,6 @@ class PermissionIssueCreatorWithinProject implements Permission {
 
     @Override
     public boolean isApplicable(PermissionType permissionType) {
-        return permissionType == PermissionType.CREATE_ISSUE;
+        return applicablePermissions.contains(permissionType);
     }
 }
