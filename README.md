@@ -34,7 +34,7 @@ All what's required is served as in memory services.
 
 ### Excluded (for now)
 
-* REST API
+* Full implementation of all details
 
 ### Unexpected changes
 
@@ -84,6 +84,7 @@ Following actions are defined:
 #### [Future] workflow which can be defined and field restrictions can be applied on each step + predefined workflows
 #### [Future] comments
 #### [Future] rich text in text fields (comments, descriptions etc)
+#### [Future] integration tests using REST API
 
 #### More TBD and documented here
 
