@@ -8,7 +8,7 @@ import com.google.inject.Provides;
 import javax.inject.Singleton;
 import java.util.stream.Collectors;
 
-public class MessagingContextModule extends AbstractModule {
+public class _MessagingContextModule extends AbstractModule {
 
     @Singleton
     @Provides

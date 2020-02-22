@@ -2,7 +2,7 @@ package com.pchudzik.edu.ddd.its.issue.id;
 
 import com.google.inject.AbstractModule;
 
-public class IssueIdContextModule extends AbstractModule {
+public class _IssueIdContextModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(IssueIdGeneratorRepository.class);

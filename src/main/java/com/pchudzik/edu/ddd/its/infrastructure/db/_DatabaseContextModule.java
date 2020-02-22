@@ -11,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 
 import javax.sql.DataSource;
 
-public class DatabaseContextModule extends AbstractModule {
+public class _DatabaseContextModule extends AbstractModule {
     private static DataSource dataSource() {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");

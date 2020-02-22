@@ -2,7 +2,7 @@ package com.pchudzik.edu.ddd.its.field;
 
 import com.google.inject.AbstractModule;
 
-public class FieldContextModule extends AbstractModule {
+public class _FieldContextModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(FieldCreation.class).to(FieldCreationImpl.class);
