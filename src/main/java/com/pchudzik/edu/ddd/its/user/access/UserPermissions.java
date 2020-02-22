@@ -1,8 +1,9 @@
-package com.pchudzik.edu.ddd.its.user;
+package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
-import com.pchudzik.edu.ddd.its.user.Permission.EvaluationContext;
-import com.pchudzik.edu.ddd.its.user.Permission.PermissionType;
+import com.pchudzik.edu.ddd.its.user.UserId;
+import com.pchudzik.edu.ddd.its.user.access.Permission.EvaluationContext;
+import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -11,8 +12,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.pchudzik.edu.ddd.its.user.Permission.PermissionType.CREATE_ISSUE;
-import static com.pchudzik.edu.ddd.its.user.Permission.PermissionType.PROJECT_MANAGER;
+import static com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType.CREATE_ISSUE;
+import static com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType.PROJECT_MANAGER;
 
 class UserPermissions {
     @Getter(AccessLevel.PACKAGE)

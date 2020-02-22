@@ -1,6 +1,7 @@
-package com.pchudzik.edu.ddd.its.user;
+package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.user.UserId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,9 @@ interface Permission {
         USER_MANAGER_PERMISSION,
         PROJECT_MANAGER,
         PROJECT_CREATOR,
-        UPDATE_USER, ACCESS_ISSUE, CREATE_ISSUE
+        UPDATE_USER,
+        ACCESS_ISSUE,
+        CREATE_ISSUE
     }
 
     class EvaluationContext {

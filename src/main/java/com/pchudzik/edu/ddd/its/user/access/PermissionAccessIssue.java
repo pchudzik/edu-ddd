@@ -1,4 +1,4 @@
-package com.pchudzik.edu.ddd.its.user;
+package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.EqualsAndHashCode;
@@ -8,19 +8,19 @@ import java.util.Objects;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class PermissionIssueCreatorWithinProject implements Permission {
+class PermissionAccessIssue implements Permission {
     private final ProjectId projectId;
 
     @Override
     public boolean evaluate(EvaluationContext evaluationContext) {
-        var projectId = evaluationContext
+        var project = evaluationContext
                 .getProjectId()
-                .orElseThrow(() -> new IllegalArgumentException("Project id for evaluating permission is missing"));
-        return Objects.equals(this.projectId, projectId);
+                .orElseThrow(() -> new IllegalArgumentException("Project id not provided"));
+        return Objects.equals(projectId, project);
     }
 
     @Override
     public boolean isApplicable(PermissionType permissionType) {
-        return permissionType == PermissionType.CREATE_ISSUE;
+        return PermissionType.ACCESS_ISSUE == permissionType;
     }
 }

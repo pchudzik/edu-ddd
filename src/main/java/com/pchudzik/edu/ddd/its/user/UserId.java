@@ -2,7 +2,7 @@ package com.pchudzik.edu.ddd.its.user;
 
 import java.util.UUID;
 
-class UserId {
+public class UserId {
     private final UUID id;
 
     public UserId() {

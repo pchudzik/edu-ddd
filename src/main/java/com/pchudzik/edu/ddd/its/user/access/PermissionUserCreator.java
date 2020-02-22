@@ -1,4 +1,4 @@
-package com.pchudzik.edu.ddd.its.user;
+package com.pchudzik.edu.ddd.its.user.access;
 
 class PermissionUserCreator implements Permission {
     @Override

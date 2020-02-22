@@ -1,6 +1,10 @@
-package com.pchudzik.edu.ddd.its.user
+package com.pchudzik.edu.ddd.its.user.access
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
+import com.pchudzik.edu.ddd.its.user.UserId
+import com.pchudzik.edu.ddd.its.user.access.Permission
+import com.pchudzik.edu.ddd.its.user.access.PermissionFactory
+import com.pchudzik.edu.ddd.its.user.access.UserPermissions
 import spock.lang.Specification
 import spock.lang.Unroll
 
