@@ -7,6 +7,7 @@ import com.pchudzik.edu.ddd.its.user.access.Access.SecuredAction
 import com.pchudzik.edu.ddd.its.user.access.Access.SecuredOperation
 import spock.lang.Specification
 
+import static com.pchudzik.edu.ddd.its.user.access.PermissionFactory.accessIssue
 import static com.pchudzik.edu.ddd.its.user.access.PermissionFactory.issueCreatorWithinProject
 
 class Access_ATest extends Specification {
@@ -65,6 +66,34 @@ class Access_ATest extends Specification {
         then:
         thrown(AccessException)
         0 * operation.execute()
+    }
+
+    def "user with permission can access issue"() {
+        given:
+        def action = Mock(SecuredAction)
+        def project = new ProjectId("ABC")
+        def principal = repo.addUser(AccessFixtures.user(accessIssue(project)))
+
+        when:
+        access.ifCanViewIssue(principal, project, action)
+
+        then:
+        1 * action.apply()
+    }
+
+
+    def "user without permission cannot access issue"() {
+        given:
+        def action = Mock(SecuredAction)
+        def project = new ProjectId("ABC")
+        def principal = repo.addUser(AccessFixtures.user())
+
+        when:
+        access.ifCanViewIssue(principal, project, action)
+
+        then:
+        thrown(AccessException)
+        0 * action.apply()
     }
 
     private static class StubbedUserPermissionsRepository implements PermissionsRepository {

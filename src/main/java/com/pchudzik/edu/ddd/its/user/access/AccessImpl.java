@@ -30,6 +30,15 @@ class AccessImpl implements Access {
         action.execute();
     }
 
+    @Override
+    public <T> T ifCanViewIssue(Principal principal, ProjectId project, SecuredAction<T> action) {
+        if(!findPermissionsForUser(principal).canAccessIssue(project)) {
+            throw new ForbiddenOperationException(principal, project, PermissionType.ACCESS_ISSUE);
+        }
+
+        return action.apply();
+    }
+
     private UserPermissions findPermissionsForUser(Principal principal) {
         return permissionsRepository
                 .findOne(principal.getUserId())

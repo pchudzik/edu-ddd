@@ -52,17 +52,6 @@ class UserPermissionsTest extends Specification {
         adminUser.canEditUser(adminUser.userId)
     }
 
-    def "user can view issues within project"() {
-        given:
-        def projectId = new ProjectId("ABC")
-        def otherProjectId = new ProjectId("OTHER")
-        def user = AccessFixtures.user(PermissionFactory.accessIssue(projectId))
-
-        expect:
-        user.canAccessIssue(projectId)
-        !user.canAccessIssue(otherProjectId)
-    }
-
     @Unroll
     def "administrator can do all"() {
         given:

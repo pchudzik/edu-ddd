@@ -9,11 +9,13 @@ import com.pchudzik.edu.ddd.its.field.read.FieldValues.LabelValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues.StringValue
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.TestInjectorFactory
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.access.EmptyPrincipal
 import com.pchudzik.edu.ddd.its.issue.IssueCreation
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueCreationCommand
 import com.pchudzik.edu.ddd.its.issue.IssueCreation.IssueUpdateCommand
 import com.pchudzik.edu.ddd.its.issue.id.IssueId
 import com.pchudzik.edu.ddd.its.issue.read.IssueRead
+import com.pchudzik.edu.ddd.its.issue.read.IssueRead.IssueLookupCommand
 
 class IssueCRUD_ATest extends DbSpecification {
     def injector = TestInjectorFactory.injector()
@@ -34,7 +36,7 @@ class IssueCRUD_ATest extends DbSpecification {
                 .build())
 
         then:
-        def issue = issueReadFacade.findIssue(issueId)
+        def issue = issueReadFacade.findIssue(new IssueLookupCommand(issueId, new EmptyPrincipal()))
         issue.id == issueId
         issue.title == "some issue"
     }
@@ -132,7 +134,7 @@ class IssueCRUD_ATest extends DbSpecification {
                 .build())
 
         then:
-        def issue = issueReadFacade.findIssue(issueId)
+        def issue = issueReadFacade.findIssue(new IssueLookupCommand(issueId, new EmptyPrincipal()))
         issue.id == issueId
         issue.title == "new title"
 

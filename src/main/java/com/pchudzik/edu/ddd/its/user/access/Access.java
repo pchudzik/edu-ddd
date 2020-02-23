@@ -9,6 +9,8 @@ public interface Access {
 
     void ifCanUpdateIssue(Principal principal, ProjectId projectId, SecuredOperation action);
 
+    <T> T ifCanViewIssue(Principal principal, ProjectId project, SecuredAction<T> action);
+
     interface SecuredAction<T> {
         T apply();
     }
@@ -18,10 +20,10 @@ public interface Access {
     }
 
     interface Principal {
-        UserId getUserId();
-
         static Principal of(UserId user) {
             return () -> user;
         }
+
+        UserId getUserId();
     }
 }

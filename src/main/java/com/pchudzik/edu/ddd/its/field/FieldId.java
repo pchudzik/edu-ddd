@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.field;
 
+import com.pchudzik.edu.ddd.its.infrastructure.domain.Id;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.UUID;
 
 @EqualsAndHashCode
-public class FieldId {
+public class FieldId implements Id {
     @Getter
     private final UUID value;
 

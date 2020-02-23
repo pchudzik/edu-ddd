@@ -13,4 +13,9 @@ class VoidAccess implements Access {
     void ifCanUpdateIssue(Principal principal, ProjectId projectId, SecuredOperation action) {
         action.execute()
     }
+
+    @Override
+    <T> T ifCanViewIssue(Principal principal, ProjectId project, SecuredAction<T> action) {
+        return action.apply()
+    }
 }

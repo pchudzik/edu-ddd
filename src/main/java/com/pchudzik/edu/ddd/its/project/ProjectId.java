@@ -1,11 +1,12 @@
 package com.pchudzik.edu.ddd.its.project;
 
+import com.pchudzik.edu.ddd.its.infrastructure.domain.Id;
 import com.pchudzik.edu.ddd.its.infrastructure.domain.ValidationException;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
 @EqualsAndHashCode
-public class ProjectId {
+public class ProjectId implements Id {
     private final String id;
 
     public ProjectId(String id) {

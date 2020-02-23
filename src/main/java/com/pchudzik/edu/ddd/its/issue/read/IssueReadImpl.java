@@ -1,29 +1,25 @@
 package com.pchudzik.edu.ddd.its.issue.read;
 
-import com.pchudzik.edu.ddd.its.issue.id.IssueId;
-import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager;
+import com.pchudzik.edu.ddd.its.infrastructure.domain.NoSuchObjectException;
+import com.pchudzik.edu.ddd.its.user.access.Access;
 import lombok.RequiredArgsConstructor;
-import org.jdbi.v3.core.Jdbi;
 
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 class IssueReadImpl implements IssueRead {
-    private final Jdbi jdbi;
+    private final IssueReadRepository readRepository;
+    private final TransactionManager txManager;
+    private final Access access;
 
     @Override
-    public IssueDto findIssue(IssueId issueId) {
-        return jdbi.withHandle(h -> h
-                .select("" +
-                        "select project, issue_sequence, title from issue " +
-                        "where project=:project and issue_sequence=:id")
-                .bind("project", issueId.getProject().getValue())
-                .bind("id", issueId.getIssue())
-                .map(r -> new IssueDto(
-                        new IssueId(
-                                new ProjectId(r.getColumn("project", String.class)),
-                                r.getColumn("issue_sequence", Integer.class)),
-                        r.getColumn("title", String.class)))
-                .one());
+    public IssueDto findIssue(IssueLookupCommand cmd) {
+        return txManager.inTransaction(() -> access.ifCanViewIssue(
+                cmd.getPrincipal(),
+                cmd.getIssueId().getProject(),
+                () -> readRepository
+                        .findOne(cmd.getIssueId())
+                        .orElseThrow(() -> new NoSuchObjectException(cmd.getIssueId()))));
     }
 }
