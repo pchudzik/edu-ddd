@@ -2,6 +2,7 @@ package com.pchudzik.edu.ddd.its.project;
 
 import com.pchudzik.edu.ddd.its.field.FieldValueAssignmentCommand;
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue;
+import com.pchudzik.edu.ddd.its.user.access.Access.Principal;
 import lombok.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface ProjectCreation {
         private final ProjectId id;
         private final String name;
         private final String description;
+        private final Principal principal;
         @Singular
         private final List<FieldValueAssignmentCommand> fieldAssignments;
     }
@@ -33,6 +35,7 @@ public interface ProjectCreation {
     class ProjectUpdateCommand {
         private final String name;
         private final String description;
+        private final Principal principal;
         @Singular
         private final List<FieldValueAssignmentCommand> fieldAssignments;
     }

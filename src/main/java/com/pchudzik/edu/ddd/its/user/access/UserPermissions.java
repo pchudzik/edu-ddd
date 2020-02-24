@@ -37,12 +37,6 @@ class UserPermissions {
                 PROJECT_MANAGER);
     }
 
-    private boolean checkPermission(EvaluationContext context, PermissionType projectManager) {
-        return permissions.stream()
-                .filter(p -> p.isApplicable(projectManager))
-                .anyMatch(p -> p.evaluate(context));
-    }
-
     public boolean canCreateIssue(ProjectId projectId) {
         return checkPermission(
                 new EvaluationContext().withProjectId(projectId),
@@ -52,7 +46,7 @@ class UserPermissions {
     public boolean canCreateProject() {
         return checkPermission(
                 EvaluationContext.empty(),
-                PermissionType.PROJECT_CREATOR);
+                PermissionType.CREATE_PROJECT);
     }
 
     public boolean canEditUser(UserId userId) {
@@ -77,5 +71,17 @@ class UserPermissions {
         return checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PermissionType.UPDATE_ISSUE);
+    }
+
+    public boolean canAccessProject(ProjectId projectId) {
+        return checkPermission(
+                new EvaluationContext().withProjectId(projectId),
+                PermissionType.ACCESS_PROJECT);
+    }
+
+    private boolean checkPermission(EvaluationContext context, PermissionType projectManager) {
+        return permissions.stream()
+                .filter(p -> p.isApplicable(projectManager))
+                .anyMatch(p -> p.evaluate(context));
     }
 }

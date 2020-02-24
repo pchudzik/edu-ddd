@@ -8,6 +8,6 @@ class PermissionNewProjectCreator implements Permission {
 
     @Override
     public boolean isApplicable(PermissionType permissionType) {
-        return PermissionType.PROJECT_CREATOR == permissionType;
+        return PermissionType.CREATE_PROJECT == permissionType || PermissionType.PROJECT_MANAGER == permissionType;
     }
 }

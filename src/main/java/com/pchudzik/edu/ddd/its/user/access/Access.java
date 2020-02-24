@@ -11,6 +11,12 @@ public interface Access {
 
     <T> T ifCanViewIssue(Principal principal, ProjectId project, SecuredAction<T> action);
 
+    <T> T ifCanCreateProject(Principal principal, SecuredAction<T> action);
+
+    void ifCanUpdateProject(Principal principal, ProjectId projectId, SecuredOperation action);
+
+    <T> T ifCanViewProject(Principal principal, ProjectId projectId, SecuredAction<T> action);
+
     interface SecuredAction<T> {
         T apply();
     }

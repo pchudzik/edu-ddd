@@ -1,7 +1,6 @@
 package com.pchudzik.edu.ddd.its.project
 
 import com.pchudzik.edu.ddd.its.field.FieldAssignment
-import com.pchudzik.edu.ddd.its.infrastructure.db.TransactionManager.NoTransactionManager
 import com.pchudzik.edu.ddd.its.infrastructure.queue.MessageQueue
 import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectCreatedMessage
 import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectCreationCommand
@@ -11,7 +10,7 @@ class ProjectCreationTest extends Specification {
     def projectRepository = Mock(ProjectRepository)
     def queue = Mock(MessageQueue)
     def fieldAssignment = Mock(FieldAssignment)
-    def facade = new ProjectCreationImpl(projectRepository, queue, new NoTransactionManager(), fieldAssignment)
+    def facade = new ProjectCreationImpl(projectRepository, queue, fieldAssignment)
 
     def "event is boradcasted after project is created"() {
         given:

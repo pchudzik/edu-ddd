@@ -14,25 +14,6 @@ class UserPermissionsTest extends Specification {
         user.canAddUser()
     }
 
-    def "user with permission to current project can manage it"() {
-        given:
-        def projectToManage = new ProjectId("ABC")
-        def otherProject = new ProjectId("ZXC")
-        def user = AccessFixtures.user(PermissionFactory.singleProjectManager(projectToManage))
-
-        expect:
-        user.canManageProject(projectToManage)
-        !user.canManageProject(otherProject)
-    }
-
-    def "user with project creator role can create projects"() {
-        given:
-        def user = AccessFixtures.user(PermissionFactory.newProjectCreator())
-
-        expect:
-        user.canCreateProject()
-    }
-
     def "update user data"() {
         given:
         def regularUserWithoutPermissions = AccessFixtures.user()

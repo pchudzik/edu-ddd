@@ -35,4 +35,8 @@ class PermissionFactory {
     public static Permission userDataManager() {
         return userDataManager;
     }
+
+    public static Permission accessProject(ProjectId projectId) {
+        return new PermissionAccessProject(projectId);
+    }
 }

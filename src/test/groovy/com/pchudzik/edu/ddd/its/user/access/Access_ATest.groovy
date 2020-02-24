@@ -11,13 +11,13 @@ import static com.pchudzik.edu.ddd.its.user.access.PermissionFactory.accessIssue
 import static com.pchudzik.edu.ddd.its.user.access.PermissionFactory.issueCreatorWithinProject
 
 class Access_ATest extends Specification {
+    private static final project = new ProjectId("ABC")
     def repo = new StubbedUserPermissionsRepository()
     def access = new AccessImpl(repo)
 
     def "user with permission to creating issues in current project can create them"() {
         given:
         def action = Mock(SecuredAction)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user(issueCreatorWithinProject(project)))
 
         when:
@@ -30,7 +30,6 @@ class Access_ATest extends Specification {
     def "user without permission to creating issues in current project can create them"() {
         given:
         def action = Mock(SecuredAction)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user())
 
         when:
@@ -44,7 +43,6 @@ class Access_ATest extends Specification {
     def "user with permission to creating issues in current project can update them"() {
         given:
         def operation = Mock(SecuredOperation)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user(issueCreatorWithinProject(project)))
 
         when:
@@ -57,7 +55,6 @@ class Access_ATest extends Specification {
     def "user without permission to creating issues in current project can not update them"() {
         given:
         def operation = Mock(SecuredOperation)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user())
 
         when:
@@ -71,7 +68,6 @@ class Access_ATest extends Specification {
     def "user with permission can access issue"() {
         given:
         def action = Mock(SecuredAction)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user(accessIssue(project)))
 
         when:
@@ -81,11 +77,9 @@ class Access_ATest extends Specification {
         1 * action.apply()
     }
 
-
     def "user without permission cannot access issue"() {
         given:
         def action = Mock(SecuredAction)
-        def project = new ProjectId("ABC")
         def principal = repo.addUser(AccessFixtures.user())
 
         when:
@@ -93,6 +87,87 @@ class Access_ATest extends Specification {
 
         then:
         thrown(AccessException)
+        0 * action.apply()
+    }
+
+    def "user with permission can create projects"() {
+        given:
+        def action = Mock(SecuredAction)
+        def principal = repo.addUser(AccessFixtures.user(PermissionFactory.newProjectCreator()))
+
+        when:
+        access.ifCanCreateProject(principal, action)
+
+        then:
+        1 * action.apply()
+    }
+
+    def "user without permission cannot create projects"() {
+        given:
+        def action = Mock(SecuredAction)
+        def principal = repo.addUser(AccessFixtures.user())
+
+        when:
+        access.ifCanCreateProject(principal, action)
+
+        then:
+        thrown(AccessException)
+        0 * action.apply()
+    }
+
+    def "user with permission to current project can manage it"() {
+        given:
+        def action = Mock(SecuredOperation)
+        def projectManager = repo.addUser(AccessFixtures.user(permission))
+
+        when:
+        access.ifCanUpdateProject(projectManager, project, action)
+
+        then:
+        1 * action.execute()
+
+        where:
+        permission << [
+                PermissionFactory.singleProjectManager(project),
+                PermissionFactory.newProjectCreator()
+        ]
+    }
+
+    def "user with permission to current project cannot manage it"() {
+        given:
+        def action = Mock(SecuredOperation)
+        def principal = repo.addUser(AccessFixtures.user())
+
+        when:
+        access.ifCanUpdateProject(principal, project, action)
+
+        then:
+        thrown AccessException
+        0 * action.execute()
+    }
+
+    def "user with permission to current project can access it"() {
+        given:
+        def action = Mock(SecuredAction)
+        def principal = repo.addUser(AccessFixtures.user(PermissionFactory.accessProject(project)))
+
+        when:
+        access.ifCanViewProject(principal, project, action)
+
+        then:
+        1 * action.apply()
+    }
+
+    def "user with permission to current project cannot access it"() {
+        given:
+        def action = Mock(SecuredAction)
+        def principal = repo.addUser(AccessFixtures.user())
+
+        when:
+        access.ifCanViewProject(principal, project, action)
+
+        then:
+        thrown AccessException
         0 * action.apply()
     }
 

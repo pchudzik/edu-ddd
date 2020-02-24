@@ -15,11 +15,12 @@ interface Permission {
     enum PermissionType {
         USER_MANAGER_PERMISSION,
         PROJECT_MANAGER,
-        PROJECT_CREATOR,
+        CREATE_PROJECT,
         UPDATE_USER,
         ACCESS_ISSUE,
         CREATE_ISSUE,
-        UPDATE_ISSUE;
+        UPDATE_ISSUE,
+        ACCESS_PROJECT;
     }
 
     class EvaluationContext {
