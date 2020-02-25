@@ -1,7 +1,7 @@
 package com.pchudzik.edu.ddd.its.issue.read;
 
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
-import com.pchudzik.edu.ddd.its.user.access.Access.Principal;
+import com.pchudzik.edu.ddd.its.user.access.Principal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -9,11 +9,11 @@ public class AccessException extends DomainException {
     }
 
     static class ForbiddenOperationException extends AccessException {
-        private final Access.Principal principal;
+        private final Principal principal;
         private final ProjectId projectId;
-        private final Permission.PermissionType permissionType;
+        private final PermissionType permissionType;
 
-        public ForbiddenOperationException(Access.Principal principal, ProjectId projectId, Permission.PermissionType permissionType) {
+        public ForbiddenOperationException(Principal principal, ProjectId projectId, PermissionType permissionType) {
             super("User " + principal.getUserId() + " doesn't have permission " + permissionType);
             this.principal = principal;
             this.projectId = projectId;
@@ -22,9 +22,9 @@ public class AccessException extends DomainException {
     }
 
     static class NoSuchUserException extends AccessException {
-        private final Access.Principal principal;
+        private final Principal principal;
 
-        public NoSuchUserException(Access.Principal principal) {
+        public NoSuchUserException(Principal principal) {
             super("No user " + principal.getUserId());
             this.principal = principal;
         }

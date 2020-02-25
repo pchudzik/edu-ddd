@@ -3,48 +3,44 @@ package com.pchudzik.edu.ddd.its.user.access;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import com.pchudzik.edu.ddd.its.user.UserId;
 import com.pchudzik.edu.ddd.its.user.access.Permission.EvaluationContext;
-import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-import static com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType.CREATE_ISSUE;
-import static com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType.PROJECT_MANAGER;
+import static com.pchudzik.edu.ddd.its.user.access.PermissionType.CREATE_ISSUE;
+import static com.pchudzik.edu.ddd.its.user.access.PermissionType.PROJECT_MANAGER;
 
 class UserPermissions {
     @Getter(AccessLevel.PACKAGE)
     private final UserId userId;
-    private final Set<Permission> permissions;
+    private final ApplicablePermissions permissions;
 
-    public UserPermissions(UserId userId, Collection<Permission> permissions) {
+    public UserPermissions(UserId userId, ApplicablePermissions userPermissions, ApplicablePermissions rolePermissions) {
         this.userId = userId;
-        this.permissions = new HashSet<>(permissions);
+        this.permissions = userPermissions.and(rolePermissions);
     }
 
     public boolean canAddUser() {
-        return checkPermission(
+        return permissions.checkPermission(
                 EvaluationContext.empty(),
                 PermissionType.USER_MANAGER_PERMISSION);
     }
 
     public boolean canManageProject(ProjectId projectId) {
-        return checkPermission(
+        return permissions.checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PROJECT_MANAGER);
     }
 
     public boolean canCreateIssue(ProjectId projectId) {
-        return checkPermission(
+        return permissions.checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 CREATE_ISSUE);
     }
 
     public boolean canCreateProject() {
-        return checkPermission(
+        return permissions.checkPermission(
                 EvaluationContext.empty(),
                 PermissionType.CREATE_PROJECT);
     }
@@ -54,34 +50,27 @@ class UserPermissions {
             return true;
         }
 
-        return checkPermission(
-                new EvaluationContext()
-                        .withActiveUserId(this.userId)
-                        .withOtherUserId(userId),
-                PermissionType.UPDATE_USER);
+        return permissions.checkPermission(new EvaluationContext()
+                .withActiveUserId(this.userId)
+                .withOtherUserId(userId), PermissionType.UPDATE_USER);
     }
 
     public boolean canAccessIssue(ProjectId projectId) {
-        return checkPermission(
+        return permissions.checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PermissionType.ACCESS_ISSUE);
     }
 
     public boolean canUpdateIssue(ProjectId projectId) {
-        return checkPermission(
+        return permissions.checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PermissionType.UPDATE_ISSUE);
     }
 
     public boolean canAccessProject(ProjectId projectId) {
-        return checkPermission(
+        return permissions.checkPermission(
                 new EvaluationContext().withProjectId(projectId),
                 PermissionType.ACCESS_PROJECT);
     }
 
-    private boolean checkPermission(EvaluationContext context, PermissionType projectManager) {
-        return permissions.stream()
-                .filter(p -> p.isApplicable(projectManager))
-                .anyMatch(p -> p.evaluate(context));
-    }
 }

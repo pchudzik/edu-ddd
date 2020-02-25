@@ -1,11 +1,11 @@
 package com.pchudzik.edu.ddd.its.project.read;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.user.access.AuthorizedCommand;
+import com.pchudzik.edu.ddd.its.user.access.Principal;
 import lombok.*;
 
 import java.util.List;
-
-import static com.pchudzik.edu.ddd.its.user.access.Access.Principal;
 
 public interface ProjectView {
     List<ProjectDto> listProjects(ListProjectsCmd cmd);
@@ -21,7 +21,7 @@ public interface ProjectView {
 
     @Getter
     @RequiredArgsConstructor
-    class ListProjectsCmd {
+    class ListProjectsCmd implements AuthorizedCommand {
         private final Principal principal;
     }
 }

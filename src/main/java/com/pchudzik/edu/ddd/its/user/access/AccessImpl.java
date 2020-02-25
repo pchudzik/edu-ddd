@@ -3,7 +3,6 @@ package com.pchudzik.edu.ddd.its.user.access;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import com.pchudzik.edu.ddd.its.user.access.AccessException.ForbiddenOperationException;
 import com.pchudzik.edu.ddd.its.user.access.AccessException.NoSuchUserException;
-import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;

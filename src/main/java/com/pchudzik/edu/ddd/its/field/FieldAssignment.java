@@ -1,5 +1,6 @@
 package com.pchudzik.edu.ddd.its.field;
 
+import com.pchudzik.edu.ddd.its.infrastructure.domain.Command;
 import com.pchudzik.edu.ddd.its.issue.id.IssueId;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import lombok.Getter;
@@ -10,7 +11,7 @@ public interface FieldAssignment {
     void assignFieldValues(ProjectId projectId, Collection<FieldAssignmentCommand> assignments);
     void assignFieldValues(IssueId issue, Collection<FieldAssignmentCommand> assignments);
 
-    interface FieldAssignmentCommand<V> {
+    interface FieldAssignmentCommand<V> extends Command {
         FieldId getFieldId();
 
         V getValue();

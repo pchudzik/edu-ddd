@@ -1,7 +1,6 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
-import com.pchudzik.edu.ddd.its.user.UserId;
 
 import java.util.function.Predicate;
 
@@ -27,11 +26,4 @@ public interface Access {
         void execute();
     }
 
-    interface Principal {
-        static Principal of(UserId user) {
-            return () -> user;
-        }
-
-        UserId getUserId();
-    }
 }

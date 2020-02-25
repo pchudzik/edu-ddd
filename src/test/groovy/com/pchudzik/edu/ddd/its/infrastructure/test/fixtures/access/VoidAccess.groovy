@@ -2,6 +2,7 @@ package com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.access
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.user.access.Access
+import com.pchudzik.edu.ddd.its.user.access.Principal
 
 import java.util.function.Predicate
 

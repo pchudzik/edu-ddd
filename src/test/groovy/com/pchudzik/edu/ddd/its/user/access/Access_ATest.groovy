@@ -2,7 +2,6 @@ package com.pchudzik.edu.ddd.its.user.access
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.user.UserId
-import com.pchudzik.edu.ddd.its.user.access.Access.Principal
 import com.pchudzik.edu.ddd.its.user.access.Access.SecuredAction
 import com.pchudzik.edu.ddd.its.user.access.Access.SecuredOperation
 import spock.lang.Specification

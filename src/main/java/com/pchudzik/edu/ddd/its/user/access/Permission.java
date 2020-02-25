@@ -12,17 +12,6 @@ interface Permission {
 
     boolean isApplicable(PermissionType permissionType);
 
-    enum PermissionType {
-        USER_MANAGER_PERMISSION,
-        PROJECT_MANAGER,
-        CREATE_PROJECT,
-        UPDATE_USER,
-        ACCESS_ISSUE,
-        CREATE_ISSUE,
-        UPDATE_ISSUE,
-        ACCESS_PROJECT;
-    }
-
     class EvaluationContext {
         private final Map<Keys, Object> arguments = new HashMap<>();
 
