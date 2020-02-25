@@ -8,11 +8,13 @@ import com.pchudzik.edu.ddd.its.field.defaults.assignment.FieldDefinitions
 import com.pchudzik.edu.ddd.its.field.read.FieldValues
 import com.pchudzik.edu.ddd.its.field.read.FieldValues.StringValue
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.access.EmptyPrincipal
 import com.pchudzik.edu.ddd.its.project.ProjectCreation
 import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectCreationCommand
 import com.pchudzik.edu.ddd.its.project.ProjectCreation.ProjectUpdateCommand
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.project.read.ProjectView
+import com.pchudzik.edu.ddd.its.project.read.ProjectView.ListProjectsCmd
 import com.pchudzik.edu.ddd.its.project.read.ProjectView.ProjectDto
 
 class ProjectCRUD_ATest extends DbSpecification {
@@ -33,7 +35,7 @@ class ProjectCRUD_ATest extends DbSpecification {
                 .build())
 
         then:
-        def allProjects = projectView.listProjects()
+        def allProjects = projectView.listProjects(new ListProjectsCmd(new EmptyPrincipal()))
 
         and:
         allProjects.size() == 1
@@ -170,7 +172,7 @@ class ProjectCRUD_ATest extends DbSpecification {
                 .build())
 
         then:
-        def allProjects = projectView.listProjects()
+        def allProjects = projectView.listProjects(new ListProjectsCmd(new EmptyPrincipal()))
         allProjects.size() == 1
         allProjects.contains(ProjectDto.builder()
                 .id(projectId)

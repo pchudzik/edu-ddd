@@ -3,6 +3,8 @@ package com.pchudzik.edu.ddd.its.user.access;
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import com.pchudzik.edu.ddd.its.user.UserId;
 
+import java.util.function.Predicate;
+
 public interface Access {
 
     <T> T ifCanCreateIssue(Principal principal, ProjectId projectId, SecuredAction<T> action);
@@ -15,7 +17,7 @@ public interface Access {
 
     void ifCanUpdateProject(Principal principal, ProjectId projectId, SecuredOperation action);
 
-    <T> T ifCanViewProject(Principal principal, ProjectId projectId, SecuredAction<T> action);
+    Predicate<ProjectId> canViewProject(Principal principal);
 
     interface SecuredAction<T> {
         T apply();

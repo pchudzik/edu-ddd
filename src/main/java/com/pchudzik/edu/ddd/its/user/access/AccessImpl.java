@@ -7,6 +7,7 @@ import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionType;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 class AccessImpl implements Access {
@@ -58,12 +59,9 @@ class AccessImpl implements Access {
     }
 
     @Override
-    public <T> T ifCanViewProject(Principal principal, ProjectId projectId, SecuredAction<T> action) {
-        if (!findPermissionsForUser(principal).canAccessProject(projectId)) {
-            throw new ForbiddenOperationException(principal, null, PermissionType.CREATE_PROJECT);
-        }
-
-        return action.apply();
+    public Predicate<ProjectId> canViewProject(Principal principal) {
+        var userPermissions = findPermissionsForUser(principal);
+        return userPermissions::canAccessProject;
     }
 
     private UserPermissions findPermissionsForUser(Principal principal) {

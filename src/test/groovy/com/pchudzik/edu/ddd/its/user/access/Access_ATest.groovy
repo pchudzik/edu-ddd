@@ -148,27 +148,18 @@ class Access_ATest extends Specification {
 
     def "user with permission to current project can access it"() {
         given:
-        def action = Mock(SecuredAction)
         def principal = repo.addUser(AccessFixtures.user(PermissionFactory.accessProject(project)))
 
-        when:
-        access.ifCanViewProject(principal, project, action)
-
-        then:
-        1 * action.apply()
+        expect:
+        access.canViewProject(principal).test(project)
     }
 
     def "user with permission to current project cannot access it"() {
         given:
-        def action = Mock(SecuredAction)
         def principal = repo.addUser(AccessFixtures.user())
 
-        when:
-        access.ifCanViewProject(principal, project, action)
-
-        then:
-        thrown AccessException
-        0 * action.apply()
+        expect:
+        !access.canViewProject(principal).test(project)
     }
 
     private static class StubbedUserPermissionsRepository implements PermissionsRepository {
