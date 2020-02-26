@@ -19,4 +19,9 @@ class PermissionAccessProject implements Permission {
     public boolean isApplicable(PermissionType permissionType) {
         return PermissionType.ACCESS_PROJECT == permissionType;
     }
+
+    @Override
+    public PermissionSnapshot getSnapshot() {
+        return new PermissionSnapshot(PermissionType.ACCESS_PROJECT, projectId);
+    }
 }

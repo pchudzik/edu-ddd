@@ -2,6 +2,8 @@ package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import com.pchudzik.edu.ddd.its.user.UserId;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,23 @@ interface Permission {
     boolean evaluate(EvaluationContext evaluationContext);
 
     boolean isApplicable(PermissionType permissionType);
+
+    PermissionSnapshot getSnapshot();
+
+    @RequiredArgsConstructor
+    class PermissionSnapshot {
+        @Getter
+        private final PermissionType permissionType;
+        private final ProjectId projectId;
+
+        public PermissionSnapshot(PermissionType permissionType) {
+            this(permissionType, null);
+        }
+
+        Optional<ProjectId> getProjectId() {
+            return Optional.ofNullable(projectId);
+        }
+    }
 
     class EvaluationContext {
         private final Map<Keys, Object> arguments = new HashMap<>();

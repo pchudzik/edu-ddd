@@ -18,6 +18,8 @@ public interface Access {
 
     Predicate<ProjectId> canViewProject(Principal principal);
 
+    <T> T ifCanManageRoles(Principal principal, SecuredAction<T> action);
+
     interface SecuredAction<T> {
         T apply();
     }

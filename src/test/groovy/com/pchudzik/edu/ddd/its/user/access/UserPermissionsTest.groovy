@@ -8,7 +8,7 @@ import spock.lang.Unroll
 class UserPermissionsTest extends Specification {
     def "user creator can modify and create users"() {
         given:
-        def user = AccessFixtures.user(PermissionFactory.userCreator())
+        def user = AccessFixtures.user(PermissionFactory.userManager())
 
         expect:
         user.canAddUser()
@@ -16,17 +16,12 @@ class UserPermissionsTest extends Specification {
 
     def "update user data"() {
         given:
-        def regularUserWithoutPermissions = AccessFixtures.user()
-        def regularUser = AccessFixtures.user(PermissionFactory.userDataManager())
-        def adminUser = AccessFixtures.user(PermissionFactory.userCreator())
+        def regularUser = AccessFixtures.user()
+        def adminUser = AccessFixtures.user(PermissionFactory.userManager())
 
         expect:
-        regularUserWithoutPermissions.canEditUser(regularUserWithoutPermissions.userId)
-        !regularUserWithoutPermissions.canEditUser(adminUser.userId)
-
-        and:
-        !regularUser.canEditUser(adminUser.userId)
         regularUser.canEditUser(regularUser.userId)
+        !regularUser.canEditUser(adminUser.userId)
 
         and:
         adminUser.canEditUser(regularUser.userId)

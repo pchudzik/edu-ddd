@@ -36,4 +36,9 @@ class VoidAccess implements Access {
     Predicate<ProjectId> canViewProject(Principal principal) {
         { p -> true } as Predicate
     }
+
+    @Override
+    <T> T ifCanManageRoles(Principal principal, SecuredAction<T> action) {
+        action.apply()
+    }
 }

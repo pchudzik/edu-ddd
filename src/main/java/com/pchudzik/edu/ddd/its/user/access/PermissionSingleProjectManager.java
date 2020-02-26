@@ -21,6 +21,11 @@ class PermissionSingleProjectManager implements Permission {
 
     @Override
     public boolean isApplicable(PermissionType permissionType) {
-        return permissionType == PermissionType.PROJECT_MANAGER;
+        return permissionType == PermissionType.SINGLE_PROJECT_MANAGER;
+    }
+
+    @Override
+    public PermissionSnapshot getSnapshot() {
+        return new PermissionSnapshot(PermissionType.SINGLE_PROJECT_MANAGER, projectId);
     }
 }

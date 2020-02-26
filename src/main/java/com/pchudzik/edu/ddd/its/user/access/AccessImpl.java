@@ -15,7 +15,7 @@ class AccessImpl implements Access {
     @Override
     public <T> T ifCanCreateIssue(Principal principal, ProjectId projectId, SecuredAction<T> action) {
         if (!findPermissionsForUser(principal).canCreateIssue(projectId)) {
-            throw new ForbiddenOperationException(principal, projectId, PermissionType.CREATE_ISSUE);
+            throw new ForbiddenOperationException(principal, projectId, PermissionType.ISSUE_MANAGER);
         }
 
         return action.apply();
@@ -23,11 +23,10 @@ class AccessImpl implements Access {
 
     @Override
     public void ifCanUpdateIssue(Principal principal, ProjectId projectId, SecuredOperation action) {
-        if (!findPermissionsForUser(principal).canUpdateIssue(projectId)) {
-            throw new ForbiddenOperationException(principal, projectId, PermissionType.UPDATE_ISSUE);
-        }
-
-        action.execute();
+        ifCanCreateIssue(principal, projectId, () -> {
+            action.execute();
+            return null;
+        });
     }
 
     @Override
@@ -42,7 +41,7 @@ class AccessImpl implements Access {
     @Override
     public <T> T ifCanCreateProject(Principal principal, SecuredAction<T> action) {
         if (!findPermissionsForUser(principal).canCreateProject()) {
-            throw new ForbiddenOperationException(principal, null, PermissionType.CREATE_PROJECT);
+            throw new ForbiddenOperationException(principal, PermissionType.CREATE_PROJECT);
         }
 
         return action.apply();
@@ -51,7 +50,7 @@ class AccessImpl implements Access {
     @Override
     public void ifCanUpdateProject(Principal principal, ProjectId projectId, SecuredOperation action) {
         if (!findPermissionsForUser(principal).canManageProject(projectId)) {
-            throw new ForbiddenOperationException(principal, projectId, PermissionType.PROJECT_MANAGER);
+            throw new ForbiddenOperationException(principal, projectId, PermissionType.SINGLE_PROJECT_MANAGER);
         }
 
         action.execute();
@@ -61,6 +60,15 @@ class AccessImpl implements Access {
     public Predicate<ProjectId> canViewProject(Principal principal) {
         var userPermissions = findPermissionsForUser(principal);
         return userPermissions::canAccessProject;
+    }
+
+    @Override
+    public <T> T ifCanManageRoles(Principal principal, SecuredAction<T> action) {
+        if (!findPermissionsForUser(principal).canCreateRoles()) {
+            throw new ForbiddenOperationException(principal, PermissionType.ROLES_MANAGER);
+        }
+
+        return action.apply();
     }
 
     private UserPermissions findPermissionsForUser(Principal principal) {

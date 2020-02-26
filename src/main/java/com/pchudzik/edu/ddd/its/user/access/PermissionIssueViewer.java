@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class PermissionAccessIssue implements Permission {
+class PermissionIssueViewer implements Permission {
     private final ProjectId projectId;
 
     @Override
@@ -22,5 +22,10 @@ class PermissionAccessIssue implements Permission {
     @Override
     public boolean isApplicable(PermissionType permissionType) {
         return PermissionType.ACCESS_ISSUE == permissionType;
+    }
+
+    @Override
+    public PermissionSnapshot getSnapshot() {
+        return new PermissionSnapshot(PermissionType.ACCESS_ISSUE, projectId);
     }
 }

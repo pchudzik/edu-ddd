@@ -1,12 +1,12 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 public enum PermissionType {
-    USER_MANAGER_PERMISSION,
-    PROJECT_MANAGER,
+    ADMINISTRATOR,
+    USER_MANAGER,
+    ROLES_MANAGER,
     CREATE_PROJECT,
-    UPDATE_USER,
+    SINGLE_PROJECT_MANAGER,
+    ISSUE_MANAGER,
     ACCESS_ISSUE,
-    CREATE_ISSUE,
-    UPDATE_ISSUE,
-    ACCESS_PROJECT;
+    ACCESS_PROJECT
 }

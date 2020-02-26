@@ -145,6 +145,31 @@ class Access_ATest extends Specification {
         0 * action.execute()
     }
 
+    def "user with permission can create and manage roles"() {
+        given:
+        def action = Mock(SecuredAction)
+        def user = repo.addUser(AccessFixtures.user(PermissionFactory.rolesManager()))
+
+        when:
+        access.ifCanManageRoles(user, action)
+
+        then:
+        1 * action.apply()
+    }
+
+    def "user without permission cannot create nor manage roles"() {
+        given:
+        def action = Mock(SecuredAction)
+        def principal = repo.addUser(AccessFixtures.user())
+
+        when:
+        access.ifCanManageRoles(principal, action)
+
+        then:
+        thrown AccessException
+        0 * action.apply()
+    }
+
     def "user with permission to current project can access it"() {
         given:
         def principal = repo.addUser(AccessFixtures.user(PermissionFactory.accessProject(project)))

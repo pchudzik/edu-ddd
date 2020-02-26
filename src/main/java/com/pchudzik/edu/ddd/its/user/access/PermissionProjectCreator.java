@@ -1,6 +1,6 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
-class PermissionAdministrator implements Permission {
+class PermissionProjectCreator implements Permission {
     @Override
     public boolean evaluate(EvaluationContext evaluationContext) {
         return true;
@@ -8,11 +8,11 @@ class PermissionAdministrator implements Permission {
 
     @Override
     public boolean isApplicable(PermissionType permissionType) {
-        return true;
+        return PermissionType.CREATE_PROJECT == permissionType || PermissionType.SINGLE_PROJECT_MANAGER == permissionType;
     }
 
     @Override
     public PermissionSnapshot getSnapshot() {
-        return new PermissionSnapshot(PermissionType.ADMINISTRATOR);
+        return new PermissionSnapshot(PermissionType.CREATE_PROJECT);
     }
 }
