@@ -75,3 +75,19 @@ create table field_value
   foreign key (project)                 references project(id),
   foreign key (issue)                   references issue(issue_sequence)
 );
+
+create table roles (
+  id   uuid         not null,
+  name varchar(256) not null,
+  primary key(id)
+);
+
+create table permissions
+(
+  id       uuid        not null,
+  owner_id uuid        not null,
+  type     varchar(36) not null,
+  project  varchar(7),
+  primary key(id),
+  foreign key(project) references project(id)
+)

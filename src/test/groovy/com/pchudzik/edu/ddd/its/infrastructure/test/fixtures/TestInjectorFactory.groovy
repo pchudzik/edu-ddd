@@ -8,4 +8,8 @@ class TestInjectorFactory {
     static Injector injector() {
         return InjectorFactory.injector(new _VoidAccessContextModule())
     }
+
+    static Injector realSecurityInjector() {
+        return InjectorFactory.injector()
+    }
 }

@@ -18,7 +18,7 @@ public class RolesImpl implements Roles {
                                 permissionAssignment.getPermissionType(),
                                 permissionAssignment.getProjectId().orElse(null)))
                         .collect(Collectors.toList()));
-        repository.save(rolePermissions.snapshot());
+        repository.save(rolePermissions.getSnapshot());
         return rolePermissions.getId();
     }
 

@@ -45,6 +45,8 @@ class PermissionFactory {
 
     public static Permission createPermission(PermissionType permissionType, @Nullable ProjectId projectId) {
         switch (permissionType) {
+            case ADMINISTRATOR:
+                return administrator();
             case USER_MANAGER:
                 return userManager();
             case SINGLE_PROJECT_MANAGER:

@@ -1,7 +1,9 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
+import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionSnapshot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Singular;
 
 import java.util.Collection;
 
@@ -19,11 +21,19 @@ class RolePermissions {
                 new ApplicablePermissions(permissions));
     }
 
-    public RolePermissionsSnapshot snapshot() {
-        return null;
+    public RolePermissionsSnapshot getSnapshot() {
+        return new RolePermissionsSnapshot(
+                id,
+                roleName,
+                permissions.getSnapshot());
     }
 
+    @Getter
+    @RequiredArgsConstructor
     static class RolePermissionsSnapshot {
-
+        private final RoleId id;
+        private final String name;
+        @Singular
+        private final Collection<PermissionSnapshot> permissions;
     }
 }
