@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-public class RolesImpl implements Roles {
+class RolesImpl implements Roles {
     private final RolePermissionsRepository repository;
 
     @Override

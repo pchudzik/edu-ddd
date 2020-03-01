@@ -2,8 +2,8 @@ package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
 import com.pchudzik.edu.ddd.its.user.UserId;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,7 +16,7 @@ public interface Roles {
     void assignUserToRole(RoleAssignmentCommand assignmentCommand);
 
     @Getter
-    @RequiredArgsConstructor
+    @Builder
     class RoleAssignmentCommand implements AuthorizedCommand {
         private final UserId userId;
         private final RoleId roleId;
@@ -24,7 +24,7 @@ public interface Roles {
     }
 
     @Getter
-    @RequiredArgsConstructor
+    @Builder
     class RoleCreationCommand implements AuthorizedCommand {
         private final Principal principal;
         private final String name;
@@ -32,7 +32,7 @@ public interface Roles {
     }
 
     @Getter
-    @RequiredArgsConstructor
+    @Builder
     class RoleUpdateCommand implements AuthorizedCommand {
         private final RoleId roleId;
         private final Principal principal;
@@ -40,15 +40,11 @@ public interface Roles {
         private final Collection<PermissionAssignment> permissions;
     }
 
-    @RequiredArgsConstructor
+    @Builder
     class PermissionAssignment {
         @Getter
         private final PermissionType permissionType;
         private final ProjectId projectId;
-
-        public PermissionAssignment(PermissionType permissionType) {
-            this(permissionType, null);
-        }
 
         public Optional<ProjectId> getProjectId() {
             return Optional.ofNullable(projectId);

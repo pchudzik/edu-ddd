@@ -5,7 +5,7 @@ import com.pchudzik.edu.ddd.its.infrastructure.domain.DomainService;
 
 import javax.inject.Inject;
 
-public class RolesAppService implements Roles {
+class RolesAppService implements Roles {
     private final Access access;
     private final TransactionManager transactionManager;
     private final Roles roles;
