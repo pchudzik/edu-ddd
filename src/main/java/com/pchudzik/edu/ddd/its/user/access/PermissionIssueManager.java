@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class PermissionIssueCreatorWithinProject implements Permission {
+class PermissionIssueManager implements Permission {
     private final ProjectId projectId;
 
     @Override
@@ -26,6 +26,6 @@ class PermissionIssueCreatorWithinProject implements Permission {
 
     @Override
     public PermissionSnapshot getSnapshot() {
-        return new PermissionSnapshot(PermissionType.ISSUE_MANAGER);
+        return new PermissionSnapshot(PermissionType.ISSUE_MANAGER, projectId);
     }
 }

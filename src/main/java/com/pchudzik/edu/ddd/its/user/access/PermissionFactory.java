@@ -20,7 +20,7 @@ class PermissionFactory {
     }
 
     public static Permission issueCreatorWithinProject(ProjectId projectId) {
-        return new PermissionIssueCreatorWithinProject(projectId);
+        return new PermissionIssueManager(projectId);
     }
 
     public static Permission newProjectCreator() {
@@ -43,7 +43,7 @@ class PermissionFactory {
         return rolesManager;
     }
 
-    public static Permission createPermission(PermissionType permissionType, @Nullable ProjectId projectId) {
+    public static Permission  createPermission(PermissionType permissionType, @Nullable ProjectId projectId) {
         switch (permissionType) {
             case ADMINISTRATOR:
                 return administrator();
@@ -59,6 +59,8 @@ class PermissionFactory {
                 return issueCreatorWithinProject(requiredProjectId(projectId));
             case ACCESS_PROJECT:
                 return accessProject(requiredProjectId(projectId));
+            case ROLES_MANAGER:
+                return rolesManager();
             default:
                 throw new IllegalArgumentException("Unknown permission type " + permissionType);
         }

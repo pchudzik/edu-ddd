@@ -26,7 +26,12 @@ public class RolesAppService implements Roles {
 
     @Override
     public void updateRole(RoleUpdateCommand cmd) {
-
+        transactionManager.useTransaction(() -> access.ifCanManageRoles(
+                cmd.getPrincipal(),
+                () -> {
+                    roles.updateRole(cmd);
+                    return null;
+                }));
     }
 
     @Override

@@ -10,9 +10,19 @@ class Permissions_ArchTest extends ArchSpecification {
     def "permissions can be created only via factory"() {
         expect:
         classes()
-                .that().areAssignableFrom(Permission)
+                .that().areAssignableTo(Permission)
                 .should().onlyBeAccessed()
                 .byClassesThat().belongToAnyOf(PermissionFactory, ApplicablePermissions)
+                .orShould().beAssignableTo(Permission)
+                .check(package_)
+    }
+
+    def "applicable permissions are created only in RolePermissions or UserPermissions classes"() {
+        expect:
+        classes()
+                .that().areAssignableTo(ApplicablePermissions)
+                .should().onlyBeAccessed()
+                .byClassesThat().belongToAnyOf(RolePermissions, UserPermissions, ApplicablePermissions)
                 .check(package_)
     }
 }

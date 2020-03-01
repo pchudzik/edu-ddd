@@ -1,18 +1,24 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.user.access.Permission.PermissionSnapshot;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 
 import java.util.Collection;
+import java.util.List;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 class RolePermissions {
     @Getter
     private final RoleId id;
-    private final String roleName;
-    private final ApplicablePermissions permissions;
+    private String roleName;
+    private ApplicablePermissions permissions;
+
+    public RolePermissions(RoleId roleId, String name, Collection<Permission> permissions) {
+        this(roleId, name, new ApplicablePermissions(permissions));
+    }
 
     public RolePermissions(String name, Collection<Permission> permissions) {
         this(
@@ -26,6 +32,14 @@ class RolePermissions {
                 id,
                 roleName,
                 permissions.getSnapshot());
+    }
+
+    public void updateName(String name) {
+        this.roleName = name;
+    }
+
+    public void updatePermissions(List<Permission> permissions) {
+        this.permissions = new ApplicablePermissions(permissions);
     }
 
     @Getter
