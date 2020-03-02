@@ -21,7 +21,7 @@ class UserPermissions {
         this.permissions = userPermissions.and(rolePermissions);
     }
 
-    public boolean canAddUser() {
+    public boolean canManageUsers() {
         return permissions.checkPermission(
                 EvaluationContext.empty(),
                 PermissionType.USER_MANAGER);
@@ -45,7 +45,7 @@ class UserPermissions {
                 PermissionType.CREATE_PROJECT);
     }
 
-    public boolean canEditUser(UserId userId) {
+    public boolean canManageUser(UserId userId) {
         if (Objects.equals(this.userId, userId)) {
             return true;
         }

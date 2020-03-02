@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.user.UserId;
 
 import java.util.function.Predicate;
 
@@ -19,6 +20,10 @@ public interface Access {
     Predicate<ProjectId> canViewProject(Principal principal);
 
     <T> T ifCanManageRoles(Principal principal, SecuredAction<T> action);
+
+    <T> T ifCanManageUsers(Principal principal, SecuredAction<T> action);
+
+    void ifCanManageUser(Principal principal, UserId userId, SecuredOperation operation);
 
     interface SecuredAction<T> {
         T apply();

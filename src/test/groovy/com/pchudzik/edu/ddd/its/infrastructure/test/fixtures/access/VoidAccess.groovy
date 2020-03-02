@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.access
 
 import com.pchudzik.edu.ddd.its.project.ProjectId
+import com.pchudzik.edu.ddd.its.user.UserId
 import com.pchudzik.edu.ddd.its.user.access.Access
 import com.pchudzik.edu.ddd.its.user.access.Principal
 
@@ -40,5 +41,15 @@ class VoidAccess implements Access {
     @Override
     <T> T ifCanManageRoles(Principal principal, SecuredAction<T> action) {
         action.apply()
+    }
+
+    @Override
+    <T> T ifCanManageUsers(Principal principal, SecuredAction<T> action) {
+        action.apply()
+    }
+
+    @Override
+    void ifCanManageUser(Principal principal, UserId userId, SecuredOperation operation) {
+        operation.execute()
     }
 }

@@ -1,24 +1,48 @@
 package com.pchudzik.edu.ddd.its.user;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 class User {
-    private final UserId userId;
-    private final UserDisplayDetails userDisplayDetails;
+    @Getter
+    private final UserId id;
+    private final String login;
+    private String displayName;
 
     public User(String login) {
         this(new UserId(), login);
     }
 
     public User(UserId userId, String login) {
-        this.userId = userId;
-        this.userDisplayDetails = new UserDisplayDetails(login);
+        this.id = userId;
+        this.login = login;
     }
 
-    private class UserDisplayDetails {
-        private String login;
-        private String displayName;
+    public User(String login, String displayName) {
+        this.id = new UserId();
+        this.login = login;
+        this.displayName = displayName;
+    }
 
-        public UserDisplayDetails(String login) {
-            this.login = login;
-        }
+    public User(UserId id, String login, String displayName) {
+        this.id = id;
+        this.login = login;
+        this.displayName = displayName;
+    }
+
+    public void updateDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public UserSnapshot getSnapshot() {
+        return new UserSnapshot(id, login, displayName);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    static class UserSnapshot {
+        private final UserId id;
+        private final String login;
+        private final String displayName;
     }
 }

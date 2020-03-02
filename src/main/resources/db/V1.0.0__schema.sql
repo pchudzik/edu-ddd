@@ -90,4 +90,12 @@ create table permissions
   project  varchar(7),
   primary key(id),
   foreign key(project) references project(id)
-)
+);
+
+create table users
+(
+  id uuid not null,
+  login varchar(256) not null,
+  display_name varchar(1024),
+  primary key(id)
+);

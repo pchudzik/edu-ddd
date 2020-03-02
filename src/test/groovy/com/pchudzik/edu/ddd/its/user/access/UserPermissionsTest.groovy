@@ -11,7 +11,7 @@ class UserPermissionsTest extends Specification {
         def user = AccessFixtures.user(PermissionFactory.userManager())
 
         expect:
-        user.canAddUser()
+        user.canManageUsers()
     }
 
     def "update user data"() {
@@ -20,12 +20,12 @@ class UserPermissionsTest extends Specification {
         def adminUser = AccessFixtures.user(PermissionFactory.userManager())
 
         expect:
-        regularUser.canEditUser(regularUser.userId)
-        !regularUser.canEditUser(adminUser.userId)
+        regularUser.canManageUser(regularUser.userId)
+        !regularUser.canManageUser(adminUser.userId)
 
         and:
-        adminUser.canEditUser(regularUser.userId)
-        adminUser.canEditUser(adminUser.userId)
+        adminUser.canManageUser(regularUser.userId)
+        adminUser.canManageUser(adminUser.userId)
     }
 
     @Unroll
@@ -40,11 +40,11 @@ class UserPermissionsTest extends Specification {
         where:
         checkAction << [
                 { UserPermissions u, ProjectId p -> u.canAccessIssue(p) },
-                { UserPermissions u, ProjectId p -> u.canAddUser() },
+                { UserPermissions u, ProjectId p -> u.canManageUsers() },
                 { UserPermissions u, ProjectId p -> u.canCreateIssue(p) },
                 { UserPermissions u, ProjectId p -> u.canCreateProject() },
-                { UserPermissions u, ProjectId p -> u.canEditUser(u.getUserId()) },
-                { UserPermissions u, ProjectId p -> u.canEditUser(new UserId()) },
+                { UserPermissions u, ProjectId p -> u.canManageUser(u.getUserId()) },
+                { UserPermissions u, ProjectId p -> u.canManageUser(new UserId()) },
                 { UserPermissions u, ProjectId p -> u.canManageProject(p) }
         ]
     }

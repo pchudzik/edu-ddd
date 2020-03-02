@@ -13,6 +13,7 @@ import com.pchudzik.edu.ddd.its.issue.id._IssueIdContextModule;
 import com.pchudzik.edu.ddd.its.issue.read._IssueReadFacadeContextModule;
 import com.pchudzik.edu.ddd.its.project._ProjectContextModule;
 import com.pchudzik.edu.ddd.its.project.read._ProjectReadContextModule;
+import com.pchudzik.edu.ddd.its.user._UserContextModule;
 import com.pchudzik.edu.ddd.its.user.access._AccessContextModule;
 
 import java.util.HashMap;
@@ -36,7 +37,9 @@ public class InjectorFactory {
                     new _IssueContextModule(),
                     new _FieldContextModule(),
                     new _FieldReadContextModule(),
-                    new _FieldDefinitionsContextModule()));
+                    new _FieldDefinitionsContextModule(),
+                    new _UserContextModule()
+                    ));
         }
 
         return cache.get(securityModule.getClass());

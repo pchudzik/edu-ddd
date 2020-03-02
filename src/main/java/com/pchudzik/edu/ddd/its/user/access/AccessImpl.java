@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.user.UserId;
 import com.pchudzik.edu.ddd.its.user.access.AccessException.ForbiddenOperationException;
 import com.pchudzik.edu.ddd.its.user.access.AccessException.NoSuchUserException;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,24 @@ class AccessImpl implements Access {
         }
 
         return action.apply();
+    }
+
+    @Override
+    public <T> T ifCanManageUsers(Principal principal, SecuredAction<T> action) {
+        if(!findPermissionsForUser(principal).canManageUsers()) {
+            throw new ForbiddenOperationException(principal, PermissionType.USER_MANAGER);
+        }
+
+        return action.apply();
+    }
+
+    @Override
+    public void ifCanManageUser(Principal principal, UserId userId, SecuredOperation operation) {
+        if(!findPermissionsForUser(principal).canManageUser(userId)) {
+            throw new ForbiddenOperationException(principal, PermissionType.USER_MANAGER);
+        }
+
+        operation.execute();
     }
 
     private UserPermissions findPermissionsForUser(Principal principal) {
