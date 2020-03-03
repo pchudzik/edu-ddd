@@ -1,13 +1,17 @@
 package com.pchudzik.edu.ddd.its.user;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@AllArgsConstructor
 class User {
     @Getter
     private final UserId id;
     private final String login;
     private String displayName;
+    private boolean deleted;
 
     public User(String login) {
         this(new UserId(), login);
@@ -24,25 +28,25 @@ class User {
         this.displayName = displayName;
     }
 
-    public User(UserId id, String login, String displayName) {
-        this.id = id;
-        this.login = login;
-        this.displayName = displayName;
-    }
-
     public void updateDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     public UserSnapshot getSnapshot() {
-        return new UserSnapshot(id, login, displayName);
+        return new UserSnapshot(id, login, displayName, deleted);
+    }
+
+    public void markAsDeleted() {
+        this.deleted = true;
     }
 
     @Getter
+    @EqualsAndHashCode
     @RequiredArgsConstructor
     static class UserSnapshot {
         private final UserId id;
         private final String login;
         private final String displayName;
+        private final boolean deleted;
     }
 }

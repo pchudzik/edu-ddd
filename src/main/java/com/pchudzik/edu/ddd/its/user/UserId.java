@@ -1,10 +1,12 @@
 package com.pchudzik.edu.ddd.its.user;
 
 import com.pchudzik.edu.ddd.its.infrastructure.domain.Id;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.UUID;
 
+@EqualsAndHashCode
 public class UserId implements Id {
     @Getter
     private final UUID value;

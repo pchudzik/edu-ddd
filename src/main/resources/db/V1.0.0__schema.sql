@@ -94,8 +94,9 @@ create table permissions
 
 create table users
 (
-  id uuid not null,
-  login varchar(256) not null,
+  id           uuid          not null,
+  login        varchar(256)  not null,
+  deleted      boolean       not null,
   display_name varchar(1024),
   primary key(id)
 );

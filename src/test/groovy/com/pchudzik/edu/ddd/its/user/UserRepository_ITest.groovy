@@ -14,15 +14,7 @@ class UserRepository_ITest extends DbSpecification {
         repo.save(user)
 
         then:
-        def saved = jdbi.withHandle({ h ->
-            h
-                    .select("select * from users")
-                    .mapToMap()
-                    .one()
-        })
-        saved["id"] == user.id.value
-        saved["login"] == user.login
-        saved["display_name"] == user.displayName
+        repo.findOne(user.id).get().snapshot == user
 
         where:
         user << [
@@ -43,13 +35,25 @@ class UserRepository_ITest extends DbSpecification {
         repo.save(user.snapshot)
 
         then:
-        def saved = jdbi.withHandle({ h ->
+        repo.findOne(user.id).get().snapshot == user.snapshot
+    }
+
+    def "deleted user can not be found"() {
+        given:
+        def user = new User("only_login")
+        user.markAsDeleted()
+
+        when:
+        repo.save(user.snapshot)
+
+        then:
+        !repo.findOne(user.id).isPresent()
+        def found = jdbi.withHandle({ h ->
             h
-                    .select("select * from users")
+                    .select("select id from users")
                     .mapToMap()
                     .one()
         })
-        saved["id"] == user.id.value
-        saved["display_name"] == "nice display name"
+        found["id"] == user.id.value
     }
 }

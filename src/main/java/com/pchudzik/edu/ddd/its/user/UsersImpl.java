@@ -30,16 +30,27 @@ public class UsersImpl implements Users {
         txManager.useTransaction(() -> access.ifCanManageUser(
                 cmd.getPrincipal(), cmd.getUserId(),
                 () -> {
-                    var user = userRepository
-                            .findOne(cmd.getUserId())
-                            .orElseThrow(() -> new NoSuchObjectException(cmd.getUserId()));
+                    var user = findUser(cmd.getUserId());
                     user.updateDisplayName(cmd.getDisplayName());
                     userRepository.save(user.getSnapshot());
                 }));
     }
 
     @Override
-    public void deleteUser(UserDeletionCommand userId) {
+    public void deleteUser(UserDeletionCommand cmd) {
+        txManager.useTransaction(() -> access.ifCanManageUsers(
+                cmd.getPrincipal(),
+                () -> {
+                    var user = findUser(cmd.getUserId());
+                    user.markAsDeleted();
+                    userRepository.save(user.getSnapshot());
+                    return null;
+                }));
+    }
 
+    private User findUser(UserId userId) {
+        return userRepository
+                .findOne(userId)
+                .orElseThrow(() -> new NoSuchObjectException(userId));
     }
 }
