@@ -1,6 +1,7 @@
 package com.pchudzik.edu.ddd.its.user.access;
 
 import com.pchudzik.edu.ddd.its.project.ProjectId;
+import com.pchudzik.edu.ddd.its.user.UserId;
 import com.pchudzik.edu.ddd.its.user.access.RolePermissions.RolePermissionsSnapshot;
 import lombok.RequiredArgsConstructor;
 import org.jdbi.v3.core.Handle;
@@ -46,6 +47,15 @@ class RolePermissionsRepositoryImpl implements RolePermissionsRepository {
                     .map(new RolePermissionsMapper(permissions))
                     .one();
         });
+    }
+
+    @Override
+    public void assignRoleToUser(UserId userId, RoleId roleId) {
+        jdbi.useHandle(h -> h
+                .createUpdate("insert into user_roles(role_id, user_id) values(:roleId, :userId)")
+                .bind("roleId", roleId.getValue())
+                .bind("userId", userId.getValue())
+                .execute());
     }
 
     private void deletePermissions(RoleId roleId) {

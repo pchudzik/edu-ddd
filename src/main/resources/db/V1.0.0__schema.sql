@@ -100,3 +100,12 @@ create table users
   display_name varchar(1024),
   primary key(id)
 );
+
+create table user_roles
+(
+    role_id uuid not null,
+    user_id uuid not null,
+    primary key (role_id, user_id),
+    foreign key (role_id) references roles(id),
+    foreign key (user_id) references users(id)
+);

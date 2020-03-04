@@ -2,14 +2,18 @@ package com.pchudzik.edu.ddd.its.user.access
 
 import com.pchudzik.edu.ddd.its.infrastructure.db.DbSpecification
 import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.TestInjectorFactory
+import com.pchudzik.edu.ddd.its.infrastructure.test.fixtures.access.EmptyPrincipal
 import com.pchudzik.edu.ddd.its.project.ProjectId
 import com.pchudzik.edu.ddd.its.test.acceptance.Fixtures
+import com.pchudzik.edu.ddd.its.user.Users
+import com.pchudzik.edu.ddd.its.user.Users.UserCreationCommand
 import org.jdbi.v3.core.Jdbi
 import spock.lang.Unroll
 
 class RolePermissionsRepository_ITest extends DbSpecification {
     def jdbi = TestInjectorFactory.realSecurityInjector().getInstance(Jdbi)
     def repository = TestInjectorFactory.realSecurityInjector().getInstance(RolePermissionsRepository)
+    def users = TestInjectorFactory.injector().getInstance(Users)
 
     private ProjectId projectId
 
@@ -123,5 +127,28 @@ class RolePermissionsRepository_ITest extends DbSpecification {
         then:
         def found = repository.findOne(role.id).getSnapshot()
         found.permissions.isEmpty()
+    }
+
+    def "assigns role to user"() {
+        given:
+        def userId = users.createUser(UserCreationCommand.builder()
+                .principal(new EmptyPrincipal())
+                .login("login")
+                .build())
+        def role = new RolePermissions("test", [])
+        repository.save(role.getSnapshot())
+
+        when:
+        repository.assignRoleToUser(userId, role.id)
+
+        then:
+        def found = jdbi.withHandle({ h ->
+            h
+                    .select("select * from user_roles")
+                    .mapToMap()
+                    .one()
+        })
+        found["role_id"] == role.id.value
+        found["user_id"] == userId.value
     }
 }

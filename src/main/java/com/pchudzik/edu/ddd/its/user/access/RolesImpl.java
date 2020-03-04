@@ -36,7 +36,9 @@ class RolesImpl implements Roles {
 
     @Override
     public void assignUserToRole(RoleAssignmentCommand assignmentCommand) {
-
+        repository.assignRoleToUser(
+                assignmentCommand.getUserId(),
+                assignmentCommand.getRoleId());
     }
 
 }

@@ -36,6 +36,12 @@ class RolesAppService implements Roles {
 
     @Override
     public void assignUserToRole(RoleAssignmentCommand assignmentCommand) {
-
+        transactionManager.useTransaction(() -> access.ifCanManageUsers(
+                assignmentCommand.getPrincipal(),
+                () -> {
+                    roles.assignUserToRole(assignmentCommand);
+                    return null;
+                }
+        ));
     }
 }
