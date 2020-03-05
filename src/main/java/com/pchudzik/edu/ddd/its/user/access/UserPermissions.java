@@ -16,9 +16,9 @@ class UserPermissions {
     private final UserId userId;
     private final ApplicablePermissions permissions;
 
-    public UserPermissions(UserId userId, ApplicablePermissions userPermissions, ApplicablePermissions rolePermissions) {
+    public UserPermissions(UserId userId, ApplicablePermissions permissions){
         this.userId = userId;
-        this.permissions = userPermissions.and(rolePermissions);
+        this.permissions = permissions;
     }
 
     public boolean canManageUsers() {

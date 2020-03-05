@@ -8,5 +8,6 @@ public class _AccessContextModule extends AbstractModule {
         bind(Access.class).to(AccessImpl.class);
         bind(RolePermissionsRepository.class).to(RolePermissionsRepositoryImpl.class);
         bind(PermissionsRepository.class).to(PermissionsRepositoryImpl.class);
+        bind(UserPermissionsRepository.class).to(UserPermissionsRepositoryImpl.class);
     }
 }
